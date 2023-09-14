@@ -79,96 +79,223 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The unique identifier for the user.
+     *
+     * This field is annotated with {@code @Id} to designate it as the primary key of the database table.
+     * It is also annotated with {@code @Column} to specify the column name, which is "user_id," and to indicate
+     * that the field cannot be null. Additionally, it is annotated with {@code @GeneratedValue} and
+     * {@code @SequenceGenerator} to configure automatic generation of unique values for this field using a sequence.
+     * The sequence generator is named "user_seq," and it allocates values in increments of 1.
+     */
     @Id
     @Column(name = "user_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     @SequenceGenerator(name = "user_seq", allocationSize = 1)
     private Long id;
 
+    /**
+     * The user's full name.
+     */
     @NotNull
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    @Size(max = 150)
+    @Column(
+            name = "full_name",
+            nullable = false
+    )
+    private String fullName;
 
-    @NotNull
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+    /**
+     * The user's last name.
+     */
+    @Size(max = 100)
+    @Column(
+            name = "nickname"
+    )
+    private String nickname;
 
+    /**
+     * The user's username, which is unique.
+     */
     @NotNull
-    @Size(max = 15)
-    @Column(name = "username", unique = true, nullable = false)
+    @Size(max = 100)
+    @Column(
+            name = "username",
+            unique = true,
+            nullable = false
+    )
     private String username;
 
+    /**
+     * The user's email address, which is unique and serves as a natural identifier.
+     */
     @Email
     @NotNull
     @NaturalId
-    @Size(max = 40)
-    @Column(name = "email", unique = true, nullable = false)
+    @Size(max = 100)
+    @Column(
+            name = "email",
+            unique = true,
+            nullable = false
+    )
     private String email;
 
+    /**
+     * The user's password.
+     */
     @NotNull
-    @Size(max = 100)
-    @Column(name = "password", nullable = false)
+    @Size(max = 255 )
+    @Column(
+            name = "password",
+            nullable = false
+    )
     private String password;
 
-    @Column(name = "bio", nullable = true)
+    /**
+     * The user's biography.
+     */
+    @Column(
+            name = "bio",
+            nullable = true
+    )
     private String bio;
 
-    @Column(name = "gender", nullable = true)
+    /**
+     * The user's gender.
+     */
+    @Column(
+            name = "gender",
+            nullable = true
+    )
     private boolean gender;
 
+    /**
+     * The user's phone number.
+     */
     @NotNull
-    @Column(name = "phone_number", nullable = false)
+    @Column(
+            name = "phone_number",
+            nullable = false
+    )
     private String phoneNumber;
 
-    @Column(name = "country", nullable = true)
+    /**
+     * The user's country.
+     */
+    @Column(
+            name = "country",
+            nullable = true
+    )
     private String country;
 
-    @Column(name = "image_url", nullable = true)
+    /**
+     * The URL of the user's profile image.
+     */
+    @Column(
+            name = "image_url",
+            nullable = true
+    )
     private String imageUrl;
 
-    @Column(name = "dob", nullable = true)
+    /**
+     * The user's date of birth.
+     */
+    @Column(
+            name = "dob",
+            nullable = true
+    )
     private Instant dob;
 
+    /**
+     * Indicates whether the user is banned.
+     */
     @NotNull
-    @Column(name = "is_banned", nullable = false)
+    @Column(
+            name = "is_banned",
+            nullable = false
+    )
     private Boolean isBanned;
 
-    @Column(name = "banned_date", nullable = true)
+    /**
+     * The date when the user was banned.
+     */
+    @Column(
+            name = "banned_date",
+            nullable = true
+    )
     private Instant bannedDate;
 
+    /**
+     * The user's role, represented as an enumeration.
+     */
     @Enumerated(EnumType.STRING)
     private ERole role;
 
+    /**
+     * Get the authorities granted to the user based on their role.
+     *
+     * @return A collection of granted authorities.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
 
+    /**
+     * Get the user's password.
+     *
+     * @return The user's password.
+     */
     @Override
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Get the user's username.
+     *
+     * @return The user's username.
+     */
     @Override
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Check if the user's account is non-expired (always returns true).
+     *
+     * @return True, indicating the account is non-expired.
+     */
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    /**
+     * Check if the user's account is non-locked (always returns true).
+     *
+     * @return True, indicating the account is non-locked.
+     */
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    /**
+     * Check if the user's credentials are non-expired (always returns true).
+     *
+     * @return True, indicating the credentials are non-expired.
+     */
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    /**
+     * Check if the user's account is enabled (always returns true).
+     *
+     * @return True, indicating the account is enabled.
+     */
     @Override
     public boolean isEnabled() {
         return true;
