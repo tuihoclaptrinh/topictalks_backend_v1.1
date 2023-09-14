@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    # The SQL driver class name using the MySQL Connector/J JDBC driver for connecting to a MySQL database
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/topic-talks-app?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+    username: root
+    password: p4ssw0rd!
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
