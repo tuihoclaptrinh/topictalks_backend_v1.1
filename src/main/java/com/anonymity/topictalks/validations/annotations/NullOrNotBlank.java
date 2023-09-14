@@ -10,10 +10,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Custom validation annotation for checking if a field is null or not blank (for Strings).
- * <p>
+ *
  * This annotation can be applied to fields and parameters and is used in conjunction with the
  * {@link NullOrNotBlankValidator} class to perform the validation.
- * </p>
+ *
  *
  * @see NullOrNotBlankValidator
  *
