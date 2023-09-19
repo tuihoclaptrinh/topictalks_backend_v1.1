@@ -1,4 +1,4 @@
-package com.anonymity.topictalks.configurations.audit;
+package com.anonymity.topictalks.configs.audit;
 
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import org.springframework.data.domain.AuditorAware;

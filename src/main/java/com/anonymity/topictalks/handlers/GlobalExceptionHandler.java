@@ -1,9 +1,11 @@
 package com.anonymity.topictalks.handlers;
 
 import com.anonymity.topictalks.exceptions.*;
-import com.anonymity.topictalks.models.payloads.responses.ApiResponse;
 import com.anonymity.topictalks.models.payloads.responses.GlobalErrorResponse;
 import com.anonymity.topictalks.models.payloads.responses.TokenErrorResponse;
+import com.anonymity.topictalks.utils.logger.LoggerUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -29,6 +31,8 @@ import java.time.Instant;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final LoggerUtils<GlobalExceptionHandler> logger = new LoggerUtils<>(GlobalExceptionHandler.class);
 
     /**
      * Build an error response object with the given message and HTTP status.
@@ -62,6 +66,7 @@ public class GlobalExceptionHandler {
                 .message(ex.getMessage())
                 .path(request.getDescription(false))
                 .build();
+        logger.logException(ex);
         return new ResponseEntity<>(errorResponse,HttpStatus.FORBIDDEN);
     }
 
@@ -73,6 +78,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GlobalErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST));
@@ -85,24 +91,11 @@ public class GlobalExceptionHandler {
      * @return A ResponseEntity with a GlobalErrorResponse and HTTP status Bad Request.
      */
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<GlobalErrorResponse> messageExceptionHandler(NoHandlerFoundException ex) {
+    public ResponseEntity<GlobalErrorResponse> handleMessageException(NoHandlerFoundException ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST));
-    }
-
-    /**
-     * Handle other exceptions and return a Bad Request response.
-     *
-     * @param ex  The Exception that occurred.
-     * @param req The web request.
-     * @return A ResponseEntity with a GlobalErrorResponse and HTTP status Bad Request.
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<GlobalErrorResponse> otherExceptionHandler(Exception ex, WebRequest req) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(buildErrorResponse(ex.getMessage() + " - " + req.getDescription(false), HttpStatus.BAD_REQUEST));
     }
 
     /**
@@ -114,6 +107,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AppException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<GlobalErrorResponse> handleAppException(AppException ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
@@ -128,6 +122,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<GlobalErrorResponse> handleBadRequestException(BadRequestException ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST));
@@ -142,6 +137,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidOldPasswordException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<GlobalErrorResponse> handleInvalidOldPasswordException(InvalidOldPasswordException ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST));
@@ -156,6 +152,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<GlobalErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND));
@@ -170,6 +167,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<GlobalErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse("Malformed JSON request: " + ex.getMessage(), HttpStatus.BAD_REQUEST));
@@ -184,6 +182,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<GlobalErrorResponse> handleGenericException(Exception ex) {
+        logger.logException(ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildErrorResponse("Internal Server Error: "+ ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));

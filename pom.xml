@@ -15,6 +15,7 @@
 	<description>TopicTalks-BackEnd</description>
 	<properties>
 		<java.version>17</java.version>
+		<netty-socketio.version>2.0.3</netty-socketio.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -58,6 +59,18 @@
 		<!-- =============================================================== -->
 		<!-- external library dependencies -->
 		<!-- =============================================================== -->
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.83</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.corundumstudio.socketio</groupId>
+			<artifactId>netty-socketio</artifactId>
+			<version>${netty-socketio.version}</version>
+		</dependency>
 
 		<!-- ===== jjwt ===== -->
 		<dependency>

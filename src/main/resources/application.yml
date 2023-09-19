@@ -1,31 +1,53 @@
 server:
-  port: 8080
+  port: 8080 # Port on which the server will run
 spring:
   task:
     scheduling:
       pool:
-        size: 10
+        size: 10 # Size of the scheduling thread pool
   servlet:
     multipart:
-      file-size-threshold: 0
+      file-size-threshold: 0 # Threshold for multipart file size
+  # Hikari offers improved performance, resource efficiency, and streamlined connection management,
+  # making it a popular choice for database interaction.
   datasource:
-    name: tuihoclaptrinh
-    type: com.zaxxer.hikari.HikariDataSource
+    name: tuihoclaptrinh # Name of the data source
+    type: com.zaxxer.hikari.HikariDataSource # Type of data source
     hikari:
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver # JDBC driver class name
       # Automatically commit connections returned from the pool
       auto-commit: true
       # Minimum number of idle connections maintained in the pool
       minimum-idle: 5
       # Database connection timeout, default is 30 seconds, which is 30000
       idle-timeout: 60000
-    url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
-    username: root
-    password: p4ssw0rd!
+    url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+    username: root # Database username
+    password: p4ssw0rd! # Database password
   jpa:
     hibernate:
       ddl-auto: update # If the update data table does not exist, it will be automatically created.
-    show-sql: true
+    show-sql: true # Show SQL statements
     properties:
       hibernate:
-        format_sql: true
+        format_sql: true # Format SQL statements
+  messages:
+    basename: messages
+
+## Configuration jwt
+application:
+  security:
+    jwt:
+      secret-key: 586B633834416E396D7436753879382F423F4428482B4C6250655367566B5970
+      expiration: 900000 #  15 min in ms
+      refresh-token:
+        expiration: 1296000000 # 15 days in ms
+
+socket-server:
+  port: 8085
+  host: 127.0.0.1
+
+logging: # Log pattern for console output
+  pattern:
+    console: "%clr(%d{dd-MM-yyy HH:mm:ss.SSS}){faint} %highlight(%-5level) %magenta(${PID}) --- %cyan([%t]) %yellow(%logger{50}).%green(%M) : %msg%n"
+

@@ -1,4 +1,4 @@
-package com.anonymity.topictalks.configurations.audit;
+package com.anonymity.topictalks.configs.audit;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
