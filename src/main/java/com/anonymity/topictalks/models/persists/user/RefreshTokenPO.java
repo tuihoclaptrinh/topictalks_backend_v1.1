@@ -2,10 +2,7 @@ package com.anonymity.topictalks.models.persists.user;
 
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -42,6 +39,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "refresh_token")
+@EqualsAndHashCode(callSuper=false)
 public class RefreshTokenPO extends DateAudit implements Serializable {
 
     /**

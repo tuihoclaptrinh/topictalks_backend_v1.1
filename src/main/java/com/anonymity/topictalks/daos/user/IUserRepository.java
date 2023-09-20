@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.daos.user;
 
+import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,7 +16,7 @@ import java.util.Optional;
  */
 
 @Repository
-public interface IUserRepository extends JpaRepository<UserPO, Long> {
+public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
     Optional<UserPO> findByUsername(String username);
 

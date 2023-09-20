@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.daos.message;
 
+import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface IConversationRepository extends JpaRepository<ConversationPO, Long> {
+public interface IConversationRepository extends IBaseRepository<ConversationPO, Long> {
 }

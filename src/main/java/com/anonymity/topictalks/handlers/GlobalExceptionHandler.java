@@ -17,6 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * GlobalExceptionHandler is a controller advice class responsible for handling exceptions globally
@@ -45,7 +46,7 @@ public class GlobalExceptionHandler {
         return GlobalErrorResponse.builder()
                 .error(status.getReasonPhrase())
                 .message(message)
-                .timeStamp(Instant.now())
+                .timeStamp(LocalDateTime.now())
                 .build();
     }
 
@@ -60,7 +61,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<TokenErrorResponse> handleRefreshTokenException(TokenException ex, WebRequest request){
         final TokenErrorResponse errorResponse = TokenErrorResponse.builder()
-                .timestamp(Instant.now())
+                .timestamp(LocalDateTime.now())
                 .error("Invalid Token")
                 .status(HttpStatus.FORBIDDEN.value())
                 .message(ex.getMessage())

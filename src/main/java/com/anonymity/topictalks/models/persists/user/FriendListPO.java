@@ -2,10 +2,7 @@ package com.anonymity.topictalks.models.persists.user;
 
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -46,6 +43,7 @@ import java.io.Serializable;
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 @Table(name = "friend_list", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "friend_id",

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Custom Access Denied Handler to handle access denied exceptions.
@@ -54,7 +55,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         TokenErrorResponse body = TokenErrorResponse.builder()
                 .status(HttpServletResponse.SC_FORBIDDEN)
                 .error("Forbidden")
-                .timestamp(Instant.now())
+                .timestamp(LocalDateTime.now())
                 .message(accessDeniedException.getMessage())
                 .path(request.getServletPath())
                 .build();

@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.daos.message;
 
+import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 
 @Repository
-public interface IMessageRepository extends JpaRepository<MessagePO, Long> {
+public interface IMessageRepository extends IBaseRepository<MessagePO, Long> {
 
     List<MessagePO> findAllByConversationId(ConversationPO conversation);
 

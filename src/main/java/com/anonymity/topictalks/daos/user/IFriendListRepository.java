@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.daos.user;
 
+import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.user.FriendListPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface IFriendListRepository extends JpaRepository<FriendListPO, Long> {
+public interface IFriendListRepository extends IBaseRepository<FriendListPO, Long> {
 }

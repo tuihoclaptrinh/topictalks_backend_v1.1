@@ -1,9 +1,8 @@
 package com.anonymity.topictalks.models.persists.audit;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * - The {@code DateAudit} class is a base class for entities that require auditing of creation and modification dates.
@@ -68,7 +68,7 @@ public class DateAudit implements Serializable {
     // Represents the instant when the entity was created.
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     /**
      * The {@code updatedAt} field represents the instant when the entity was last modified. It is annotated with
@@ -79,6 +79,6 @@ public class DateAudit implements Serializable {
     // Represents the instant when the entity was last modified.
     @LastModifiedDate
     @Column(nullable = true)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
 }
