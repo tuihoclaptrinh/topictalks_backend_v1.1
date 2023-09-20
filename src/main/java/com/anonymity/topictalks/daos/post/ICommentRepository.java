@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.daos.post;
 
+import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.post.CommentPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface ICommentRepository extends JpaRepository<CommentPO, Long> {
+public interface ICommentRepository extends IBaseRepository<CommentPO, Long> {
 }

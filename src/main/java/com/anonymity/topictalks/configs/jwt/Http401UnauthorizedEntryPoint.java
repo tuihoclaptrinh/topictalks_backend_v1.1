@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Custom HTTP 401 Unauthorized Entry Point to handle authentication exceptions.
@@ -55,7 +56,7 @@ public class Http401UnauthorizedEntryPoint implements AuthenticationEntryPoint {
         TokenErrorResponse body = TokenErrorResponse.builder()
                 .status(HttpServletResponse.SC_UNAUTHORIZED)
                 .error("Unauthorized")
-                .timestamp(Instant.now())
+                .timestamp(LocalDateTime.now())
                 .message(authException.getMessage())
                 .path(request.getServletPath())
                 .build();

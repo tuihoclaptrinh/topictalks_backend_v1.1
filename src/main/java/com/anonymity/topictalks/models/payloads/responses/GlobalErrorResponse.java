@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * GlobalErrorResponse is a class representing a standardized error response format for global exceptions handling.
@@ -37,6 +37,6 @@ public class GlobalErrorResponse {
     /**
      * A timestamp indicating when the error occurred.
      */
-    private Instant timeStamp;
+    private LocalDateTime timeStamp;
 
 }

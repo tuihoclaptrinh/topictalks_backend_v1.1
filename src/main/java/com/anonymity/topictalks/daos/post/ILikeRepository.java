@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.daos.post;
 
+import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.post.LikeKey;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,5 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface ILikeRepository extends JpaRepository<LikePO, LikeKey> {
+public interface ILikeRepository extends IBaseRepository<LikePO, LikeKey> {
 }

@@ -26,13 +26,15 @@ spring:
     password: p4ssw0rd! # Database password
   jpa:
     hibernate:
-      ddl-auto: update # If the update data table does not exist, it will be automatically created.
+      ddl-auto: create-drop # If the update data table does not exist, it will be automatically created.
     show-sql: true # Show SQL statements
     properties:
       hibernate:
         format_sql: true # Format SQL statements
   messages:
     basename: messages
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
 
 ## Configuration jwt
 application:
@@ -43,9 +45,27 @@ application:
       refresh-token:
         expiration: 1296000000 # 15 days in ms
 
+## Socket Io Configuration
 socket-server:
+  # Socket Port
   port: 8085
+  # Socket Host
   host: 127.0.0.1
+  # Number of connections
+  workCount: 100
+  #Allow client requests
+  allowCustomRequests: true
+  # Protocol upgrade timeout (milliseconds), default 10 seconds
+  upgradeTimeout: 10000
+  # Ping message timeout (milliseconds), default 60 seconds
+  pingTimeout: 60000
+  # Ping message interval (milliseconds), default is 25 seconds.
+  pingInterval: 25000
+  #Set the maximum content length of HTTP interaction
+  maxHttpContentLength: 1048576
+  #Set the maximum length of data processed per frame to prevent others from using big data to attack the server
+  maxFramePayloadLength: 1048576
+
 
 logging: # Log pattern for console output
   pattern:

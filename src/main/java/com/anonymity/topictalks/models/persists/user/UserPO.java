@@ -5,10 +5,7 @@ import com.anonymity.topictalks.utils.enums.ERole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -55,6 +52,7 @@ import java.util.Collection;
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 @Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "username"

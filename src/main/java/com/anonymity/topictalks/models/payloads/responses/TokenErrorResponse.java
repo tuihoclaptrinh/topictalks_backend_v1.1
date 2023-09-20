@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * TokenErrorResponse is a class representing a standardized error response format for token-related exceptions.
@@ -36,7 +37,7 @@ public class TokenErrorResponse {
     /**
      * A timestamp indicating when the error occurred.
      */
-    private Instant timestamp;
+    private LocalDateTime timestamp;
 
     /**
      * A descriptive error message explaining the error in more detail.

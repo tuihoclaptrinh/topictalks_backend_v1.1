@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.daos.notification;
 
+import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.notification.MessageNotificationPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface IMessageNotificationRepository extends JpaRepository<MessageNotificationPO, Long> {
+public interface IMessageNotificationRepository extends IBaseRepository<MessageNotificationPO, Long> {
 }

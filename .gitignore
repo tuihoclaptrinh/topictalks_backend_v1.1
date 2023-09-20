@@ -34,3 +34,4 @@ build/
 
 ### external file ###
 topictalks-javadoc
+!**/src/generated-sources/

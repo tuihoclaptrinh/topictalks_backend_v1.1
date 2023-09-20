@@ -7,6 +7,7 @@ import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse
 import com.anonymity.topictalks.models.payloads.responses.RefreshTokenResponse;
 import com.anonymity.topictalks.services.IAuthenticationService;
 import com.anonymity.topictalks.services.IRefreshTokenService;
+import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,7 +37,7 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<ResponseData> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
