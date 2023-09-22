@@ -77,14 +77,14 @@ public class PostPO extends DateAudit implements Serializable {
     /**
      * Represents the user who authored this post.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     private UserPO authorId;
 
     /**
      * Represents the parent topic associated with this post.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "topic_parent_id", nullable = false)
     private TopicParentPO topicParentId;
 

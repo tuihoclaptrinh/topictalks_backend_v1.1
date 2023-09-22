@@ -3,7 +3,11 @@ package com.anonymity.topictalks.daos.topic;
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author de140172 - author
@@ -15,4 +19,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ITopicChildrenRepository extends IBaseRepository<TopicChildrenPO, Long> {
+    @Query(value = "SELECT * FROM topic_children t WHERE t.topic_children_name= :topicChildrenName AND t.topic_parent_id= :topicParentId", nativeQuery = true)
+    List<TopicChildrenPO> findByTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName, @Param(value = "topicParentId") long topicParentId);
 }

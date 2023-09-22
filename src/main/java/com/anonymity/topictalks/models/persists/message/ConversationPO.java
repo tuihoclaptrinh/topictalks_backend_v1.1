@@ -79,7 +79,7 @@ public class ConversationPO extends DateAudit implements Serializable {
     /**
      * Represents the topic within which this conversation is associated.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "topic_children_id", nullable = false)
     private TopicChildrenPO topicChildren;
 

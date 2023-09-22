@@ -24,9 +24,6 @@ import java.time.Instant;
 @AllArgsConstructor
 public class RegisterRequest {
 
-    @NullOrNotBlank(message = "Full name can not be blank")
-    private String fullName;
-
     @NullOrNotBlank(message = "Username can not be blank")
     private String username;
 
@@ -37,8 +34,5 @@ public class RegisterRequest {
     @NullOrNotBlank(message = "Password cannot be null")
     @StrongPassword
     private String password;
-
-    @NullOrNotBlank
-    private String phoneNumber;
 
 }
