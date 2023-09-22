@@ -68,7 +68,7 @@ public class UserTopicPO extends DateAudit implements Serializable {
      * The identifier of the topic children associated with the user.
      */
     @Id
-    private Long topicChildrenId;
+    private Long topicParentId;
 
     /**
      * Represents the user information associated with this user-topic mapping.
@@ -80,12 +80,12 @@ public class UserTopicPO extends DateAudit implements Serializable {
     private UserPO userInfo;
 
     /**
-     * Represents the topic children information associated with this user-topic mapping.
-     * It is annotated with {@code @ManyToOne} to establish a many-to-one relationship with the {@code TopicChildrenPO} class.
+     * Represents the topic parent information associated with this user-topic mapping.
+     * It is annotated with {@code @ManyToOne} to establish a many-to-one relationship with the {@code TopicParentPO} class.
      */
     @ManyToOne
-    @MapsId("topicChildrenId")
-    @JoinColumn(name = "topic_children_id")
-    private TopicChildrenPO topicChildrenInfo;
+    @MapsId("topicParentId")
+    @JoinColumn(name = "topic_parent_id")
+    private TopicParentPO topicParentInfo;
 
 }

@@ -27,6 +27,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop # If the update data table does not exist, it will be automatically created.
+#       ddl-auto: update
     show-sql: true # Show SQL statements
     properties:
       hibernate:

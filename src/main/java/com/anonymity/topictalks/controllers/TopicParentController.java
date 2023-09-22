@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.TopicParentRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
@@ -10,14 +11,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/topic-parent")
+@CrossOrigin(origins = "http://localhost:3000")
 @PreAuthorize("hasAnyRole('ADMIN')")
 @Tag(name = "Topic parent", description = "The Post API contains information relate to CRUD topic parent in system.")
 public class TopicParentController {
@@ -47,6 +48,30 @@ public class TopicParentController {
         dataResponse.setSuccess(true);
         dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
         dataResponse.setData(newTopicParent);
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllTopicParents() {
+        DataResponse dataResponse = new DataResponse();
+
+        List<TopicParentPO> list = topicParentService.getAll();
+
+        if (list.isEmpty()) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Currently, this user haven't created any posts yet.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(list);
+
         return ResponseEntity.ok(dataResponse);
     }
 }

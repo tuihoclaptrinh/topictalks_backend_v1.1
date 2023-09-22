@@ -53,7 +53,7 @@ public class UserTopicKey implements Serializable {
     /**
      * The identifier of the topic children associated with the user.
      */
-    @Column(name = "topic_children_id")
-    private Long topicChildrenId;
+    @Column(name = "topic_parent_id")
+    private Long topicParentId;
 
 }
