@@ -21,12 +21,12 @@ spring:
       minimum-idle: 5
       # Database connection timeout, default is 30 seconds, which is 30000
       idle-timeout: 60000
-    url: jdbc:mysql://localhost:3307/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root # Database username
     password: 123 # Database password
   jpa:
     hibernate:
-      ddl-auto: create-drop # If the update data table does not exist, it will be automatically created.
+      ddl-auto: update # If the update data table does not exist, it will be automatically created.
     show-sql: true # Show SQL statements
     properties:
       hibernate:
