@@ -1,9 +1,11 @@
 package com.anonymity.topictalks.controllers;
 
-import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
+import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicParentRequest;
+import com.anonymity.topictalks.models.payloads.requests.UserTopicRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
-import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
-import com.anonymity.topictalks.services.ITopicChildrenService;
+import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
+import com.anonymity.topictalks.services.IUserTopicService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,17 +14,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/topic-children")
-@PreAuthorize("hasAnyRole('ADMIN')")
+@RequestMapping("/api/v1/user-topic")
 @CrossOrigin(origins = "http://localhost:3000")
-@Tag(name = "Topic children", description = "The Post API contains information relate to CRUD topic children in system.")
-public class TopicChildrenController {
-    private final ITopicChildrenService topicChildrenService;
+@PreAuthorize("hasAnyRole('ADMIN','USER')")
+@Tag(name = "Topic parent", description = "The Post API contains information relate to CRUD user topic in system.")
+public class UserTopicController {
+    private final IUserTopicService userTopicService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody TopicChildrenRequest request, BindingResult bindingResult) {
+    @PostMapping("{id}/create")
+    public ResponseEntity<?> create(@PathVariable Long id, @RequestBody UserTopicRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
         if (bindingResult.hasErrors()) {//BAD REQUEST
             dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
@@ -32,18 +36,13 @@ public class TopicChildrenController {
 
             return ResponseEntity.ok(dataResponse);
         }
-        TopicChildrenPO newTopicChildren = topicChildrenService.create(request);
-        if (newTopicChildren==null){
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            dataResponse.setDesc("This children topic has already exist.");
-            dataResponse.setSuccess(false);
-            dataResponse.setData("");
 
-            return ResponseEntity.ok(dataResponse);
-        }
+        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
         dataResponse.setSuccess(true);
         dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
-        dataResponse.setData(newTopicChildren);
+        dataResponse.setData(userTopicService.createUserTopic(id, request));
         return ResponseEntity.ok(dataResponse);
+
+
     }
 }

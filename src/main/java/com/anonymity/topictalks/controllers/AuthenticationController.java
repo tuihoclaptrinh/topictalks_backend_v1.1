@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentication", description = "The Authentication API. Contains operations like login, logout, refresh-token etc.")
 @RestController
 @RequestMapping("/api/v1/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 @SecurityRequirements()
 @RequiredArgsConstructor
 public class AuthenticationController {
@@ -41,19 +42,21 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
+
     @PostMapping("/refresh-token")
     public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(refreshTokenService.generateNewToken(request));
     }
 
     @GetMapping("/info")
-    public Authentication getAuthentication(@RequestBody AuthenticationRequest request){
-        return     authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
+    public Authentication getAuthentication(@RequestBody AuthenticationRequest request) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
     }
 
 }

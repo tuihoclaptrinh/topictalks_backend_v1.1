@@ -26,4 +26,9 @@ public class TopicParentServiceImpl implements ITopicParentService {
         topicParent.setUpdatedAt(LocalDateTime.now());
         return topicParentRepository.save(topicParent);
     }
+
+    @Override
+    public List<TopicParentPO> getAll() {
+        return topicParentRepository.findAll();
+    }
 }

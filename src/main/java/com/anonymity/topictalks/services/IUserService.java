@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.services;
 
+
 /**
  * @author de140172 - author
  * @version 1.1 - version of software
@@ -8,4 +9,5 @@ package com.anonymity.topictalks.services;
  * @since 1.0 - version of class
  */
 public interface IUserService {
+
 }
