@@ -39,7 +39,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "participant")
-@IdClass(ParticipantKey.class)
 @EqualsAndHashCode(callSuper = false)
 public class ParticipantPO extends DateAudit implements Serializable {
 
@@ -57,17 +56,8 @@ public class ParticipantPO extends DateAudit implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The identifier of the user who is a participant in the conversation.
-     */
-    @Id
-    private Long userId;
-
-    /**
-     * The identifier of the conversation in which the user is a participant.
-     */
-    @Id
-    private Long conversationId;
+    @EmbeddedId
+    private ParticipantKey id = new ParticipantKey();
 
     /**
      * Represents the user who is a participant in the conversation.
@@ -80,7 +70,7 @@ public class ParticipantPO extends DateAudit implements Serializable {
     /**
      * Represents the conversation to which the participant belongs.
      */
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @MapsId("conversationId")
     @JoinColumn(name = "conversation_id")
     private ConversationPO conversationInfo;
