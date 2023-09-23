@@ -3,7 +3,7 @@ package com.anonymity.topictalks.services;
 import com.anonymity.topictalks.models.payloads.requests.AuthenticationRequest;
 import com.anonymity.topictalks.models.payloads.requests.RegisterRequest;
 import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse;
-import com.anonymity.topictalks.utils.commons.ResponseData;
+import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 
 /**
  * @author de140172 - author
@@ -14,7 +14,7 @@ import com.anonymity.topictalks.utils.commons.ResponseData;
  */
 public interface IAuthenticationService {
 
-    ResponseData<AuthenticationResponse> register(RegisterRequest request);
+    Object register(RegisterRequest request);
     AuthenticationResponse authenticate(AuthenticationRequest request);
 
 

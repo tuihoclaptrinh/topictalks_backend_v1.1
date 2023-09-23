@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -24,7 +25,10 @@ public class AuthenticationResponse {
 
     private  Long id;
     private String username;
+    private String url_img;
     private List<String> roles;
+    private Boolean isBanned;
+    private Instant bannedDate;
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("refresh_token")

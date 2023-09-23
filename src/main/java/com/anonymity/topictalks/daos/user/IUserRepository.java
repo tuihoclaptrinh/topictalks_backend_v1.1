@@ -20,4 +20,6 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
     Optional<UserPO> findByUsername(String username);
 
+    Optional<UserPO> getUserByUsernameOrEmail(String username, String mail);
+
 }

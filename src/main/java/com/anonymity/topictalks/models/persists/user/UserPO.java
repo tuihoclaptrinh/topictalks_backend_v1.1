@@ -21,27 +21,26 @@ import java.util.Collection;
 /**
  * The {@code UserPO} class represents a user entity in the application. It is annotated with {@code @Entity} to
  * indicate that it is a JPA entity that can be persisted in a database.
- *
+ * <p>
  * This class extends the {@code DateAudit} class, which provides auditing fields for tracking creation and modification
  * dates. It also implements the {@code UserDetails} interface, making it suitable for use as a Spring Security user
  * details object.
- *
+ * <p>
  * The {@code @Table} annotation specifies the name of the database table associated with this entity and defines unique
  * constraints on the "username" and "email" columns.
- *
+ * <p>
  * This class is also annotated with {@code @Builder} to provide a builder pattern for creating instances of the class
  * with a concise and readable syntax.
- *
+ * <p>
  * Additional annotations like {@code @DynamicInsert}, {@code @DynamicUpdate}, {@code @NoArgsConstructor}, and
  * {@code @AllArgsConstructor} provide further configuration and constructor generation.
- *
- * @see DateAudit
- * @see UserDetails
  *
  * @author de140172 - author
  * @version 1.1 - version of software
  * - Package Name: com.anonymity.topictalks.models.persists.user
  * - Created At: 14-09-2023 12:46:18
+ * @see DateAudit
+ * @see UserDetails
  * @since 1.0 - version of class
  */
 
@@ -52,7 +51,7 @@ import java.util.Collection;
 @DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @Table(name = "user", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "username"
@@ -69,7 +68,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
      * with respect to serialization. If the receiver has loaded a class for the object that has a different
      * {@code serialVersionUID} than the corresponding class on the sender's side, then deserialization will result in
      * an {@code InvalidClassException}.
-     *
+     * <p>
      * This field is typically declared as a {@code private static final long} and should be explicitly defined
      * to ensure version compatibility between different implementations of the class.
      */
@@ -79,7 +78,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
 
     /**
      * The unique identifier for the user.
-     *
+     * <p>
      * This field is annotated with {@code @Id} to designate it as the primary key of the database table.
      * It is also annotated with {@code @Column} to specify the column name, which is "user_id," and to indicate
      * that the field cannot be null. Additionally, it is annotated with {@code @GeneratedValue} and
@@ -95,7 +94,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     /**
      * The user's full name.
      */
-    @NotNull
     @Size(max = 150)
     @Column(
             name = "full_name",
@@ -128,7 +126,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
      * The user's email address, which is unique and serves as a natural identifier.
      */
     @Email
-    @NotNull
     @NaturalId
     @Size(max = 100)
     @Column(
@@ -142,7 +139,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
      * The user's password.
      */
     @NotNull
-    @Size(max = 255 )
+    @Size(max = 255)
     @Column(
             name = "password",
             nullable = false
@@ -165,12 +162,11 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
             name = "gender",
             nullable = true
     )
-    private boolean gender;
+    private String gender;
 
     /**
      * The user's phone number.
      */
-    @NotNull
     @Column(
             name = "phone_number",
             nullable = false
@@ -203,6 +199,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
             nullable = true
     )
     private Instant dob;
+
 
     /**
      * Indicates whether the user is banned.

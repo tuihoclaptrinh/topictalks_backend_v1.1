@@ -3,7 +3,11 @@ package com.anonymity.topictalks.daos.post;
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author de140172 - author
@@ -15,4 +19,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IPostRepository extends IBaseRepository<PostPO, Long> {
+    @Query(value = "SELECT * FROM post p WHERE p.author_id = :authorId", nativeQuery = true)
+    List<PostPO> findByAuthorId(@Param(value = "authorId") long authorId);
+
+    @Query(value = "SELECT * FROM post p WHERE p.author_id = :authorId AND p.is_approved = :isApproved", nativeQuery = true)
+    List<PostPO> findByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved);
+
 }
