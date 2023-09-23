@@ -1,85 +1,51 @@
 package com.anonymity.topictalks.services.impls;
 
-import com.alibaba.fastjson.JSON;
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.listeners.SocketEventListener;
-import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
-import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.services.IConversationService;
-import com.anonymity.topictalks.services.IMessageService;
-import com.anonymity.topictalks.services.ISocketService;
+import com.anonymity.topictalks.services.IParticipantService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
 import com.corundumstudio.socketio.SocketIOClient;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
  * @author de140172 - author
  * @version 1.1 - version of software
  * - Package Name: com.anonymity.topictalks.services.impls
- * - Created At: 23-09-2023 09:05:40
+ * - Created At: 22-09-2023 18:59:05
  * @since 1.0 - version of class
  */
 
 @Service
 @RequiredArgsConstructor
-public class SocketServiceImpl implements ISocketService {
+public class ParticipantServiceImpl implements IParticipantService {
 
-    private final IMessageService messageService;
-    private final IConversationRepository conversationRepository;
-    private final IUserRepository userRepository;
+    private final IParticipantRepository participantRepository;
     private final RandomUserUtils randomUserUtil;
     private final IConversationService conversationService;
-    private final IParticipantRepository participantRepository;
-    private Logger logger = LoggerFactory.getLogger(SocketServiceImpl.class);
+    private final IUserRepository userRepository;
+    private final IConversationRepository conversationRepository;
+    private Logger logger = LoggerFactory.getLogger(ParticipantServiceImpl.class);
 
-    /**
-     * @param senderClient
-     * @param receiveMessageDTO
-     */
     @Override
-    public void sendSocketMessage(SocketIOClient senderClient, ReceiveMessageDTO receiveMessageDTO) {
-        for (
-                SocketIOClient client : senderClient.getNamespace().getRoomOperations(receiveMessageDTO.getConversationId().toString()).getClients()) {
-            if (!client.getSessionId().equals(senderClient.getSessionId())) {
-                logger.info("something on : {}", !client.getSessionId().equals(senderClient.getSessionId()));
-                client.sendEvent("readMessage",
-                        receiveMessageDTO);
-            }
-        }
-    }
-
-    /**
-     * @param senderClient
-     * @param receiveMessageDTO
-     */
-    @Override
-    public void saveMessage(SocketIOClient senderClient, ReceiveMessageDTO receiveMessageDTO) {
-        MessagePO messagePO = MessagePO.builder()
-                .senderId(userRepository.findById(receiveMessageDTO.getUserId()).orElse(null))
-                .conversationId(conversationRepository.findById(receiveMessageDTO.getConversationId()).orElse(null))
-                .content(receiveMessageDTO.getData().get("message").toString())
-                .build();
-        messageService.saveMessage(messagePO);
-        sendSocketMessage(senderClient, receiveMessageDTO);
-    }
-
-    /**
-     * @param client
-     * @param participantRequest
-     */
-    @Override
-    public void creatChatSingle(SocketIOClient client, ParticipantRequest participantRequest) {
+    @Transactional
+    public void createChatSingle(SocketIOClient client, ParticipantRequest participantRequest) {
 
         Map<Long, Long> result = randomUserUtil.randomUserChatting(participantRequest);
 
@@ -115,12 +81,8 @@ public class SocketServiceImpl implements ISocketService {
 
             logger.info("Socket ID[{}] - conversation[{}] - username [{}]  Connected to chat module through", client.getSessionId().toString(), participant.getConversationInfo().getId(), participant2.getUserInfo().getUsername());
 
-            sendSocketMessage(client,
-                    ReceiveMessageDTO.builder()
-                            .conversationId(conversationResponse.getConversationId())
-                            .build());
-
         }
 
     }
+
 }
