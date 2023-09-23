@@ -18,14 +18,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/post")
-@PreAuthorize("hasAnyRole('USER')")
+@PreAuthorize("hasAnyRole('ADMIN','USER')")
 @Tag(name = "Post", description = "The Post API contains information relate to CRUD post in system.")
 public class PostController {
 
     private final IPostService postService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<?> create(@RequestBody PostRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
         if (bindingResult.hasErrors()) {//BAD REQUEST
