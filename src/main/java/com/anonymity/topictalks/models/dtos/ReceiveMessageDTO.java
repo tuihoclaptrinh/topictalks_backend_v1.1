@@ -23,6 +23,7 @@ import java.io.Serializable;
 public class ReceiveMessageDTO implements Serializable {
 
     private Long userId;
+    private Long TargetId;
     private Long conversationId;
     private JSONObject data;
 
