@@ -70,8 +70,23 @@ public class SocketEventListener {
     @OnEvent("sendMessage")
     public void onSendMessage(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
 
-        logger.info("receiveMessageDTO {}",receiveMessageDTO);
-        socketService.saveMessage(client, receiveMessageDTO);
+        MessagePO messagePO = MessagePO.builder()
+                .senderId(userRepository.findById(receiveMessageDTO.getUserId()).orElse(null))
+                .conversationId(conversationRepository.findById(receiveMessageDTO.getConversationId()).orElse(null))
+                .content(receiveMessageDTO.getData().get("message").toString())
+                .build();
+        messageRepository.save(messagePO);
+
+        SocketIOClient socketIOClient = clientMap.get(String.valueOf(receiveMessageDTO.getTargetId()));
+        if(!StringUtils.isEmpty(socketIOClient)){
+            logger.info("conversation user id {} online", receiveMessageDTO.getConversationId());
+            socketIOClient.sendEvent("readMessage",receiveMessageDTO);
+        }else {
+            logger.info("conversation user id {} is not online", receiveMessageDTO.getConversationId());
+        }
+
+//        logger.info("receiveMessageDTO {}",receiveMessageDTO);
+//        socketService.saveMessage(client, receiveMessageDTO);
 
 //        logger.info("receiveMessageDTO {}",receiveMessageDTO);
 //        MessagePO messagePO = MessagePO.builder()

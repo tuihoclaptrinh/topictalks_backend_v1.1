@@ -49,8 +49,8 @@ public class SocketServiceImpl implements ISocketService {
      */
     @Override
     public void sendSocketMessage(SocketIOClient senderClient, ReceiveMessageDTO receiveMessageDTO) {
-        for (
-                SocketIOClient client : senderClient.getNamespace().getRoomOperations(receiveMessageDTO.getConversationId().toString()).getClients()) {
+        for ( // getRoomOperations(receiveMessageDTO.getConversationId().toString()).getClients()
+                SocketIOClient client : senderClient.getNamespace().getAllClients()) {
             if (!client.getSessionId().equals(senderClient.getSessionId())) {
                 logger.info("something on : {}", !client.getSessionId().equals(senderClient.getSessionId()));
                 client.sendEvent("readMessage",
