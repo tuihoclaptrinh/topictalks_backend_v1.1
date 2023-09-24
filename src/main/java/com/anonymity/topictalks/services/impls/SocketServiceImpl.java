@@ -1,16 +1,18 @@
 package com.anonymity.topictalks.services.impls;
 
+import com.alibaba.fastjson.JSON;
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
-import com.anonymity.topictalks.models.persists.message.MessageDemoPO;
+import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.services.IConversationService;
-import com.anonymity.topictalks.services.IMessageDemoService;
+import com.anonymity.topictalks.services.IMessageService;
 import com.anonymity.topictalks.services.ISocketService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -33,7 +35,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SocketServiceImpl implements ISocketService {
 
-    private final IMessageDemoService messageService;
+    private final IMessageService messageService;
     private final IConversationRepository conversationRepository;
     private final IUserRepository userRepository;
     private final RandomUserUtils randomUserUtil;
@@ -63,7 +65,7 @@ public class SocketServiceImpl implements ISocketService {
      */
     @Override
     public void saveMessage(SocketIOClient senderClient, ReceiveMessageDTO receiveMessageDTO) {
-        MessageDemoPO messagePO = MessageDemoPO.builder()
+        MessagePO messagePO = MessagePO.builder()
                 .senderId(userRepository.findById(receiveMessageDTO.getUserId()).orElse(null))
                 .conversationId(conversationRepository.findById(receiveMessageDTO.getConversationId()).orElse(null))
                 .content(receiveMessageDTO.getData().get("message").toString())

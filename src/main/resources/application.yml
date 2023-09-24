@@ -21,7 +21,7 @@ spring:
       minimum-idle: 5
       # Database connection timeout, default is 30 seconds, which is 30000
       idle-timeout: 60000
-    url: jdbc:mysql://localhost:3306/topic-talks-app1?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root # Database username
     password: 123456789 # Database password
   jpa:
