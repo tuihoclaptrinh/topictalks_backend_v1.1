@@ -18,12 +18,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/topic-parent")
-@CrossOrigin(origins = "http://localhost:3000")
 @PreAuthorize("hasAnyRole('ADMIN')")
 @Tag(name = "Topic parent", description = "The Post API contains information relate to CRUD topic parent in system.")
 public class TopicParentController {
     private final ITopicParentService topicParentService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TopicParentRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
@@ -51,6 +51,7 @@ public class TopicParentController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all")
     public ResponseEntity<?> getAllTopicParents() {
@@ -62,7 +63,7 @@ public class TopicParentController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData("Currently, this user haven't created any posts yet.");
+            dataResponse.setData("Not exist any children topic.");
 
             return ResponseEntity.ok(dataResponse);
         }

@@ -35,4 +35,9 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
         topicChildren.setUpdatedAt(LocalDateTime.now());
         return topicChildrenRepository.save(topicChildren);
     }
+
+    @Override
+    public List<TopicChildrenPO> getAll() {
+        return topicChildrenRepository.findAll();
+    }
 }
