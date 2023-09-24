@@ -37,7 +37,7 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
-    public List<TopicChildrenPO> getAll() {
-        return topicChildrenRepository.findAll();
+    public List<TopicChildrenPO> getTopicChildrenByTopicParentId(long parentTopicId) {
+        return topicChildrenRepository.findByTopicParentId(parentTopicId);
     }
 }

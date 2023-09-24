@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ITopicChildrenService {
     TopicChildrenPO create(TopicChildrenRequest request);
-    List<TopicChildrenPO> getAll();
+    List<TopicChildrenPO> getTopicChildrenByTopicParentId(long parentTopicId);
 
 }
 
