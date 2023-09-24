@@ -41,7 +41,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Table(name = "message")
 @EqualsAndHashCode(callSuper = true)
-public class MessagePO extends DateAudit implements Serializable {
+public class MessageDemoPO extends DateAudit implements Serializable {
 
     /**
      * The {@code serialVersionUID} is a unique identifier for a serializable class. It is used during deserialization
