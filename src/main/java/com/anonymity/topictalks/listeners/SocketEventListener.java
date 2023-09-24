@@ -2,6 +2,7 @@ package com.anonymity.topictalks.listeners;
 
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IMessageRepository;
+import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
@@ -49,6 +50,7 @@ public class SocketEventListener {
     private final RandomUserUtils randomUserUtils;
     private final IParticipantService participantService;
     private final ISocketService socketService;
+    private final IParticipantRepository participantRepository;
 
     @OnConnect
     public void  eventOnConnect(SocketIOClient client){
@@ -77,47 +79,71 @@ public class SocketEventListener {
                 .build();
         messageRepository.save(messagePO);
 
-        SocketIOClient socketIOClient = clientMap.get(String.valueOf(receiveMessageDTO.getTargetId()));
-        if(!StringUtils.isEmpty(socketIOClient)){
-            logger.info("conversation user id {} online", receiveMessageDTO.getConversationId());
-            socketIOClient.sendEvent("readMessage",receiveMessageDTO);
-        }else {
-            logger.info("conversation user id {} is not online", receiveMessageDTO.getConversationId());
+        if(true) {
+
+            var conversation = conversationRepository.getOne(receiveMessageDTO.getConversationId());
+            String[] split = participantService.getUserIdsByConversation(conversation).split(",");
+            Long userId = receiveMessageDTO.getUserId();
+            for (String s: split) {
+                if(StringUtils.isEmpty(s)){
+                    continue;
+                }
+                Long conversationOne = Long.valueOf(s);
+
+                if(!userId.equals(conversationOne)){
+                    SocketIOClient ioClient = clientMap.get(conversationOne.toString());
+                    if(null != ioClient){
+                        ioClient.sendEvent("sendMessage",receiveMessageDTO);
+                    }
+                }
+            }
+
+        } else {
+            SocketIOClient socketIOClient = clientMap.get(String.valueOf(receiveMessageDTO.getTargetId()));
+            if(!StringUtils.isEmpty(socketIOClient)){
+                logger.info("conversation user id {} online", receiveMessageDTO.getConversationId());
+                socketIOClient.sendEvent("sendMessage",receiveMessageDTO);
+            }else {
+                logger.info("conversation user id {} is not online", receiveMessageDTO.getConversationId());
+            }
         }
-
-//        logger.info("receiveMessageDTO {}",receiveMessageDTO);
-//        socketService.saveMessage(client, receiveMessageDTO);
-
-//        logger.info("receiveMessageDTO {}",receiveMessageDTO);
-//        MessagePO messagePO = MessagePO.builder()
-//                .senderId(userRepository.findById(receiveMessageDTO.getUserId()).orElse(null))
-//                .conversationId(conversationRepository.findById(receiveMessageDTO.getConversationId()).orElse(null))
-//                .content(receiveMessageDTO.getData().get("message").toString())
-//                .build();
-//        // Save message record
-//        messageRepository.save(messagePO);
-//
-//        SocketIOClient socketIOClient = clientMap.get(String.valueOf(receiveMessageDTO.getConversationId()));
-//
-//        if(!StringUtils.isEmpty(socketIOClient)){
-//            logger.info("conversation user id {} online", receiveMessageDTO.getConversationId());
-//            socketIOClient.sendEvent("readMessage",receiveMessageDTO);
-//        }else {
-//            logger.info("conversation user id {} is not online", receiveMessageDTO.getConversationId());
-//        }
 
     }
 
     @OnEvent("initChatSingle")
     public void onInitiateChat(SocketIOClient client, ParticipantRequest request) {
 
-
         // Create or retrieve a conversation for the 1-1 chat
         socketService.creatChatSingle(client, request);
 
+    }
 
-        // Perform any additional logic as needed for each pair
+    @OnEvent("onJoinRoom")
+    public void onJoinRoom(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
 
+        logger.info("onJoinRoom {}",receiveMessageDTO);
+        if(true) {
+            SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
+            if(null != socketIOClient){
+                socketIOClient.sendEvent("onJoinRoom",receiveMessageDTO);
+            }else {
+                logger.info("Offline users: {} ,UserId {}",receiveMessageDTO.getTargetId(),receiveMessageDTO.getTargetId());
+            }
+        }
+
+    }
+
+    @OnEvent("onLeftRoom")
+    public void onLeftRoom(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
+        logger.info("onLeftRoom {}",receiveMessageDTO);
+        if(true){
+            SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
+            if(null != socketIOClient){
+                socketIOClient.sendEvent("onLeftRoom",receiveMessageDTO);
+            }else {
+                logger.info("Offline users：{} ,UserId {}",receiveMessageDTO.getTargetId(),receiveMessageDTO.getTargetId());
+            }
+        }
     }
 
 }
