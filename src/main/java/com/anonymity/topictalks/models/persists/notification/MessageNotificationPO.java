@@ -1,7 +1,7 @@
 package com.anonymity.topictalks.models.persists.notification;
 
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
-import com.anonymity.topictalks.models.persists.message.MessageDemoPO;
+import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -75,6 +75,6 @@ public class MessageNotificationPO extends DateAudit implements Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "message_id", nullable = false)
-    private MessageDemoPO messageId;
+    private MessagePO messageId;
 
 }

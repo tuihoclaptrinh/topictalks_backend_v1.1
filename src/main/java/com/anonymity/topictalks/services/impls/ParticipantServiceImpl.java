@@ -2,9 +2,8 @@ package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
-//import com.anonymity.topictalks.daos.user.IUserRepository;
-//import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
