@@ -1,10 +1,13 @@
 package com.anonymity.topictalks.daos.message;
 
 import com.anonymity.topictalks.daos.IBaseRepository;
+import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author de140172 - author
@@ -16,4 +19,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IParticipantRepository extends IBaseRepository<ParticipantPO, ParticipantKey> {
+    List<ParticipantPO> findAllByConversationInfo(ConversationPO conversationId);
 }

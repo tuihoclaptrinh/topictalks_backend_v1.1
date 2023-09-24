@@ -6,8 +6,10 @@ import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
+import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
 import com.anonymity.topictalks.services.IParticipantService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
@@ -22,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author de140172 - author
@@ -83,6 +87,26 @@ public class ParticipantServiceImpl implements IParticipantService {
 
         }
 
+    }
+
+    /**
+     * @param conversationPO
+     * @return
+     */
+    @Override
+    public String getUserIdsByConversation(ConversationPO conversationPO) {
+
+        List<ParticipantPO> participantS = participantRepository.findAllByConversationInfo(conversationPO);
+
+        List<Long> userIds = participantS.stream()
+                .map(ParticipantPO::getUserInfo).map(UserPO::getId)
+                .toList();
+
+        String result = userIds.stream()
+                .map(Object::toString) // Convert Long to String
+                .collect(Collectors.joining(",")); // Join with commas and space
+
+        return result;
     }
 
 }

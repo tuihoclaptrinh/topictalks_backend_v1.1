@@ -1,7 +1,10 @@
 package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.corundumstudio.socketio.SocketIOClient;
+
+import java.util.List;
 
 /**
  * @author de140172 - author
@@ -12,4 +15,5 @@ import com.corundumstudio.socketio.SocketIOClient;
  */
 public interface IParticipantService {
     void createChatSingle(SocketIOClient client, ParticipantRequest participantRequest);
+    String getUserIdsByConversation(ConversationPO conversationPO);
 }
