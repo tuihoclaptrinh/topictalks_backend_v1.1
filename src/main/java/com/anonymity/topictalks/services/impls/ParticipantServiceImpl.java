@@ -109,4 +109,12 @@ public class ParticipantServiceImpl implements IParticipantService {
         return result;
     }
 
+    @Override
+    public List<ParticipantPO> getAllParticipantByUserId(long id) {
+        UserPO userPO = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+
+        return participantRepository.findAllByUserInfo(userPO);
+    }
+
 }
