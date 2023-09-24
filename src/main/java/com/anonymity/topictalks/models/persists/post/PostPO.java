@@ -15,21 +15,21 @@ import java.io.Serializable;
 /**
  * The {@code PostPO} class represents a post entity in the application.
  * It extends the {@code DateAudit} class, inheriting fields for auditing creation and modification dates.
- *
+ * <p>
  * - {@code id}: The unique identifier for the post. It is automatically generated and serves as the primary key.
- *
+ * <p>
  * - {@code authorId}: Represents the user who authored this post.
- *   It is annotated with {@code @ManyToOne} to establish a many-to-one relationship with the {@code UserPO} class.
- *
+ * It is annotated with {@code @ManyToOne} to establish a many-to-one relationship with the {@code UserPO} class.
+ * <p>
  * - {@code topicParentId}: Represents the parent topic associated with this post.
- *   It is annotated with {@code @ManyToOne} to establish a many-to-one relationship with the {@code TopicParentPO} class.
- *
+ * It is annotated with {@code @ManyToOne} to establish a many-to-one relationship with the {@code TopicParentPO} class.
+ * <p>
  * - {@code title}: The title of the post, which cannot be null.
- *
+ * <p>
  * - {@code isApproved}: Indicates whether the post is approved or not.
- *
+ * <p>
  * - {@code content}: The content of the post, which is stored as a large text.
- *
+ * <p>
  * - {@code image}: An optional image associated with the post.
  *
  * @author de140172 - author
@@ -57,7 +57,7 @@ public class PostPO extends DateAudit implements Serializable {
      * with respect to serialization. If the receiver has loaded a class for the object that has a different
      * {@code serialVersionUID} than the corresponding class on the sender's side, then deserialization will result in
      * an {@code InvalidClassException}.
-     *
+     * <p>
      * This field is typically declared as a {@code private static final long} and should be explicitly defined
      * to ensure version compatibility between different implementations of the class.
      */
@@ -111,7 +111,8 @@ public class PostPO extends DateAudit implements Serializable {
     /**
      * An optional image associated with the post.
      */
-    @Column(name = "image", nullable = true)
+    @Lob
+    @Column(name = "image", columnDefinition = "LONGTEXT", nullable = true)
     private String image;
 
 }
