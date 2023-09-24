@@ -1,12 +1,17 @@
 package com.anonymity.topictalks.services.impls;
 
+import com.alibaba.fastjson.JSON;
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IMessageRepository;
+import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
+import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.services.IMessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,8 +34,22 @@ public class MessageServiceImpl implements IMessageService {
      * @return
      */
     @Override
-    public List<MessagePO> getMessages(Long conversationId) {
-        return messageRepository.findAllByConversationId(conversationRepository.findById(conversationId).get());
+    public List<ReceiveMessageDTO> getMessages(Long conversationId) {
+        ConversationPO conversationPO = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
+        List<MessagePO> listMessage = messageRepository.findAllByConversationId(conversationPO);
+        List<ReceiveMessageDTO> list = new ArrayList<>();
+        for (int i = 0; i < listMessage.size(); i++) {
+            ReceiveMessageDTO receiveMessageDTO = new ReceiveMessageDTO();
+            receiveMessageDTO.setUserId(listMessage.get(i).getSenderId().getId());
+            receiveMessageDTO.setUsername(listMessage.get(i).getSenderId().getUsername());
+            receiveMessageDTO.setConversationId(listMessage.get(i).getConversationId().getId());
+            String message = listMessage.get(i).getContent();
+            receiveMessageDTO.setData(JSON.parseObject("{\"message\":\"message\"}"));
+            receiveMessageDTO.setTimeAt(String.valueOf(listMessage.get(i).getCreatedAt()));
+            list.add(receiveMessageDTO);
+        }
+        return list;
     }
 
     /**

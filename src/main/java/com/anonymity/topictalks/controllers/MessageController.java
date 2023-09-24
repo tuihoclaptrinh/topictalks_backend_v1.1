@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.services.IMessageService;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +17,15 @@ import java.util.List;
  * @since 1.0 - version of class
  */
 @RestController
-@RequestMapping("/message")
+@RequestMapping("/api/v1/message")
 @RequiredArgsConstructor
 public class MessageController {
 
     private final IMessageService messageService;
 
-    @CrossOrigin
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{room}")
-    public ResponseEntity<List<MessagePO>> getMessages(@PathVariable Long room) {
+    public ResponseEntity<List<ReceiveMessageDTO>> getMessages(@PathVariable Long room) {
         return ResponseEntity.ok(messageService.getMessages(room));
     }
 

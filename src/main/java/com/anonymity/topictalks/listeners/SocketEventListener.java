@@ -8,6 +8,7 @@ import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
+import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
 import com.anonymity.topictalks.services.IParticipantService;
 import com.anonymity.topictalks.services.ISocketService;
@@ -24,6 +25,8 @@ import org.springframework.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,24 +56,24 @@ public class SocketEventListener {
     private final IParticipantRepository participantRepository;
 
     @OnConnect
-    public void  eventOnConnect(SocketIOClient client){
+    public void eventOnConnect(SocketIOClient client) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
-        clientMap.put(urlParams.get("uid").get(0),client);
-        logger.info("link open, urlParams {}",urlParams);
-        logger.info("Number of people joining: {}",clientMap.size());
+        clientMap.put(urlParams.get("uid").get(0), client);
+        logger.info("link open, urlParams {}", urlParams);
+        logger.info("Number of people joining: {}", clientMap.size());
     }
 
     @OnDisconnect
-    public void  eventOnDisConnect(SocketIOClient client){
+    public void eventOnDisConnect(SocketIOClient client) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
         String moveUser = urlParams.get("uid").get(0);
         clientMap.remove(moveUser);
-        logger.info("Link closed, urlParams {}",urlParams);
-        logger.info("Remaining number of people: {}",clientMap.size());
+        logger.info("Link closed, urlParams {}", urlParams);
+        logger.info("Remaining number of people: {}", clientMap.size());
     }
 
     @OnEvent("sendMessage")
-    public void onSendMessage(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
+    public void onSendMessage(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
 
         MessagePO messagePO = MessagePO.builder()
                 .senderId(userRepository.findById(receiveMessageDTO.getUserId()).orElse(null))
@@ -79,31 +82,34 @@ public class SocketEventListener {
                 .build();
         messageRepository.save(messagePO);
 
-        if(true) {
-
+        if (true) {
             var conversation = conversationRepository.getOne(receiveMessageDTO.getConversationId());
             String[] split = participantService.getUserIdsByConversation(conversation).split(",");
             Long userId = receiveMessageDTO.getUserId();
-            for (String s: split) {
-                if(StringUtils.isEmpty(s)){
+            UserPO userPO = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
+            receiveMessageDTO.setUsername(userPO.getUsername());
+            receiveMessageDTO.setTimeAt(LocalDateTime.now().toString());
+            for (String s : split) {
+                if (StringUtils.isEmpty(s)) {
                     continue;
                 }
                 Long conversationOne = Long.valueOf(s);
 
-                if(!userId.equals(conversationOne)){
+                if (!userId.equals(conversationOne)) {
                     SocketIOClient ioClient = clientMap.get(conversationOne.toString());
-                    if(null != ioClient){
-                        ioClient.sendEvent("sendMessage",receiveMessageDTO);
+                    if (null != ioClient) {
+                        ioClient.sendEvent("sendMessage", receiveMessageDTO);
                     }
                 }
             }
 
         } else {
             SocketIOClient socketIOClient = clientMap.get(String.valueOf(receiveMessageDTO.getTargetId()));
-            if(!StringUtils.isEmpty(socketIOClient)){
+            if (!StringUtils.isEmpty(socketIOClient)) {
                 logger.info("conversation user id {} online", receiveMessageDTO.getConversationId());
-                socketIOClient.sendEvent("sendMessage",receiveMessageDTO);
-            }else {
+                socketIOClient.sendEvent("sendMessage", receiveMessageDTO);
+            } else {
                 logger.info("conversation user id {} is not online", receiveMessageDTO.getConversationId());
             }
         }
@@ -121,27 +127,27 @@ public class SocketEventListener {
     @OnEvent("onJoinRoom")
     public void onJoinRoom(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
 
-        logger.info("onJoinRoom {}",receiveMessageDTO);
-        if(true) {
+        logger.info("onJoinRoom {}", receiveMessageDTO);
+        if (true) {
             SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
-            if(null != socketIOClient){
-                socketIOClient.sendEvent("onJoinRoom",receiveMessageDTO);
-            }else {
-                logger.info("Offline users: {} ,UserId {}",receiveMessageDTO.getTargetId(),receiveMessageDTO.getTargetId());
+            if (null != socketIOClient) {
+                socketIOClient.sendEvent("onJoinRoom", receiveMessageDTO);
+            } else {
+                logger.info("Offline users: {} ,UserId {}", receiveMessageDTO.getTargetId(), receiveMessageDTO.getTargetId());
             }
         }
 
     }
 
     @OnEvent("onLeftRoom")
-    public void onLeftRoom(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
-        logger.info("onLeftRoom {}",receiveMessageDTO);
-        if(true){
+    public void onLeftRoom(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
+        logger.info("onLeftRoom {}", receiveMessageDTO);
+        if (true) {
             SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
-            if(null != socketIOClient){
-                socketIOClient.sendEvent("onLeftRoom",receiveMessageDTO);
-            }else {
-                logger.info("Offline users：{} ,UserId {}",receiveMessageDTO.getTargetId(),receiveMessageDTO.getTargetId());
+            if (null != socketIOClient) {
+                socketIOClient.sendEvent("onLeftRoom", receiveMessageDTO);
+            } else {
+                logger.info("Offline users：{} ,UserId {}", receiveMessageDTO.getTargetId(), receiveMessageDTO.getTargetId());
             }
         }
     }
