@@ -45,7 +45,7 @@ public class MessageServiceImpl implements IMessageService {
             receiveMessageDTO.setUsername(listMessage.get(i).getSenderId().getUsername());
             receiveMessageDTO.setConversationId(listMessage.get(i).getConversationId().getId());
             String message = listMessage.get(i).getContent();
-            receiveMessageDTO.setData(JSON.parseObject("{\"message\":\"message\"}"));
+            receiveMessageDTO.setData(JSON.parseObject("{\"message\":\""+message+"\"}"));
             receiveMessageDTO.setTimeAt(String.valueOf(listMessage.get(i).getCreatedAt()));
             list.add(receiveMessageDTO);
         }
