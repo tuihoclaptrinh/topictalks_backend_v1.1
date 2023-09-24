@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessageDemoPO;
 import com.anonymity.topictalks.services.IMessageDemoService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class MessageDemoController {
 
     @CrossOrigin
     @GetMapping("/{room}")
-    public ResponseEntity<List<MessageDemoPO>> getMessages(@PathVariable String room) {
-        return ResponseEntity.ok(messageService.getMessages(room));
+    public ResponseEntity<List<MessageDemoPO>> getMessages(@PathVariable Long conversationId) {
+        return ResponseEntity.ok(messageService.getMessages(conversationId));
     }
 }

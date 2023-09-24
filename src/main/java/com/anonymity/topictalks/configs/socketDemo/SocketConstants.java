@@ -1,4 +1,4 @@
-package com.anonymity.topictalks.socketDemo;
+package com.anonymity.topictalks.configs.socketDemo;
 
 public class SocketConstants {
 
