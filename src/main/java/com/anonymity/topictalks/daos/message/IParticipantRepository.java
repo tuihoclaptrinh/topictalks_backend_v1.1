@@ -27,7 +27,7 @@ public interface IParticipantRepository extends IBaseRepository<ParticipantPO, P
 
     List<ParticipantPO> findAllByUserInfo(UserPO userPO);
 
-    @Query(value = "SELECT a.user_id FROM participant a, conversation b WHERE b.conversation_id= :conversation_id AND a.user_id != :user_id", nativeQuery = true)
+    @Query(value = "SELECT a.user_id FROM participant a, conversation b WHERE b.conversation_id= :conversation_id AND a.conversation_id= :conversation_id AND a.user_id != :user_id", nativeQuery = true)
     long getPartnerIdByConversationIdAndUserId(@Param(value = "conversation_id") long conversation_id, @Param(value = "user_id") long user_id );
 
 }
