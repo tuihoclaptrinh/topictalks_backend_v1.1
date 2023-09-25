@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.services;
 
+import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface IMessageService {
 
-    List<MessagePO> getMessages(Long conversationId);
+    List<ReceiveMessageDTO> getMessages(Long conversationId);
 
     MessagePO saveMessage(MessagePO message);
 
