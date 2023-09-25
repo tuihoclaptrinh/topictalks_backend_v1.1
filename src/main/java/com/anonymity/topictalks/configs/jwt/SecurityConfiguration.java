@@ -59,8 +59,7 @@ public class SecurityConfiguration {
                                         "/configuration/security",
                                         "/swagger-ui/**",
                                         "/webjars/**",
-                                        "/swagger-ui.html",
-                                        "/ws"
+                                        "/swagger-ui.html"
                                 ).permitAll()
                                 //.requestMatchers("/api/v1/resource").hasAnyRole("ADMIN","USER") replaced with annotation in AuthorizationController
                                 .requestMatchers(HttpMethod.POST,"/api/v1/resource").hasRole("ADMIN")

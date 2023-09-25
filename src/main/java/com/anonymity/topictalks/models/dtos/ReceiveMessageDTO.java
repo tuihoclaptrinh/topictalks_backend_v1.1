@@ -25,9 +25,10 @@ import java.time.LocalDateTime;
 public class ReceiveMessageDTO implements Serializable {
 
     private Long userId;
+    private String targetName;
     private String username;
     private String timeAt;
-    private Long TargetId;
+    private Long targetId;
     private Long conversationId;
     private JSONObject data;
 

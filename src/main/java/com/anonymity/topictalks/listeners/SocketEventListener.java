@@ -152,4 +152,49 @@ public class SocketEventListener {
         }
     }
 
+    @OnEvent("1V1CommunicateVideo")
+    public void on1V1CommunicateVideo(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
+        logger.info("1V1CommunicateVideo {}",receiveMessageDTO);
+        if(true) { // group friend type
+            SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
+            if(null != socketIOClient){
+                socketIOClient.sendEvent("1V1CommunicateVideo",receiveMessageDTO);
+            }else {
+                logger.info("Not online user: {}, user Id {}",receiveMessageDTO.getTargetName(),receiveMessageDTO.getTargetId());
+                SocketIOClient socketIOClient02 = clientMap.get(receiveMessageDTO.getUserId().toString());
+                socketIOClient02.sendEvent("notOnline","The other party is not online");
+            }
+        }
+    }
+
+    @OnEvent("1V1CommunicatePhone")
+    public void on1V1CommunicatePhone(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
+        logger.info("1V1CommunicatePhone {}",receiveMessageDTO);
+        if(true) { // group friend type
+            SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
+            if(null != socketIOClient){
+                socketIOClient.sendEvent("1V1CommunicatePhone",receiveMessageDTO);
+            }else {
+                logger.info("Not online user: {}, user Id {}",receiveMessageDTO.getTargetName(),receiveMessageDTO.getTargetId());
+                SocketIOClient socketIOClient02 = clientMap.get(receiveMessageDTO.getUserId().toString());
+                socketIOClient02.sendEvent("notOnline","The other party is not online");
+            }
+        }
+    }
+
+    @OnEvent("ManyToManyCommunicateVideo")
+    public void onManyToManyCommunicateVideo(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
+        logger.info("ManyToManyCommunicateVideo {}",receiveMessageDTO);
+        if(true) { // group friend type
+            SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
+            if(null != socketIOClient){
+                socketIOClient.sendEvent("ManyToManyCommunicateVideo",receiveMessageDTO);
+            }else {
+                logger.info("Not online user: {}, user ID {}",receiveMessageDTO.getTargetName(),receiveMessageDTO.getTargetId());
+                SocketIOClient socketIOClient02 = clientMap.get(receiveMessageDTO.getUserId().toString());
+                socketIOClient02.sendEvent("notOnline","The other party is not online");
+            }
+        }
+    }
+
 }
