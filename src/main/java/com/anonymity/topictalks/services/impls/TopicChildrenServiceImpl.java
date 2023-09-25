@@ -31,6 +31,7 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
         }
         topicChildren.setTopicChildrenName(request.getTopicChildrenName());
         topicChildren.setTopicParentId(topicParent);
+        topicChildren.setImage(request.getImage());
         topicChildren.setCreatedAt(LocalDateTime.now());
         topicChildren.setUpdatedAt(LocalDateTime.now());
         return topicChildrenRepository.save(topicChildren);
@@ -39,5 +40,10 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     @Override
     public List<TopicChildrenPO> getTopicChildrenByTopicParentId(long parentTopicId) {
         return topicChildrenRepository.findByTopicParentId(parentTopicId);
+    }
+
+    @Override
+    public TopicChildrenPO getTopicChildrenById(long TopicChildrenId) {
+        return topicChildrenRepository.findById(TopicChildrenId);
     }
 }
