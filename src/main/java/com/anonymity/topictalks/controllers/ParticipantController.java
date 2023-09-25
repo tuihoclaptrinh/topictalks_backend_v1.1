@@ -2,6 +2,7 @@ package com.anonymity.topictalks.controllers;
 
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.services.IParticipantService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +29,7 @@ public class ParticipantController {
     public ResponseEntity<?> getAllParticipantByUserId(@PathVariable("id") long id ) {
         DataResponse dataResponse = new DataResponse();
 
-        List<ParticipantPO> list = participantService.getAllParticipantByUserId(id);
+        List<ParticipantResponse> list = participantService.getAllParticipantByUserId(id);
 
         if (list.isEmpty()) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204

@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -19,5 +20,5 @@ public interface IParticipantService {
 
     String getUserIdsByConversation(ConversationPO conversationPO);
 
-    List<ParticipantPO> getAllParticipantByUserId(long id);
+    List<ParticipantResponse> getAllParticipantByUserId(long id);
 }

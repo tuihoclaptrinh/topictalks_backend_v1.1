@@ -4,8 +4,10 @@ import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.listeners.SocketEventListener;
+import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,7 +62,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 .topicChildrenId(participantRequest.getTopicChildId())
                 .build();
 
-        for(Map.Entry<Long, Long> entry: result.entrySet()) {
+        for (Map.Entry<Long, Long> entry : result.entrySet()) {
 
             var conversationResponse = conversationService.createConversation(conversationRequest);
 
@@ -110,11 +113,28 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
-    public List<ParticipantPO> getAllParticipantByUserId(long id) {
+    public List<ParticipantResponse> getAllParticipantByUserId(long id) {
         UserPO userPO = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
-
-        return participantRepository.findAllByUserInfo(userPO);
+        List<ParticipantResponse> responses = new ArrayList<>();
+        List<ParticipantPO> list = participantRepository.findAllByUserInfo(userPO);
+        for (int i = 0; i < list.size(); i++) {
+            ParticipantResponse participant = new ParticipantResponse();
+            participant.setConversationInfor(list.get(i).getConversationInfo());
+            long partnerId = participantRepository.getPartnerIdByConversationIdAndUserId(
+                    list.get(i).getConversationInfo().getId(),
+                    list.get(i).getUserInfo().getId());
+            PartnerDTO partnerDTO = new PartnerDTO();
+            partnerDTO.setId(partnerId);
+            partnerDTO.setBanned(list.get(i).getUserInfo().getIsBanned());
+            partnerDTO.setBannedAt(list.get(i).getUserInfo().getIsBanned() == true ? null : list.get(i).getUserInfo().getBannedDate());
+            UserPO partner = userRepository.findById(partnerId).get();
+            partnerDTO.setImage(partner.getImageUrl());
+            partnerDTO.setUsername(partner.getUsername());
+            participant.setPartnerDTO(partnerDTO);
+            responses.add(participant);
+        }
+        return responses;
     }
 
 }

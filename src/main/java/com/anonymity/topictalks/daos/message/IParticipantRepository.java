@@ -4,8 +4,11 @@ import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
+import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,5 +24,10 @@ import java.util.List;
 @Repository
 public interface IParticipantRepository extends IBaseRepository<ParticipantPO, ParticipantKey> {
     List<ParticipantPO> findAllByConversationInfo(ConversationPO conversationId);
+
     List<ParticipantPO> findAllByUserInfo(UserPO userPO);
+
+    @Query(value = "SELECT a.user_id FROM participant a, conversation b WHERE b.conversation_id= :conversation_id AND a.user_id != :user_id", nativeQuery = true)
+    long getPartnerIdByConversationIdAndUserId(@Param(value = "conversation_id") long conversation_id, @Param(value = "user_id") long user_id );
+
 }
