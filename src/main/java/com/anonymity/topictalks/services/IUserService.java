@@ -1,6 +1,8 @@
 package com.anonymity.topictalks.services;
 
 
+import com.anonymity.topictalks.models.persists.user.UserPO;
+
 /**
  * @author de140172 - author
  * @version 1.1 - version of software
@@ -10,4 +12,5 @@ package com.anonymity.topictalks.services;
  */
 public interface IUserService {
 
+    boolean updateAvatar(String avatar, long id);
 }
