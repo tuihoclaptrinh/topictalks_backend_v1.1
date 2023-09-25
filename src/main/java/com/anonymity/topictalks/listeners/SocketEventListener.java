@@ -58,11 +58,9 @@ public class SocketEventListener {
     @OnConnect
     public void eventOnConnect(SocketIOClient client) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
-        String conversationId = urlParams.get("conversationId").get(0);
         clientMap.put(urlParams.get("uid").get(0),client);
         logger.info("link open, urlParams {}",urlParams);
         logger.info("Number of people joining: {}",clientMap.size());
-        logger.info("Conversation ID: {}",conversationId);
     }
 
     @OnDisconnect
