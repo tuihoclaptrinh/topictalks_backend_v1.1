@@ -121,17 +121,23 @@ public class ParticipantServiceImpl implements IParticipantService {
         for (int i = 0; i < list.size(); i++) {
             ParticipantResponse participant = new ParticipantResponse();
             participant.setConversationInfor(list.get(i).getConversationInfo());
-            long partnerId = participantRepository.getPartnerIdByConversationIdAndUserId(
+            List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
                     list.get(i).getConversationInfo().getId(),
                     list.get(i).getUserInfo().getId());
-            PartnerDTO partnerDTO = new PartnerDTO();
-            partnerDTO.setId(partnerId);
-            partnerDTO.setBanned(list.get(i).getUserInfo().getIsBanned());
-            partnerDTO.setBannedAt(list.get(i).getUserInfo().getIsBanned() == true ? null : list.get(i).getUserInfo().getBannedDate());
-            UserPO partner = userRepository.findById(partnerId).get();
-            partnerDTO.setImage(partner.getImageUrl());
-            partnerDTO.setUsername(partner.getUsername());
-            participant.setPartnerDTO(partnerDTO);
+            List<PartnerDTO> listPartner = new ArrayList<>();
+            for (int j = 0; j <partnerIdList.size() ; j++) {
+                UserPO partner = userRepository.findById(partnerIdList.get(j))
+                        .orElseThrow(() -> new IllegalArgumentException("This user haven't exist.") );
+                PartnerDTO partnerDTO = new PartnerDTO();
+                partnerDTO.setId(partner.getId());
+                partnerDTO.setBanned(partner.getIsBanned());
+                partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
+                partnerDTO.setImage(partner.getImageUrl());
+                partnerDTO.setUsername(partner.getUsername());
+                listPartner.add(partnerDTO);
+
+            }
+            participant.setPartnerDTO(listPartner);
             responses.add(participant);
         }
         return responses;

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -16,5 +17,5 @@ import java.time.Instant;
 @AllArgsConstructor
 public class ParticipantResponse implements Serializable {
     private ConversationPO conversationInfor;
-    private PartnerDTO partnerDTO;
+    private List<PartnerDTO> partnerDTO;
 }
