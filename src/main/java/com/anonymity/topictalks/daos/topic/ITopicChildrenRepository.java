@@ -25,4 +25,6 @@ public interface ITopicChildrenRepository extends IBaseRepository<TopicChildrenP
 
     @Query(value = "SELECT * FROM topic_children t WHERE t.topic_parent_id= :topicParentId", nativeQuery = true)
     List<TopicChildrenPO> findByTopicParentId(@Param(value = "topicParentId") long topicParentId);
+
+    TopicChildrenPO findById(long id);
 }

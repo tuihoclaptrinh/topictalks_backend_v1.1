@@ -76,4 +76,10 @@ public class TopicChildrenPO extends DateAudit implements Serializable {
     @JsonIgnore
     private TopicParentPO topicParentId;
 
+    /**
+     * An optional image associated with the children topic.
+     */
+    @Lob
+    @Column(name = "image", columnDefinition = "LONGTEXT", nullable = false)
+    private String image;
 }

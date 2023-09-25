@@ -74,4 +74,29 @@ public class TopicChildrenController {
 
         return ResponseEntity.ok(dataResponse);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getTopicChildrenById(@PathVariable Long id) {
+        DataResponse dataResponse = new DataResponse();
+
+        TopicChildrenPO topicChildrenPO = topicChildrenService.getTopicChildrenById(id);
+
+        if (topicChildrenPO==null) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//204
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("This topic children doesn't exist.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(topicChildrenPO);
+
+        return ResponseEntity.ok(dataResponse);
+    }
 }

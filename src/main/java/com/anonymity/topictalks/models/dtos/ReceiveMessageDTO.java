@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * @author de140172 - author
@@ -23,8 +25,10 @@ import java.io.Serializable;
 public class ReceiveMessageDTO implements Serializable {
 
     private Long userId;
-    private Long targetId;
     private String targetName;
+    private String username;
+    private String timeAt;
+    private Long targetId;
     private Long conversationId;
     private JSONObject data;
 
