@@ -86,7 +86,7 @@ public class MessageServiceImpl implements IMessageService {
         UserPO partner = userRepository.findById(partnerId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
 
-        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userInSessionId, partnerId);
+        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userInSessionId, partnerId,false);
         if (!isConversationMatched.isEmpty()) {
             ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
                     .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));

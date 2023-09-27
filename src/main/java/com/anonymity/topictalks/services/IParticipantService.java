@@ -22,4 +22,7 @@ public interface IParticipantService {
 
     List<ParticipantResponse> getAllParticipantByUserId(long id);
 
+    ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId, long topicChildrenId);
+
+
 }

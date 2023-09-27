@@ -51,7 +51,7 @@ public class ConversationServiceImpl implements IConversationService {
 
     @Override
     public Boolean checkMatchingConversations(long userId1, long userId2) {
-        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userId1, userId2);
+        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userId1, userId2,false);
         if (isConversationMatched.isEmpty()) return false;
         return true;
     }

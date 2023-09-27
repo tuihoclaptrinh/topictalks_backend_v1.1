@@ -25,7 +25,7 @@ public interface IConversationRepository extends IBaseRepository<ConversationPO,
             "JOIN conversation c ON p1.conversation_id = c.conversation_id " +
             "WHERE p1.user_id = :userId1 " +
             "AND p2.user_id = :userId2 " +
-            "AND c.is_group_chat = 0", nativeQuery = true)
-    List<Long> checkMatchingConversations(@Param(value = "userId1") long userId1, @Param(value = "userId2") long userId2);
+            "AND c.is_group_chat = :isGroupChat", nativeQuery = true)
+    List<Long> checkMatchingConversations(@Param(value = "userId1") long userId1, @Param(value = "userId2") long userId2, @Param(value = "isGroupChat") boolean isGroupChat);
 
 }
