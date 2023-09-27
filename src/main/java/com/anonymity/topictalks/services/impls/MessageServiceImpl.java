@@ -82,30 +82,25 @@ public class MessageServiceImpl implements IMessageService {
     public List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId, Long topicChildrenId) {
         List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userInSessionId, partnerId);
         if (!isConversationMatched.isEmpty()) {
-            System.out.println("-----------------------> Chay vao day: " + isConversationMatched.isEmpty());
             ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
                     .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
-            return getMessages(conversationPO.getId());
+            List<MessagePO> messagePO = messageRepository.findAllByConversationId(conversationPO);
+            if (!messagePO.isEmpty()) return getMessages(conversationPO.getId());
         }
         UserPO userInSession = userRepository.findById(userInSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
 
-        System.out.println("==============> User: "+userInSession.toString());
-
         UserPO partner = userRepository.findById(partnerId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
 
-        System.out.println("==============> Partner: "+partner.toString());
-
         ConversationRequest request = new ConversationRequest();
-        request.setChatName("You, "+partner.getUsername());
+        request.setChatName("You, " + partner.getUsername());
         request.setIsGroupChat(false);
         request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
             conversationResponse = conversationService.createConversation(request);
-            System.out.println("===================> Conversation new: "+conversationResponse.toString());
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
         ParticipantPO participantPO1 = new ParticipantPO();
@@ -126,7 +121,6 @@ public class MessageServiceImpl implements IMessageService {
         participantPO2.setUpdatedAt(LocalDateTime.now());
         participantRepository.save(participantPO2);
 
-        System.out.println("-------------> Conversation ID: "+conversationResponse.getConversationId());
         ReceiveMessageDTO response = new ReceiveMessageDTO();
         response.setUsername(partner.getUsername());
         response.setConversationId(conversationResponse.getConversationId());
