@@ -80,19 +80,31 @@ public class MessageServiceImpl implements IMessageService {
 
     @Override
     public List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId, Long topicChildrenId) {
-        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userInSessionId, partnerId);
-        if (!isConversationMatched.isEmpty()) {
-            ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
-                    .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
-            List<MessagePO> messagePO = messageRepository.findAllByConversationId(conversationPO);
-            if (!messagePO.isEmpty()) return getMessages(conversationPO.getId());
-        }
         UserPO userInSession = userRepository.findById(userInSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
 
         UserPO partner = userRepository.findById(partnerId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
 
+        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userInSessionId, partnerId);
+        if (!isConversationMatched.isEmpty()) {
+            ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
+                    .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
+            List<MessagePO> messagePO = messageRepository.findAllByConversationId(conversationPO);
+            if (!messagePO.isEmpty()) {
+                return getMessages(conversationPO.getId());
+            } else {
+                ReceiveMessageDTO response = new ReceiveMessageDTO();
+                response.setUsername(partner.getUsername());
+                response.setConversationId(conversationPO.getId());
+                response.setTimeAt(null);
+                response.setData(JSON.parseObject("{\"message\":\"\"}"));
+                response.setUserId(partnerId);
+                List<ReceiveMessageDTO> responseMessageDTOList = new ArrayList<>();
+                responseMessageDTOList.add(response);
+                return responseMessageDTOList;
+            }
+        }
         ConversationRequest request = new ConversationRequest();
         request.setChatName("You, " + partner.getUsername());
         request.setIsGroupChat(false);
