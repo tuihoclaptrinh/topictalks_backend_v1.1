@@ -11,6 +11,8 @@ import com.anonymity.topictalks.services.IConversationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author de140172 - author
  * @version 1.1 - version of software
@@ -45,5 +47,12 @@ public class ConversationServiceImpl implements IConversationService {
                 .isGroupChat(conversation.getIsGroupChat())
                 .topicChildrenId(conversation.getTopicChildren().getId())
                 .build();
+    }
+
+    @Override
+    public Boolean checkMatchingConversations(long userId1, long userId2) {
+        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userId1, userId2);
+        if (isConversationMatched.isEmpty()) return false;
+        return true;
     }
 }

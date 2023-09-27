@@ -21,4 +21,5 @@ public interface IParticipantService {
     String getUserIdsByConversation(ConversationPO conversationPO);
 
     List<ParticipantResponse> getAllParticipantByUserId(long id);
+
 }
