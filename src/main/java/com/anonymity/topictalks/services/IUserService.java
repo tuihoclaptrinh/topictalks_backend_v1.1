@@ -1,10 +1,10 @@
 package com.anonymity.topictalks.services;
 
 
-import com.anonymity.topictalks.models.persists.user.UserPO;
+import com.anonymity.topictalks.models.dtos.UserDTO;
+import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author de140172 - author
@@ -17,13 +17,17 @@ public interface IUserService {
 
     boolean updateAvatar(String avatar, long id);
 
-    List<UserPO> findAllUsers();
+    List<UserDTO> findAllUsers();
 
-    UserPO getUserById(long id);
+    UserDTO getUserById(long id);
 
     boolean remove(long id);
 
-    UserPO updateUser(long id, UserPO userPO);
+    Object updateUser(long id, UserUpdateRequest request);
 
-    UserPO banUser(long id);
+    UserDTO banUser(long id);
+
+    boolean checkDuplicateEmail(long id, String email);
+
+    boolean checkDuplicateUsername(long id, String username);
 }
