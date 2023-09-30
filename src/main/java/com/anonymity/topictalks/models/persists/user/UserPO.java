@@ -126,7 +126,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
      * The user's email address, which is unique and serves as a natural identifier.
      */
     @Email
-    @NaturalId
     @Size(max = 100)
     @Column(
             name = "email",

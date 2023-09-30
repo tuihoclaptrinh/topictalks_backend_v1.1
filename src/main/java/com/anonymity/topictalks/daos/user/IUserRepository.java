@@ -22,6 +22,8 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
     Optional<UserPO> findByUsername(String username);
 
+    Optional<UserPO> findByEmail(String email);
+
     Optional<UserPO> findById(Long id);
 
     Optional<UserPO> getUserByUsernameOrEmail(String username, String mail);
