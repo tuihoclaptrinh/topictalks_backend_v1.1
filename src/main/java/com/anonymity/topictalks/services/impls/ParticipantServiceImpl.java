@@ -7,6 +7,7 @@ import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
@@ -125,9 +126,9 @@ public class ParticipantServiceImpl implements IParticipantService {
                     list.get(i).getConversationInfo().getId(),
                     list.get(i).getUserInfo().getId());
             List<PartnerDTO> listPartner = new ArrayList<>();
-            for (int j = 0; j <partnerIdList.size() ; j++) {
+            for (int j = 0; j < partnerIdList.size(); j++) {
                 UserPO partner = userRepository.findById(partnerIdList.get(j))
-                        .orElseThrow(() -> new IllegalArgumentException("This user haven't exist.") );
+                        .orElseThrow(() -> new IllegalArgumentException("This user haven't exist."));
                 PartnerDTO partnerDTO = new PartnerDTO();
                 partnerDTO.setId(partner.getId());
                 partnerDTO.setBanned(partner.getIsBanned());
@@ -141,6 +142,75 @@ public class ParticipantServiceImpl implements IParticipantService {
             responses.add(participant);
         }
         return responses;
+    }
+
+    @Override
+    public ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId, long topicChildrenId) {
+        UserPO user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+        UserPO partner = userRepository.findById(partnerId)
+                .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+
+        ParticipantResponse participant = new ParticipantResponse();
+        List<PartnerDTO> listPartner = new ArrayList<>();
+        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userId, partnerId, false);
+        if (!isConversationMatched.isEmpty()) {
+            ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
+                    .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
+            List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
+            for (int i = 0; i < list.size(); i++) {
+                participant.setConversationInfor(list.get(i).getConversationInfo());
+                PartnerDTO partnerDTO = new PartnerDTO();
+                partnerDTO.setId(partner.getId());
+                partnerDTO.setBanned(partner.getIsBanned());
+                partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
+                partnerDTO.setImage(partner.getImageUrl());
+                partnerDTO.setUsername(partner.getUsername());
+                listPartner.add(partnerDTO);
+
+                participant.setPartnerDTO(listPartner);
+                return participant;
+            }
+        }
+        ConversationRequest request = new ConversationRequest();
+        request.setChatName(partner.getUsername());
+        request.setIsGroupChat(false);
+        request.setTopicChildrenId(topicChildrenId);
+        ConversationResponse conversationResponse = new ConversationResponse();
+        try {
+            conversationResponse = conversationService.createConversation(request);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        ParticipantPO participantPO1 = new ParticipantPO();
+        ConversationPO conversationPO = conversationRepository.findById(conversationResponse.getConversationId())
+                .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
+        participantPO1.setConversationInfo(conversationPO);
+        participantPO1.setUserInfo(user);
+        participantPO1.setCreatedAt(LocalDateTime.now());
+        participantPO1.setCreatedAt(LocalDateTime.now());
+        participantPO1.setUpdatedAt(LocalDateTime.now());
+        participantRepository.save(participantPO1);
+
+        ParticipantPO participantPO2 = new ParticipantPO();
+        participantPO2.setConversationInfo(conversationPO);
+        participantPO2.setUserInfo(partner);
+        participantPO2.setCreatedAt(LocalDateTime.now());
+        participantPO2.setCreatedAt(LocalDateTime.now());
+        participantPO2.setUpdatedAt(LocalDateTime.now());
+        participantRepository.save(participantPO2);
+
+        participant.setConversationInfor(conversationPO);
+        PartnerDTO partnerDTO = new PartnerDTO();
+        partnerDTO.setId(partnerId);
+        partnerDTO.setUsername(partner.getUsername());
+        partnerDTO.setBanned(partner.getIsBanned());
+        partnerDTO.setBannedAt(partner.getBannedDate());
+        partnerDTO.setImage(partner.getImageUrl());
+        listPartner.add(partnerDTO);
+        participant.setPartnerDTO(listPartner);
+
+        return participant;
     }
 
 }

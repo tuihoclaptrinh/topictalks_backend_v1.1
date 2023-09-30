@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.services;
 
+import com.anonymity.topictalks.models.dtos.MessageDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 
@@ -17,5 +18,7 @@ public interface IMessageService {
     List<ReceiveMessageDTO> getMessages(Long conversationId);
 
     MessagePO saveMessage(MessagePO message);
+
+    List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId, Long topicChildrenId);
 
 }

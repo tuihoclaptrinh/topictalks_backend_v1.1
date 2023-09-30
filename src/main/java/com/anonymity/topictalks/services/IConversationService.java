@@ -12,4 +12,6 @@ import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
  */
 public interface IConversationService {
     ConversationResponse createConversation(ConversationRequest conversationRequest);
+    Boolean checkMatchingConversations(long userId1,long userId2);
+
 }

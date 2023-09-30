@@ -1,19 +1,21 @@
 package com.anonymity.topictalks.models.dtos;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MessageDTO {
-    private  String content;
-    long senderId;
-    long conversationId;
+    private long id;
+    private String content;
+    private long senderId;
+    private long conversationId;
+    private LocalDateTime sentAt;
+
 }
