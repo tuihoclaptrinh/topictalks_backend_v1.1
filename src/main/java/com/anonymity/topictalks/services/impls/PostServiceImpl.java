@@ -33,8 +33,6 @@ public class PostServiceImpl implements IPostService {
     private ITopicParentRepository topicParentRepository;
 
     @Override
-    // Thêm xử lí get post theo role nữa: admin include APPROVED và NOT APPROVED YET
-    //                                    user just include APPROVED
     public List<PostDTO> getAllPosts() {
         List<PostDTO> dtoList = new ArrayList<>();
         List<PostPO> postList = postRepository.findAll();
@@ -151,8 +149,8 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public void save(PostPO postEntity) {
-        postRepository.save(postEntity);
+    public void save(PostPO postPO) {
+        postRepository.save(postPO);
     }
 
 }

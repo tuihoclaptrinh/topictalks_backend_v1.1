@@ -71,7 +71,7 @@ public class CommentPO extends DateAudit implements Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserPO user_id;
+    private UserPO userId;
 
     /**
      * Represents the post to which this comment is associated.
