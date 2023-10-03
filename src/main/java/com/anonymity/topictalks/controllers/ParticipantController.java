@@ -46,7 +46,7 @@ public class ParticipantController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<?> getParticipantByPartnerId(@PathVariable("id") long id, @RequestBody ConversationMatcherRequest request) {
         DataResponse dataResponse = new DataResponse();
 

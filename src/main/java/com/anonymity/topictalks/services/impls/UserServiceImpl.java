@@ -116,6 +116,7 @@ public class UserServiceImpl implements IUserService {
             userPO.setUsername(request.getUsername());
             userPO.setDob(request.getDob());
             userPO.setCountry(request.getCountry());
+            userPO.setPhoneNumber(request.getPhoneNumber());
             userPO.setBio(request.getBio());
             userPO.setImageUrl(request.getAvatar());
             userPO.setGender(request.getGender());

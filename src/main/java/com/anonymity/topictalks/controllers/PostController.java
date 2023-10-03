@@ -79,7 +79,7 @@ public class PostController {
 
         List<PostDTO> postList = postService.getAllPosts();
 
-        if (postList.isEmpty()) {//NO CONTENT
+        if (postList==null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
