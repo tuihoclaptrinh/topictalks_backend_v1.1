@@ -87,7 +87,6 @@ public class PostServiceImpl implements IPostService {
             post.setContent(request.getContent());
             post.setImage(request.getImage() != null ? request.getImage() : "");
             post.setTopicParentId(topicParent);
-            post.setIsApproved(request.isApproved());
             post.setCreatedAt(postExist.get().getCreatedAt());
             post.setUpdatedAt(LocalDateTime.now());
             return postRepository.save(post);
@@ -132,6 +131,35 @@ public class PostServiceImpl implements IPostService {
         }
         return postDtoList;
 
+    }
+
+    @Override
+    public List<PostDTO> getAllPostsByIsApproved(boolean isApproved) {
+        List<PostPO> postList = postRepository.findAllByIsApproved(isApproved);
+        if (postList.isEmpty()) return null;
+        List<PostDTO> postDtoList = new ArrayList<>();
+        for (PostPO list : postList) {
+            PostDTO postDto = new PostDTO(
+                    list.getId(),
+                    list.getTitle(),
+                    list.getContent(),
+                    list.getImage(),
+                    list.getAuthorId().getId(),
+                    list.getAuthorId().getId(),
+                    list.getCreatedAt(),
+                    list.getUpdatedAt(),
+                    list.getIsApproved()
+            );
+            postDtoList.add(postDto);
+        }
+        return postDtoList;
+    }
+
+    @Override
+    public PostPO aprrovePost(Long id) {
+        PostPO postPO = postRepository.findById(id).orElse(null);
+        postPO.setIsApproved(true);
+        return postRepository.save(postPO);
     }
 
     @Override
