@@ -85,11 +85,7 @@ public class PostController {
 
         List<PostDTO> postList = postService.getAllPosts();
 
-<<<<<<< Updated upstream
-        if (postList.isEmpty()) {//NO CONTENT
-=======
         if (postList == null) {//NO CONTENT
->>>>>>> Stashed changes
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
