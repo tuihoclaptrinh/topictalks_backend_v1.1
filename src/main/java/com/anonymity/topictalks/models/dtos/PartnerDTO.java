@@ -17,4 +17,5 @@ public class PartnerDTO {
     private boolean isBanned;
     private String image;
     private Instant bannedAt;
+    private boolean isMember;
 }

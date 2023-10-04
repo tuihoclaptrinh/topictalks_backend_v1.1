@@ -11,7 +11,7 @@ import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
  * @since 1.0 - version of class
  */
 public interface IConversationService {
-    ConversationResponse createConversation(ConversationRequest conversationRequest);
+    ConversationResponse createConversation(ConversationRequest conversationRequest, boolean isGroupChat);
     Boolean checkMatchingConversations(long userId1,long userId2);
 
 }

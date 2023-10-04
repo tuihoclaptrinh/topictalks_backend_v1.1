@@ -107,11 +107,10 @@ public class MessageServiceImpl implements IMessageService {
         }
         ConversationRequest request = new ConversationRequest();
         request.setChatName("You, " + partner.getUsername());
-        request.setIsGroupChat(false);
         request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
-            conversationResponse = conversationService.createConversation(request);
+            conversationResponse = conversationService.createConversation(request,false);
         } catch (Exception e) {
             System.out.println(e);
         }

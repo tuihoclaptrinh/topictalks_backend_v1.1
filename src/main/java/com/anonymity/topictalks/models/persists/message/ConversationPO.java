@@ -83,4 +83,10 @@ public class ConversationPO extends DateAudit implements Serializable {
     @JoinColumn(name = "topic_children_id", nullable = false)
     private TopicChildrenPO topicChildren;
 
+    /**
+     * Represent the admin of the conversation.
+     */
+    @Column(name = "adminId",nullable = true)
+    private long adminId;
+
 }

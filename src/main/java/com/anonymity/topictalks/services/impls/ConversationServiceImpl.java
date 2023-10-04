@@ -28,7 +28,7 @@ public class ConversationServiceImpl implements IConversationService {
     private final ITopicChildrenRepository topicChildrenRepository;
 
     @Override
-    public ConversationResponse createConversation(ConversationRequest conversationRequest) {
+    public ConversationResponse createConversation(ConversationRequest conversationRequest, boolean isGroupChat) {
 
         var conversation = new ConversationPO();
         TopicChildrenPO topicChildren = topicChildrenRepository
@@ -36,8 +36,9 @@ public class ConversationServiceImpl implements IConversationService {
                 .orElseThrow(() -> new TopicChildrenNotFoundException("Topic Children not found"));
 
         conversation.setChatName(conversationRequest.getChatName());
-        conversation.setIsGroupChat(conversationRequest.getIsGroupChat());
+        conversation.setIsGroupChat(isGroupChat);
         conversation.setTopicChildren(topicChildren);
+        conversation.setAdminId(conversationRequest.getAdminId());
 
         conversation = conversationRepository.save(conversation);
 
@@ -46,6 +47,7 @@ public class ConversationServiceImpl implements IConversationService {
                 .chatName(conversation.getChatName())
                 .isGroupChat(conversation.getIsGroupChat())
                 .topicChildrenId(conversation.getTopicChildren().getId())
+                .adminId(conversation.getAdminId())
                 .build();
     }
 

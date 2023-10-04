@@ -24,4 +24,5 @@ public class ConversationResponse implements Serializable {
     private String chatName;
     private Boolean isGroupChat;
     private Long topicChildrenId;
+    private Long adminId;
 }
