@@ -28,10 +28,10 @@ import java.util.List;
 @Tag(name = "Participant", description = "")
 public class ParticipantController {
     private final IParticipantService participantService;
-    private  final IConversationService conversationService;
+    private final IConversationService conversationService;
 
     @GetMapping("/{id}/all")
-    public ResponseEntity<?> getAllParticipantByUserId(@PathVariable("id") long id ) {
+    public ResponseEntity<?> getAllParticipantByUserId(@PathVariable("id") long id) {
         DataResponse dataResponse = new DataResponse();
 
         List<ParticipantResponse> list = participantService.getAllParticipantByUserId(id);
@@ -57,9 +57,9 @@ public class ParticipantController {
     public ResponseEntity<?> getParticipantByPartnerId(@PathVariable("id") long id, @RequestBody ConversationMatcherRequest request) {
         DataResponse dataResponse = new DataResponse();
 
-        ParticipantResponse participant = participantService.getParticipantByUserIdAndPartnerId(request.getUserIdInSession(),id,request.getTopicChildrenId());
+        ParticipantResponse participant = participantService.getParticipantByUserIdAndPartnerId(request.getUserIdInSession(), id, request.getTopicChildrenId());
 
-        if (participant==null) {//NO CONTENT
+        if (participant == null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
@@ -88,7 +88,7 @@ public class ParticipantController {
 
             return ResponseEntity.ok(dataResponse);
         }
-        ConversationResponse conversation = conversationService.createConversation(request,true);
+        ConversationResponse conversation = conversationService.createConversation(request, true);
         ParticipantResponse participantResponse = participantService.createGroupChat(conversation.getConversationId());
 
         if (participantResponse == null) {//NOT FOUND
@@ -108,18 +108,10 @@ public class ParticipantController {
     }
 
     @PostMapping("/join-group-chat/uid={userId}&&cid={conversationId}")
-    public ResponseEntity<?> joinChatGroup(@PathVariable Long userId,@PathVariable Long conversationId, BindingResult bindingResult) {
+    public ResponseEntity<?> joinChatGroup(@PathVariable Long userId, @PathVariable Long conversationId) {
         DataResponse dataResponse = new DataResponse();
 
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
-            dataResponse.setSuccess(false);
-            dataResponse.setData("");
-
-            return ResponseEntity.ok(dataResponse);
-        }
-        ParticipantResponse participantResponse = participantService.joinGroupChat(userId,conversationId);
+        ParticipantResponse participantResponse = participantService.joinGroupChat(userId, conversationId);
 
         if (participantResponse == null) {//NOT FOUND
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404

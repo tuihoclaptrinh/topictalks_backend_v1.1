@@ -238,14 +238,15 @@ public class ParticipantServiceImpl implements IParticipantService {
     public ParticipantResponse joinGroupChat(long userId, long conversationId) {
         UserPO userPO = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User doesn't exist"));
-        ConversationPO conversationPO = new ConversationPO();
+        ConversationPO conversationPO = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new IllegalArgumentException("Conversation doesn't exist"));
         ParticipantPO participantPO = new ParticipantPO();
         participantPO.setUserInfo(userPO);
         participantPO.setConversationInfo(conversationPO);
         participantPO.setCreatedAt(LocalDateTime.now());
         participantPO.setUpdatedAt(LocalDateTime.now());
         participantPO.setIsMember(false);
-        participantRepository.save(participantPO);
+        ParticipantPO participantPO1 = participantRepository.save(participantPO);
         ParticipantResponse participantResponse = new ParticipantResponse();
         participantResponse.setConversationInfor(conversationPO);
         List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
