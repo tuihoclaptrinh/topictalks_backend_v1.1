@@ -2,8 +2,11 @@ package com.anonymity.topictalks.daos.post;
 
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.post.CommentPO;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.anonymity.topictalks.models.persists.post.PostPO;
+import com.anonymity.topictalks.models.persists.user.UserPO;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author de140172 - author
@@ -15,4 +18,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ICommentRepository extends IBaseRepository<CommentPO, Long> {
+    List<CommentPO> findAllByPostId(PostPO postPO);
+
+    boolean existsByIdAndUserId(Long id, UserPO userPO);
 }

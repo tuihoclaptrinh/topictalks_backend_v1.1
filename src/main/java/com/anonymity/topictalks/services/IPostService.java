@@ -23,5 +23,5 @@ public interface IPostService {
 
     Object getPostByPostId(Long postId);
 
-    void save(PostPO postEntity);
+    void save(PostPO postPO);
 }
