@@ -33,22 +33,19 @@ public class PostServiceImpl implements IPostService {
     private ITopicParentRepository topicParentRepository;
 
     @Override
-    public List<PostDTO> getAllPosts() {
+    public List<PostDTO> getAllPosts(long userId) {
+        UserPO userPO = userRepository.findById(userId).orElse(null);
+        String roleUser = userPO.getRole().name();
         List<PostDTO> dtoList = new ArrayList<>();
-        List<PostPO> postList = postRepository.findAll();
+        List<PostPO> postList;
+        if (roleUser.equalsIgnoreCase("USER")) {
+            postList = postRepository.findAllByIsApproved(true);
+        } else {
+            postList = postRepository.findAll();
+        }
         if (postList.isEmpty()) return null;
         for (PostPO list : postList) {
-            PostDTO postDto = new PostDTO(
-                    list.getId(),
-                    list.getTitle(),
-                    list.getContent(),
-                    list.getImage(),
-                    list.getAuthorId().getId(),
-                    list.getAuthorId().getId(),
-                    list.getCreatedAt(),
-                    list.getUpdatedAt(),
-                    list.getIsApproved()
-            );
+            PostDTO postDto = convertToPostDto(list);
             dtoList.add(postDto);
         }
         return dtoList;
@@ -114,17 +111,7 @@ public class PostServiceImpl implements IPostService {
         if (postList.isEmpty()) return null;
         List<PostDTO> postDtoList = new ArrayList<>();
         for (PostPO list : postList) {
-            PostDTO postDto = new PostDTO(
-                    list.getId(),
-                    list.getTitle(),
-                    list.getContent(),
-                    list.getImage(),
-                    list.getAuthorId().getId(),
-                    list.getAuthorId().getId(),
-                    list.getCreatedAt(),
-                    list.getUpdatedAt(),
-                    list.getIsApproved()
-            );
+            PostDTO postDto = convertToPostDto(list);
             postDtoList.add(postDto);
         }
         return postDtoList;
@@ -137,17 +124,7 @@ public class PostServiceImpl implements IPostService {
         if (postList.isEmpty()) return null;
         List<PostDTO> postDtoList = new ArrayList<>();
         for (PostPO list : postList) {
-            PostDTO postDto = new PostDTO(
-                    list.getId(),
-                    list.getTitle(),
-                    list.getContent(),
-                    list.getImage(),
-                    list.getAuthorId().getId(),
-                    list.getAuthorId().getId(),
-                    list.getCreatedAt(),
-                    list.getUpdatedAt(),
-                    list.getIsApproved()
-            );
+            PostDTO postDto = convertToPostDto(list);
             postDtoList.add(postDto);
         }
         return postDtoList;
@@ -155,30 +132,46 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public PostPO aprrovePost(Long id) {
-        PostPO postPO = postRepository.findById(id).orElse(null);
-        postPO.setIsApproved(true);
-        return postRepository.save(postPO);
+        boolean isExisted = postRepository.existsById(id);
+        if (isExisted) {
+            PostPO postPO = postRepository.findById(id).orElse(null);
+            postPO.setId(id);
+            postPO.setIsApproved(true);
+            return postRepository.save(postPO);
+        }
+        return null;
     }
 
     @Override
     public Object getPostByPostId(Long postId) {
-        Optional<PostPO> post = postRepository.findById(postId);
-        PostDTO postDto = new PostDTO(
-                post.get().getId(),
-                post.get().getTitle(),
-                post.get().getContent(),
-                post.get().getImage(),
-                post.get().getTopicParentId().getId(),
-                post.get().getAuthorId().getId(),
-                post.get().getCreatedAt(),
-                post.get().getUpdatedAt(),
-                post.get().getIsApproved());
-        return post.isEmpty() ? null : postDto;
+        boolean isExisted = postRepository.existsById(postId);
+        if (isExisted) {
+            PostPO post = postRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("Not found"));
+            PostDTO postDto = convertToPostDto(post);
+            return postDto;
+        }
+        return null;
     }
 
     @Override
     public void save(PostPO postPO) {
         postRepository.save(postPO);
+    }
+
+    private PostDTO convertToPostDto(PostPO postPO) {
+        PostDTO postDto = new PostDTO(
+                postPO.getId(),
+                postPO.getTitle(),
+                postPO.getContent(),
+                postPO.getImage(),
+                postPO.getTopicParentId().getId(),
+                postPO.getAuthorId().getId(),
+                postPO.getCreatedAt(),
+                postPO.getUpdatedAt(),
+                postPO.getIsApproved()
+        );
+        return postDto;
     }
 
 }

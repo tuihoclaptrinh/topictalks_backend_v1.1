@@ -87,7 +87,7 @@ public class CommentServiceImpl implements ICommentService {
         UserPO userPO = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
         boolean isExisted = commentRepository.existsByIdAndUserId(commentId, userPO);
-        if (isExisted) return false;
+        if (!isExisted) return false;
         else {
             commentRepository.deleteById(commentId);
             return true;

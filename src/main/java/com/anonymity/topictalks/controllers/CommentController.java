@@ -100,6 +100,29 @@ public class CommentController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @GetMapping("/{postId}")
+    public ResponseEntity<?> getAllCommentsByPostId(@PathVariable("postId") long postId) {
+        DataResponse dataResponse = new DataResponse();
+
+        List<CommentDTO> commentList = commentService.getCommentsByPostId(postId);
+
+        if (commentList.isEmpty()) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(commentList);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
     @DeleteMapping("/{userId}/{id}")
     public ResponseEntity<?> deleteCommentById(@PathVariable("userId") long userId,@PathVariable("id") long id) {
         DataResponse dataResponse = new DataResponse();

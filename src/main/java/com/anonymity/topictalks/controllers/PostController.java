@@ -79,11 +79,11 @@ public class PostController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllPosts() {
+    @GetMapping("{id}/all")
+    public ResponseEntity<?> getAllPosts(@PathVariable long id) {
         DataResponse dataResponse = new DataResponse();
 
-        List<PostDTO> postList = postService.getAllPosts();
+        List<PostDTO> postList = postService.getAllPosts(id);
 
         if (postList == null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
@@ -154,19 +154,11 @@ public class PostController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping("/approve/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable Long id, BindingResult bindingResult) {
+    @PutMapping("/approve/{pid}")
+    public ResponseEntity<?> approvePost(@PathVariable("pid") long postId) {
         DataResponse dataResponse = new DataResponse();
 
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
-            dataResponse.setSuccess(false);
-            dataResponse.setData("");
-
-            return ResponseEntity.ok(dataResponse);
-        }
-        PostPO postUpdated = postService.aprrovePost(id);
+        PostPO postUpdated = postService.aprrovePost(postId);
 
         if (postUpdated == null) {//NOT FOUND
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
