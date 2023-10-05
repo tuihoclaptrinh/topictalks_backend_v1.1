@@ -31,4 +31,6 @@ public interface IParticipantService {
 
     ParticipantResponse createGroupChat(long conversationId);
 
+    List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
+
 }

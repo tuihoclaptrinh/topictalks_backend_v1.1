@@ -14,4 +14,6 @@ public interface IConversationService {
     ConversationResponse createConversation(ConversationRequest conversationRequest, boolean isGroupChat);
     Boolean checkMatchingConversations(long userId1,long userId2);
 
+
+
 }

@@ -38,7 +38,7 @@ public class ConversationServiceImpl implements IConversationService {
         conversation.setChatName(conversationRequest.getChatName());
         conversation.setIsGroupChat(isGroupChat);
         conversation.setTopicChildren(topicChildren);
-        conversation.setAdminId(conversationRequest.getAdminId());
+        conversation.setAdminId(isGroupChat==true? conversationRequest.getAdminId():0);
 
         conversation = conversationRepository.save(conversation);
 

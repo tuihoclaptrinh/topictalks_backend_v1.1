@@ -2,6 +2,7 @@ package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
+import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
@@ -12,6 +13,7 @@ import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
+import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
 import com.anonymity.topictalks.services.IParticipantService;
@@ -47,6 +49,7 @@ public class ParticipantServiceImpl implements IParticipantService {
     private final IConversationService conversationService;
     private final IUserRepository userRepository;
     private final IConversationRepository conversationRepository;
+    private final ITopicChildrenRepository topicChildrenRepository;
     private Logger logger = LoggerFactory.getLogger(ParticipantServiceImpl.class);
 
     @Override
@@ -152,7 +155,9 @@ public class ParticipantServiceImpl implements IParticipantService {
                 partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
                 partnerDTO.setImage(partner.getImageUrl());
                 partnerDTO.setUsername(partner.getUsername());
-                partnerDTO.setMember(list.get(i).getIsMember());
+                UserPO partnerInfor = userRepository.findById(partner.getId()).orElse(null);
+                ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(),partnerInfor);
+                partnerDTO.setMember(participantPO.getIsMember());
                 listPartner.add(partnerDTO);
 
             }
@@ -292,6 +297,34 @@ public class ParticipantServiceImpl implements IParticipantService {
         list.add(partnerDTO);
         participantResponse.setPartnerDTO(list);
         return participantResponse;
+    }
+
+    @Override
+    public List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id) {
+        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
+        List<ConversationPO> list = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO,true);
+        if (list.isEmpty()) return null;
+        List<ParticipantResponse> responseList = new ArrayList<>();
+        for (ConversationPO conversationPO: list) {
+            ParticipantResponse response = new ParticipantResponse();
+            response.setConversationInfor(conversationPO);
+            List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
+            List<PartnerDTO> partnerDtos = new ArrayList<>();
+            for (ParticipantPO po:poList) {
+                PartnerDTO partnerDTO = new PartnerDTO();
+                partnerDTO.setUsername(po.getUserInfo().getUsername());
+                partnerDTO.setImage(po.getUserInfo().getImageUrl());
+                partnerDTO.setId(po.getUserInfo().getId());
+                partnerDTO.setMember(po.getIsMember());
+                partnerDTO.setBanned(po.getUserInfo().getIsBanned());
+                partnerDTO.setBannedAt(po.getUserInfo().getBannedDate());
+                partnerDtos.add(partnerDTO);
+            }
+            response.setPartnerDTO(partnerDtos);
+            responseList.add(response);
+        }
+
+        return responseList;
     }
 
 }

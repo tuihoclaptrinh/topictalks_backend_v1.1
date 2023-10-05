@@ -2,6 +2,7 @@ package com.anonymity.topictalks.daos.message;
 
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
+import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,5 @@ public interface IConversationRepository extends IBaseRepository<ConversationPO,
             "AND c.is_group_chat = :isGroupChat", nativeQuery = true)
     List<Long> checkMatchingConversations(@Param(value = "userId1") long userId1, @Param(value = "userId2") long userId2, @Param(value = "isGroupChat") boolean isGroupChat);
 
+    List<ConversationPO> findAllByTopicChildrenAndIsGroupChat(TopicChildrenPO topicChildrenPO, boolean isGroupChat);
 }

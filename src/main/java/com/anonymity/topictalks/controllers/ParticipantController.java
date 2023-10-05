@@ -129,4 +129,27 @@ public class ParticipantController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @GetMapping("/group-chat/{id}")
+    public ResponseEntity<?> getAllGroupChatsByTopicChildrenId(@PathVariable("id") long id) {
+        DataResponse dataResponse = new DataResponse();
+
+        List<ParticipantResponse> participant = participantService.getAllGroupChatByTopicChildrenId(id);
+
+        if (participant == null) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(participant);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
 }
