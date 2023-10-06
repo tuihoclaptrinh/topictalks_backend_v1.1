@@ -6,11 +6,15 @@ import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IUserService;
+import com.anonymity.topictalks.utils.EmailUtils;
+import com.anonymity.topictalks.utils.OtpUtils;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,8 +24,43 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements IUserService {
+
     @Autowired
     private IUserRepository userRepository;
+
+    @Autowired
+    private EmailUtils emailUtils;
+    @Autowired
+    private OtpUtils otpUtils;
+
+    @Override
+    public String verifyAccount(String email, String otp) {
+        UserPO user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
+                LocalDateTime.now()).getSeconds() < (1 * 60)) {
+            user.setActive(true);
+            userRepository.save(user);
+            return "OTP verified you can login";
+        }
+        return "Please regenerate otp and try again";
+    }
+
+    @Override
+    public String regenerateOtp(String email) {
+        UserPO user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        String otp = otpUtils.generateOtp();
+        try {
+            emailUtils.sendOtpEmail(email, otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send otp please try again");
+        }
+        user.setOtp(otp);
+        user.setOtpGeneratedTime(LocalDateTime.now());
+        userRepository.save(user);
+        return "Email sent... please verify account within 1 minute";
+    }
 
     @Override
     public boolean updateAvatar(String avatar, long id) {

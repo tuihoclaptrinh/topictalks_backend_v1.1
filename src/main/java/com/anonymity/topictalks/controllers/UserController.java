@@ -29,6 +29,16 @@ import java.util.List;
 public class UserController {
     private final IUserService userService;
 
+    @PutMapping("/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam String email,
+                                                @RequestParam String otp) {
+        return new ResponseEntity<>(userService.verifyAccount(email, otp), HttpStatus.OK);
+    }
+    @PutMapping("/regenerate-otp")
+    public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
+        return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
+    }
+
     @PostMapping("/upload")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> create(@RequestBody AvatarRequest request, BindingResult bindingResult) {

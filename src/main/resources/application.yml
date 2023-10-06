@@ -35,6 +35,11 @@ spring:
     basename: messages
   jackson:
     time-zone: Asia/Ho_Chi_Minh
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hoangtuananh57tht1@gmail.com
+    password: fypfbljiqelcxvas # fypf blji qelc xvas
 
 ## Configuration jwt
 application:
