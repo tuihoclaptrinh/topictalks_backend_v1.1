@@ -1,10 +1,14 @@
 package com.anonymity.topictalks.listeners;
 
+import com.alibaba.fastjson.JSONObject;
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IMessageRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
+import com.anonymity.topictalks.models.dtos.EngagementChatDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
+import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
@@ -27,9 +31,10 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author de140172 - author
@@ -46,10 +51,13 @@ public class SocketEventListener {
 
     private Logger logger = LoggerFactory.getLogger(SocketEventListener.class);
     public static Map<String, SocketIOClient> clientMap = new ConcurrentHashMap<>();
+    public static Map<String, SocketIOClient> clientChatRandom = new ConcurrentHashMap<>();
+    public static Map<Long, Long> userChatRandom = new HashMap<>();
 
     private final IMessageRepository messageRepository;
     private final IUserRepository userRepository;
     private final IConversationRepository conversationRepository;
+    private final IConversationService conversationService;
     private final RandomUserUtils randomUserUtils;
     private final IParticipantService participantService;
     private final ISocketService socketService;
@@ -197,4 +205,127 @@ public class SocketEventListener {
         }
     }
 
+    @OnEvent("onAccessChatRandom")
+    public void accessChatRandom(SocketIOClient client, ReceiveMessageDTO topicChildren) {
+        Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
+        clientChatRandom.put(urlParams.get("uid").get(0) + "-" + topicChildren.getData().get("id").toString(),client);
+        logger.info("link open, urlParams {}",urlParams);
+        logger.info("Number of people joining to chat random: {}",clientChatRandom.size());
+
+        var engagement = EngagementChatDTO.builder()
+                .timeAccess(LocalDateTime.now().toString())
+                .clientChatRandom(clientChatRandom.size())
+                .topicChildrenId(Long.parseLong(topicChildren.getData().get("id").toString()))
+                .urlParams(urlParams)
+                .timeLeaved(null)
+                .build();
+
+//        userChatRandom.put(
+//                Long.parseLong(engagement.getUrlParams().get("uid").get(0)),
+//                engagement.getTimeAccess());
+
+        client.sendEvent("userAccess",engagement);
+
+        onCreateChatRandom();
+
+    }
+
+    @OnEvent("onLeaveChatRandom")
+    public void leaveChatRandom(SocketIOClient client) {
+        Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
+        String moveUser = urlParams.get("uid").get(0);
+        clientChatRandom.remove(moveUser);
+        logger.info("Link closed, urlParams {}", urlParams);
+        logger.info("Remaining number of people chat random: {}", clientChatRandom.size());
+        client.sendEvent("userLeaved",
+                EngagementChatDTO.builder()
+                        .timeAccess(null)
+                        .clientChatRandom(clientChatRandom.size())
+                        .urlParams(urlParams)
+                        .timeLeaved(LocalDateTime.now().toString())
+                        .build()
+        );
+    }
+
+    @OnEvent("onCreateChatRandom")
+    public void onCreateChatRandom() {
+
+        Collection<String> keys = clientChatRandom.keySet();
+        List<String> lists = new ArrayList<>();
+
+        String prevTpcId = null;
+        for (String key : keys) {
+            String[] params = key.split("-");
+            Long uId = Long.parseLong(params[0].trim());
+            Long tpcId = Long.parseLong(params[1].trim());
+            logger.info("userId: {} - topic Children Id: {}", uId, tpcId);
+            lists.add(uId + "-" + tpcId);
+            if (prevTpcId != null && prevTpcId.equals(tpcId.toString())) {
+
+                participantService.createChatRandom(
+                        ChatRandomDTO
+                                .builder()
+                                .users(lists)
+                                .tpcId(tpcId)
+                                .build());
+
+//                logger.info("Inside the same value userId: {} - topic Children Id: {}", uId, tpcId);
+//                lists.forEach(System.out::println);
+                for (String user: lists) {
+                    clientChatRandom.remove(user);
+                }
+                lists.clear();
+                logger.info("clear data on lists");
+            }
+
+            prevTpcId = tpcId.toString();
+        }
+
+        logger.info("Client remaining: {}", clientChatRandom.size());
+
+//        Collection<SocketIOClient> values = clientChatRandom.values();
+//        Collection<String> keys = clientChatRandom.keySet();
+//
+//        for (SocketIOClient client : values) {
+//            logger.info(client.getHandshakeData().getUrlParams().get("uid").get(0));
+//        }
+//
+//        Map<Long, Integer> tpcIdCountMap = new HashMap<>();
+//
+//        for (String key : keys) {
+//            String[] params = key.split("-");
+//            Long uId = Long.parseLong(params[0].trim());
+//            Long tpcId = Long.parseLong(params[1].trim());
+//            userChatRandom.put(uId, tpcId.toString());
+//            // Check if the tpcId already exists in the map
+//            if (tpcIdCountMap.containsKey(tpcId)) {
+//                // Increment the count for this tpcId
+//                int count = tpcIdCountMap.get(tpcId);
+//                // Check if the count is now >= 2
+//                if (count + 1 >= 2) {
+//                    tpcIdCountMap.put(tpcId, count + 1);
+//                }
+//            }
+//            else {
+//                // If tpcId is not in the map, initialize its count to 1
+//                tpcIdCountMap.put(tpcId, 1);
+//            }
+//            for (Map.Entry<Long, Integer> entry : tpcIdCountMap.entrySet()) {
+//                logger.info("tpcId: {} - Count: {}", entry.getKey(), entry.getValue());
+//                userChatRandom.put(entry.getKey(), entry.getValue().toString());
+//            }
+//            logger.info("User id: {}", uId);
+//            logger.info("Topic Children id: {}", tpcId);
+//        }
+//
+//        logger.info("Size chat random: {}", clientChatRandom.size());
+//
+//        for (Map.Entry<Long, String> entry : userChatRandom.entrySet()) {
+//            Long key = entry.getKey();
+//            String value = entry.getValue();
+//            logger.info("Key: " + key + ", Value: " + value);
+//        }
+
+
+    }
 }
