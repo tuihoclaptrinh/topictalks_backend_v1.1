@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.services;
 
+import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
@@ -16,8 +17,8 @@ import java.util.List;
  * @since 1.0 - version of class
  */
 public interface IParticipantService {
-    void createChatSingle(SocketIOClient client, ParticipantRequest participantRequest);
-
+    void createChatSingle(ParticipantRequest participantRequest);
+    void createChatRandom(ChatRandomDTO chatRandomDTO);
     String getUserIdsByConversation(ConversationPO conversationPO);
 
     List<ParticipantResponse> getAllParticipantByUserId(long id);
