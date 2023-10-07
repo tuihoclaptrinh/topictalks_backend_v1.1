@@ -23,4 +23,6 @@ public class ConversationController {
     public ResponseEntity<Object> checkConversationMatched(@PathVariable Long partnerId, @RequestBody ConversationMatcherRequest request) {
         return ResponseEntity.ok(JSON.parseObject("{\"isMatched\":\""+conversationService.checkMatchingConversations(request.getUserIdInSession(),partnerId)+"\"}"));
     }
+
+
 }

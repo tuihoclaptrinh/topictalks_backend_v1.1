@@ -21,6 +21,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ConversationRequest implements Serializable {
     private String chatName;
-    private Boolean isGroupChat;
     private Long topicChildrenId;
+    private Long adminId;
 }

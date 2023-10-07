@@ -75,4 +75,10 @@ public class ParticipantPO extends DateAudit implements Serializable {
     @JoinColumn(name = "conversation_id")
     private ConversationPO conversationInfo;
 
+    /**
+     * Indicates whether this user has been approved by the admin to become a member of the chat group or not.
+     */
+    @Column(name = "is_member")
+    private Boolean isMember;
+
 }

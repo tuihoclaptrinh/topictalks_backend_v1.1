@@ -84,14 +84,13 @@ public class SocketServiceImpl implements ISocketService {
         Map<Long, Long> result = randomUserUtil.randomUserChatting(participantRequest);
 
         var conversationRequest = ConversationRequest.builder()
-                .isGroupChat(false)
                 .chatName(null)
                 .topicChildrenId(participantRequest.getTopicChildId())
                 .build();
 
         for(Map.Entry<Long, Long> entry: result.entrySet()) {
 
-            var conversationResponse = conversationService.createConversation(conversationRequest);
+            var conversationResponse = conversationService.createConversation(conversationRequest,false);
 
             var key = new ParticipantKey();
             var participant = ParticipantPO.builder()

@@ -1,5 +1,7 @@
 package com.anonymity.topictalks.services;
 
+
+import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
@@ -21,9 +23,16 @@ public interface IParticipantService {
     void createChatRandom(ChatRandomDTO chatRandomDTO);
     String getUserIdsByConversation(ConversationPO conversationPO);
 
+    List<PartnerDTO> getAllUserByConversationId(long id);
+
     List<ParticipantResponse> getAllParticipantByUserId(long id);
 
     ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId, long topicChildrenId);
 
+    ParticipantResponse joinGroupChat(long userId, long conversationId);
+
+    ParticipantResponse createGroupChat(long conversationId);
+
+    List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
 
 }
