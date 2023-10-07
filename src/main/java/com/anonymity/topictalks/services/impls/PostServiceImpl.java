@@ -10,6 +10,7 @@ import com.anonymity.topictalks.models.persists.post.CommentPO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
+import com.anonymity.topictalks.services.ILikeService;
 import com.anonymity.topictalks.services.IPostService;
 import com.anonymity.topictalks.utils.enums.ERole;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,8 @@ public class PostServiceImpl implements IPostService {
     private ITopicParentRepository topicParentRepository;
 
     public final ICommentRepository commentRepository;
+
+    public  final ILikeService likeService;
 
     @Override
     public List<PostDTO> getAllPosts(long userId) {
@@ -190,6 +193,7 @@ public class PostServiceImpl implements IPostService {
                 postPO.getImage(),
                 postPO.getTopicParentId().getId(),
                 postPO.getAuthorId().getId(),
+                likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
                 postPO.getUpdatedAt(),
                 postPO.getIsApproved()

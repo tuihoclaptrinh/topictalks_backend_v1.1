@@ -6,6 +6,8 @@ import com.anonymity.topictalks.models.persists.post.LikePO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author de140172 - author
  * @version 1.1 - version of software
@@ -16,4 +18,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ILikeRepository extends IBaseRepository<LikePO, LikeKey> {
+    boolean existsByUserIdAndPostId(long userId, long postId);
+    LikePO deleteByUserIdAndPostId(long userId, long postId);
+    List<LikePO> getAllByPostId(long postId);
 }

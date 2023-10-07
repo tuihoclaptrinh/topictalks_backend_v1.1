@@ -18,6 +18,7 @@ public class PostDTO {
     private String img_url;
     private Long tparent_id;
     private Long author_id;
+    private LikeDTO like;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private boolean isApproved;
