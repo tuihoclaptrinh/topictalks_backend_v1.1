@@ -82,6 +82,7 @@ public class PostServiceImpl implements IPostService {
             post.setContent(request.getContent());
             post.setImage(request.getImage() != null ? request.getImage() : "");
             post.setTopicParentId(topicParent);
+            post.setIsApproved(postExist.get().getIsApproved());
             post.setCreatedAt(postExist.get().getCreatedAt());
             post.setUpdatedAt(LocalDateTime.now());
             return postRepository.save(post);
@@ -116,6 +117,18 @@ public class PostServiceImpl implements IPostService {
         }
         return postDtoList;
 
+    }
+
+    @Override
+    public List<PostDTO> getAllPostByAuthorId(Long authorId) {
+        List<PostPO> postList = postList = postRepository.findByAuthorId(authorId);
+        if (postList.isEmpty()) return null;
+        List<PostDTO> postDtoList = new ArrayList<>();
+        for (PostPO list : postList) {
+            PostDTO postDto = convertToPostDto(list);
+            postDtoList.add(postDto);
+        }
+        return postDtoList;
     }
 
     @Override

@@ -91,12 +91,11 @@ public class ParticipantServiceImpl implements IParticipantService {
     public void createChatRandom(ChatRandomDTO chatRandomDTO) {
 
         var conversationRequest = ConversationRequest.builder()
-                .isGroupChat(false)
                 .chatName("RANDOM-CHAT-ANONYMOUS")
                 .topicChildrenId(chatRandomDTO.getTpcId())
                 .build();
 
-        var conv = conversationService.createConversation(conversationRequest);
+        var conv = conversationService.createConversation(conversationRequest,false);
 
         for (String user: chatRandomDTO.getUsers()) {
 

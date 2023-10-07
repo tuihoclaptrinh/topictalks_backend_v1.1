@@ -122,7 +122,8 @@ public class PostController {
         dataResponse.setStatus(HttpStatus.OK.value());//200
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
-        dataResponse.setData(postService.getAllPostByAuthorIdAndRole(authorId));
+//        dataResponse.setData(postService.getAllPostByAuthorIdAndRole(authorId));
+        dataResponse.setData(postService.getAllPostByAuthorId(authorId));
 
         return ResponseEntity.ok(dataResponse);
     }

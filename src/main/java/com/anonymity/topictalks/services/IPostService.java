@@ -17,6 +17,8 @@ public interface IPostService {
 
     List<PostDTO> getAllPostByAuthorIdAndRole(Long authorId);
 
+    List<PostDTO> getAllPostByAuthorId(Long authorId);
+
     List<PostDTO> getAllPostsByIsApproved(boolean isApproved);
 
     PostPO aprrovePost(Long id);

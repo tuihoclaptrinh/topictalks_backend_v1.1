@@ -3,15 +3,12 @@ package com.anonymity.topictalks.services.impls;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
-import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.EmailUtils;
 import com.anonymity.topictalks.utils.OtpUtils;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
