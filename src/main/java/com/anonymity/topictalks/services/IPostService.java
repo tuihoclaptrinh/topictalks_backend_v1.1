@@ -13,9 +13,13 @@ public interface IPostService {
 
     boolean removePostById(long id);
 
-    List<PostDTO> getAllPosts();
+    List<PostDTO> getAllPosts(long userId);
 
     List<PostDTO> getAllPostByAuthorIdAndRole(Long authorId);
+
+    List<PostDTO> getAllPostsByIsApproved(boolean isApproved);
+
+    PostPO aprrovePost(Long id);
 
     Object getPostByPostId(Long postId);
 

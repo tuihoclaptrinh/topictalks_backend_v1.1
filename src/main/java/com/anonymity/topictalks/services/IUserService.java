@@ -15,6 +15,10 @@ import java.util.List;
  */
 public interface IUserService {
 
+    String verifyAccount(String email, String otp);
+
+    String regenerateOtp(String email);
+
     boolean updateAvatar(String avatar, long id);
 
     List<UserDTO> findAllUsers();

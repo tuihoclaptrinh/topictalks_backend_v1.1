@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 /**
@@ -109,6 +110,15 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
             name = "nickname"
     )
     private String nickname;
+
+    @Column(name = "otp", nullable = true)
+    private String otp;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean active;
+
+    @Column(name = "otp_generated_time", nullable = true)
+    private LocalDateTime otpGeneratedTime;
 
     /**
      * The user's username, which is unique.

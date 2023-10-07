@@ -5,6 +5,7 @@ import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.listeners.SocketEventListener;
+import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
@@ -54,7 +55,7 @@ public class ParticipantServiceImpl implements IParticipantService {
 
     @Override
     @Transactional
-    public void createChatSingle(SocketIOClient client, ParticipantRequest participantRequest) {
+    public void createChatSingle(ParticipantRequest participantRequest) {
 
         Map<Long, Long> result = randomUserUtil.randomUserChatting(participantRequest);
 
@@ -75,11 +76,6 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .conversationInfo(conversationRepository.findById(conversationResponse.getConversationId()).orElse(null))
                     .build();
             participantRepository.save(participant);
-
-//            client.joinRoom(participant.getConversationInfo().getId().toString());
-            logger.info("Receive: {}", participant.getConversationInfo().getId().toString());
-            client.joinRoom(participant.getConversationInfo().getId().toString());
-            logger.info("Socket ID[{}] - conversation[{}] - username [{}]  Connected to chat module through", client.getSessionId().toString(), participant.getConversationInfo().getId(), participant.getUserInfo().getUsername());
             var key2 = new ParticipantKey();
             var participant2 = ParticipantPO.builder()
                     .id(key2)
@@ -87,9 +83,33 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .conversationInfo(conversationRepository.findById(conversationResponse.getConversationId()).orElse(null))
                     .build();
             participantRepository.save(participant2);
+        }
 
-            logger.info("Socket ID[{}] - conversation[{}] - username [{}]  Connected to chat module through", client.getSessionId().toString(), participant.getConversationInfo().getId(), participant2.getUserInfo().getUsername());
+    }
 
+    @Override
+    public void createChatRandom(ChatRandomDTO chatRandomDTO) {
+
+        var conversationRequest = ConversationRequest.builder()
+                .isGroupChat(false)
+                .chatName("RANDOM-CHAT-ANONYMOUS")
+                .topicChildrenId(chatRandomDTO.getTpcId())
+                .build();
+
+        var conv = conversationService.createConversation(conversationRequest);
+
+        for (String user: chatRandomDTO.getUsers()) {
+
+            String[] params = user.split("-");
+            Long uId = Long.parseLong(params[0].trim());
+
+            var key = new ParticipantKey();
+            var participant = ParticipantPO.builder()
+                    .id(key)
+                    .userInfo(userRepository.findById(uId).orElse(null))
+                    .conversationInfo(conversationRepository.findById(conv.getConversationId()).orElse(null))
+                    .build();
+            participantRepository.save(participant);
         }
 
     }
