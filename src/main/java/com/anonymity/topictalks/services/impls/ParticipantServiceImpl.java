@@ -349,6 +349,41 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
+    public ParticipantResponse approveToGroupChat(long userId, long conversationId) {
+        ConversationPO conversationPO = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        UserPO userPO = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        boolean isApproved = participantRepository.existsByConversationInfoAndUserInfoAndIsMember(conversationPO,userPO,true);
+        if (!isApproved){
+            ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(conversationPO,userPO);
+            participantPO.setIsMember(true);
+            ParticipantPO approveParticipant = participantRepository.save(participantPO);
+            ParticipantResponse response = new ParticipantResponse();
+            List<PartnerDTO> list = getAllUserByConversationId(conversationId);
+            response.setConversationInfor(conversationPO);
+            response.setPartnerDTO(list);
+            response.setIsMember(approveParticipant.getIsMember().toString());
+            return response;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean checkAdminOfGroupChat(long userId, long conversationId) {
+        UserPO userInSession = userRepository.findById(userId).orElse(null);
+        ConversationPO conversationPO = conversationRepository.findById(conversationId).orElse(null);
+        boolean isExisted = participantRepository.existsByConversationInfoAndUserInfoAndIsMember(conversationPO,userInSession,true);
+        if (isExisted){
+            if (conversationPO.getAdminId()==userId){
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
     public List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id) {
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
         List<ConversationPO> list = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO,true);

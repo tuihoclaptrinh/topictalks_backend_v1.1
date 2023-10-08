@@ -4,6 +4,7 @@ import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationMatcherRequest;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.ProcessMemberGroupChatRequest;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
@@ -150,6 +151,44 @@ public class ParticipantController {
         dataResponse.setData(participant);
 
         return ResponseEntity.ok(dataResponse);
+    }
+
+    @PutMapping("/approve-member")
+    public ResponseEntity<?> approveToChatGroup(@RequestBody ProcessMemberGroupChatRequest request, BindingResult bindingResult) {
+        DataResponse dataResponse = new DataResponse();
+
+        if (bindingResult.hasErrors()) {//BAD REQUEST
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+        boolean isAdmin = participantService.checkAdminOfGroupChat(request.getUserInSessionId(), request.getConversationId());
+        if (!isAdmin) {
+            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());//403
+            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());//BAD REQUEST
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Not permission");
+
+            return ResponseEntity.ok(dataResponse);
+        } else {
+            ParticipantResponse response = participantService.approveToGroupChat(request.getMemberId(), request.getConversationId());
+            if (response == null) {
+                dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
+                dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+                dataResponse.setSuccess(false);
+                dataResponse.setData("");
+
+                return ResponseEntity.ok(dataResponse);
+            }
+            dataResponse.setStatus(HttpStatus.OK.value());//200
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setSuccess(true);
+            dataResponse.setData(response);
+            return ResponseEntity.ok(dataResponse);
+        }
     }
 
 }

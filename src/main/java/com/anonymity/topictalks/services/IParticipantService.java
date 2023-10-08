@@ -4,6 +4,7 @@ package com.anonymity.topictalks.services;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.requests.ProcessMemberGroupChatRequest;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
@@ -33,6 +34,10 @@ public interface IParticipantService {
     ParticipantResponse joinGroupChat(long userId, long conversationId);
 
     ParticipantResponse createGroupChat(long conversationId);
+
+    ParticipantResponse approveToGroupChat(long userId, long conversationId);
+
+    boolean checkAdminOfGroupChat(long userId, long conversationId);
 
     List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
 
