@@ -10,7 +10,9 @@ import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.ILikeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,21 +29,26 @@ public class LikeServiceImpl implements ILikeService {
     public LikePO like(LikeRequest request) {
         UserPO userPO = userRepository.findById(request.getUserId()).orElse(null);
         PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
-        LikePO likePO = new LikePO();
-        likePO.setUserId(request.getUserId());
-        likePO.setPostId(request.getPostId());
-        likePO.setUserInfo(userPO);
-        likePO.setPostInfo(postPO);
-        return likeRepository.save(likePO);
+        boolean isLiked = likeRepository.existsByUserIdAndPostId(request.getUserId(), request.getPostId());
+        if (postPO != null && userPO != null && !isLiked) {
+            LikePO likePO = new LikePO();
+            likePO.setUserId(request.getUserId());
+            likePO.setPostId(request.getPostId());
+            likePO.setUserInfo(userPO);
+            likePO.setPostInfo(postPO);
+            return likeRepository.save(likePO);
+        }
+        return null;
     }
 
     @Override
-    public LikePO unlike(long userId, long postId) {
+    public boolean unlike(long userId, long postId) {
         boolean isLiked = likeRepository.existsByUserIdAndPostId(userId, postId);
         if (isLiked) {
-            return likeRepository.deleteByUserIdAndPostId(userId, postId);
+            likeRepository.deleteByUserIdAndPostId(userId, postId);
+            return true;
         }
-        return null;
+        return false;
     }
 
     @Override

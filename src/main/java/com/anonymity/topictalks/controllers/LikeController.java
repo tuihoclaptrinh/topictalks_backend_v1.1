@@ -34,7 +34,16 @@ public class LikeController {
 
             return ResponseEntity.ok(dataResponse);
         }
+
         LikePO addLike = likeService.like(request);
+
+        if (addLike == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value()); //201
+            dataResponse.setSuccess(true);
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//CREATED
+            dataResponse.setData("Failure to like");
+            return ResponseEntity.ok(dataResponse);
+        }
         dataResponse.setStatus(HttpStatus.CREATED.value()); //201
         dataResponse.setSuccess(true);
         dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
@@ -47,8 +56,8 @@ public class LikeController {
     @DeleteMapping("/remove/uid={userId}&&pid={postId}")
     public ResponseEntity<?> remove(@PathVariable Long userId, @PathVariable Long postId) {
         DataResponse dataResponse = new DataResponse();
-        LikePO unlike = likeService.unlike(userId,postId);
-        if (unlike==null){
+        boolean isUnliked = likeService.unlike(userId, postId);
+        if (!isUnliked) {
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value()); //201
             dataResponse.setSuccess(true);
             dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//CREATED
@@ -58,7 +67,7 @@ public class LikeController {
         dataResponse.setStatus(HttpStatus.CREATED.value()); //201
         dataResponse.setSuccess(true);
         dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
-        dataResponse.setData(unlike);
+        dataResponse.setData("Un-like successfully");
         return ResponseEntity.ok(dataResponse);
     }
 

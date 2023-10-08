@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ILikeService {
     LikePO like(LikeRequest request);
-    LikePO unlike(long userId, long postId);
+    boolean unlike(long userId, long postId);
     LikeDTO getAllUserLikeByPostId(long postId);
 }

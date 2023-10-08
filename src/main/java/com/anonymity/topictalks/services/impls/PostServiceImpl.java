@@ -1,12 +1,14 @@
 package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.post.ICommentRepository;
+import com.anonymity.topictalks.daos.post.ILikeRepository;
 import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
 import com.anonymity.topictalks.models.persists.post.CommentPO;
+import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
@@ -40,6 +42,8 @@ public class PostServiceImpl implements IPostService {
     private final ILikeService likeService;
 
     private final ICommentService commentService;
+
+    private final ILikeRepository likeRepository;
 
     @Override
     public List<PostDTO> getAllPosts(long userId) {
@@ -103,11 +107,15 @@ public class PostServiceImpl implements IPostService {
     public boolean removePostById(long id) {
         PostPO postExisted = postRepository.findById(id).orElse(null);
         if (postExisted != null) {
-            List<CommentPO> list = commentRepository.findAllByPostId(postExisted);
-            if (!list.isEmpty()) {
-                for (CommentPO commment : list) {
+            List<CommentPO> commentList = commentRepository.findAllByPostId(postExisted);
+            if (!commentList.isEmpty()) {
+                for (CommentPO commment : commentList) {
                     commentRepository.deleteById(commment.getId());
                 }
+            }
+            List<LikePO> likeList = likeRepository.getAllByPostId(id);
+            if (!likeList.isEmpty()){
+                likeRepository.removeByPostId(id);
             }
             postRepository.deleteById(id);
             return true;

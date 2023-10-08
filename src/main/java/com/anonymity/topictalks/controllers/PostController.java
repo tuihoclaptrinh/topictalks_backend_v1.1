@@ -178,7 +178,7 @@ public class PostController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/is-approved={isApproved}")
     public ResponseEntity<?> getAllPostsByIsAproved(@PathVariable boolean isApproved) {
         DataResponse dataResponse = new DataResponse();
