@@ -206,6 +206,8 @@ public class ParticipantServiceImpl implements IParticipantService {
                 listPartner.add(partnerDTO);
 
             }
+            ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(),userPO);
+            participant.setIsMember(participantPO.getIsMember().toString());
             participant.setPartnerDTO(listPartner);
             responses.add(participant);
         }
@@ -238,6 +240,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 listPartner.add(partnerDTO);
 
                 participant.setPartnerDTO(listPartner);
+                participant.setIsMember(String.valueOf(true));
                 return participant;
             }
         }
@@ -341,6 +344,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<PartnerDTO> list = new ArrayList<>();
         list.add(partnerDTO);
         participantResponse.setPartnerDTO(list);
+        participantResponse.setIsMember(po.getIsMember().toString());
         return participantResponse;
     }
 
@@ -366,6 +370,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 partnerDtos.add(partnerDTO);
             }
             response.setPartnerDTO(partnerDtos);
+            response.setIsMember(null);
             responseList.add(response);
         }
 

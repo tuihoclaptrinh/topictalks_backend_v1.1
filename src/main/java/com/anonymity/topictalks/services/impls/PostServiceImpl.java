@@ -1,13 +1,16 @@
 package com.anonymity.topictalks.services.impls;
 
+import com.anonymity.topictalks.daos.post.ICommentRepository;
 import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.persists.post.CommentPO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
+import com.anonymity.topictalks.services.ILikeService;
 import com.anonymity.topictalks.services.IPostService;
 import com.anonymity.topictalks.utils.enums.ERole;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,10 @@ public class PostServiceImpl implements IPostService {
     private IUserRepository userRepository;
     @Autowired
     private ITopicParentRepository topicParentRepository;
+
+    public final ICommentRepository commentRepository;
+
+    public  final ILikeService likeService;
 
     @Override
     public List<PostDTO> getAllPosts(long userId) {
@@ -82,6 +89,7 @@ public class PostServiceImpl implements IPostService {
             post.setContent(request.getContent());
             post.setImage(request.getImage() != null ? request.getImage() : "");
             post.setTopicParentId(topicParent);
+            post.setIsApproved(postExist.get().getIsApproved());
             post.setCreatedAt(postExist.get().getCreatedAt());
             post.setUpdatedAt(LocalDateTime.now());
             return postRepository.save(post);
@@ -91,8 +99,14 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public boolean removePostById(long id) {
-        boolean isExist = postRepository.existsById(id);
-        if (isExist) {
+        PostPO postExisted = postRepository.findById(id).orElse(null);
+        if (postExisted != null) {
+            List<CommentPO> list = commentRepository.findAllByPostId(postExisted);
+            if (!list.isEmpty()){
+                for (CommentPO commment: list) {
+                    commentRepository.deleteById(commment.getId());
+                }
+            }
             postRepository.deleteById(id);
             return true;
         }
@@ -116,6 +130,18 @@ public class PostServiceImpl implements IPostService {
         }
         return postDtoList;
 
+    }
+
+    @Override
+    public List<PostDTO> getAllPostByAuthorId(Long authorId) {
+        List<PostPO> postList = postList = postRepository.findByAuthorId(authorId);
+        if (postList.isEmpty()) return null;
+        List<PostDTO> postDtoList = new ArrayList<>();
+        for (PostPO list : postList) {
+            PostDTO postDto = convertToPostDto(list);
+            postDtoList.add(postDto);
+        }
+        return postDtoList;
     }
 
     @Override
@@ -167,6 +193,7 @@ public class PostServiceImpl implements IPostService {
                 postPO.getImage(),
                 postPO.getTopicParentId().getId(),
                 postPO.getAuthorId().getId(),
+                likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
                 postPO.getUpdatedAt(),
                 postPO.getIsApproved()
