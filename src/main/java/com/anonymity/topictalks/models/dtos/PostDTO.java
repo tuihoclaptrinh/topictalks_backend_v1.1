@@ -12,12 +12,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostDTO {
-    private Long id;
+    private long id;
     private String title;
     private String content;
     private String img_url;
-    private Long tparent_id;
-    private Long author_id;
+    private long tparent_id;
+    private long author_id;
+    private long totalComment;
     private LikeDTO like;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;

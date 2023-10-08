@@ -10,6 +10,7 @@ import com.anonymity.topictalks.models.persists.post.CommentPO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
+import com.anonymity.topictalks.services.ICommentService;
 import com.anonymity.topictalks.services.ILikeService;
 import com.anonymity.topictalks.services.IPostService;
 import com.anonymity.topictalks.utils.enums.ERole;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +35,11 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private ITopicParentRepository topicParentRepository;
 
-    public final ICommentRepository commentRepository;
+    private final ICommentRepository commentRepository;
 
-    public  final ILikeService likeService;
+    private final ILikeService likeService;
+
+    private final ICommentService commentService;
 
     @Override
     public List<PostDTO> getAllPosts(long userId) {
@@ -102,8 +104,8 @@ public class PostServiceImpl implements IPostService {
         PostPO postExisted = postRepository.findById(id).orElse(null);
         if (postExisted != null) {
             List<CommentPO> list = commentRepository.findAllByPostId(postExisted);
-            if (!list.isEmpty()){
-                for (CommentPO commment: list) {
+            if (!list.isEmpty()) {
+                for (CommentPO commment : list) {
                     commentRepository.deleteById(commment.getId());
                 }
             }
@@ -193,6 +195,7 @@ public class PostServiceImpl implements IPostService {
                 postPO.getImage(),
                 postPO.getTopicParentId().getId(),
                 postPO.getAuthorId().getId(),
+                commentService.getCommentsByPostId(postPO.getId()).size(),
                 likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
                 postPO.getUpdatedAt(),
