@@ -7,9 +7,12 @@ import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.dtos.EngagementChatDTO;
+import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
@@ -226,7 +229,15 @@ public class SocketEventListener {
 
         client.sendEvent("userAccess",engagement);
 
-        onCreateChatRandom();
+        ParticipantRandomResponse p = onCreateChatRandom();
+
+        if(p!=null) {
+            for(PartnerDTO key: p.getPartnerDTO()) {
+                logger.info("Something on if {}", String.valueOf(key.getId()));
+                SocketIOClient client2 = clientMap.get(String.valueOf(key.getId()));
+                client2.sendEvent("partiAccess", p);
+            }
+        }
 
     }
 
@@ -248,11 +259,11 @@ public class SocketEventListener {
     }
 
     @OnEvent("onCreateChatRandom")
-    public void onCreateChatRandom() {
+    public ParticipantRandomResponse onCreateChatRandom() {
 
         Collection<String> keys = clientChatRandom.keySet();
         List<String> lists = new ArrayList<>();
-
+        ParticipantRandomResponse participantRandomResponse = null;
         String prevTpcId = null;
         for (String key : keys) {
             String[] params = key.split("-");
@@ -262,24 +273,33 @@ public class SocketEventListener {
             lists.add(uId + "-" + tpcId);
             if (prevTpcId != null && prevTpcId.equals(tpcId.toString())) {
 
-                participantService.createChatRandom(
+                participantRandomResponse = participantService.createChatRandom(
                         ChatRandomDTO
                                 .builder()
                                 .users(lists)
                                 .tpcId(tpcId)
                                 .build());
 
-//                logger.info("Inside the same value userId: {} - topic Children Id: {}", uId, tpcId);
-//                lists.forEach(System.out::println);
                 for (String user: lists) {
                     clientChatRandom.remove(user);
                 }
                 lists.clear();
                 logger.info("clear data on lists");
-            }
+//                SocketIOClient client = clientChatRandom.get(key);
+//                client.sendEvent("partiAccess", participantRandomResponse);
 
+//                logger.info("Inside the same value userId: {} - topic Children Id: {}", uId, tpcId);
+//                lists.forEach(System.out::println);
+
+            }
             prevTpcId = tpcId.toString();
         }
+
+//        for (String user: lists) {
+//            clientChatRandom.remove(user);
+//        }
+//        lists.clear();
+//        logger.info("clear data on lists");
 
         logger.info("Client remaining: {}", clientChatRandom.size());
 
@@ -326,6 +346,7 @@ public class SocketEventListener {
 //            logger.info("Key: " + key + ", Value: " + value);
 //        }
 
+        return participantRandomResponse;
 
     }
 }

@@ -4,6 +4,7 @@ package com.anonymity.topictalks.services;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public interface IParticipantService {
     void createChatSingle(ParticipantRequest participantRequest);
-    void createChatRandom(ChatRandomDTO chatRandomDTO);
+    ParticipantRandomResponse createChatRandom(ChatRandomDTO chatRandomDTO);
     String getUserIdsByConversation(ConversationPO conversationPO);
 
     List<PartnerDTO> getAllUserByConversationId(long id);

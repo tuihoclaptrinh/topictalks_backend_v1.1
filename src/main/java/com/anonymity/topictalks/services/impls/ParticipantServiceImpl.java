@@ -7,9 +7,11 @@ import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
+import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantKey;
@@ -18,6 +20,7 @@ import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
 import com.anonymity.topictalks.services.IParticipantService;
+import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
 import com.corundumstudio.socketio.SocketIOClient;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +54,7 @@ public class ParticipantServiceImpl implements IParticipantService {
     private final IUserRepository userRepository;
     private final IConversationRepository conversationRepository;
     private final ITopicChildrenRepository topicChildrenRepository;
+    private final IUserService userService;
     private Logger logger = LoggerFactory.getLogger(ParticipantServiceImpl.class);
 
     @Override
@@ -88,19 +92,38 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
-    public void createChatRandom(ChatRandomDTO chatRandomDTO) {
+    public ParticipantRandomResponse createChatRandom(ChatRandomDTO chatRandomDTO) {
 
         var conversationRequest = ConversationRequest.builder()
                 .chatName("RANDOM-CHAT-ANONYMOUS")
                 .topicChildrenId(chatRandomDTO.getTpcId())
                 .build();
 
-        var conv = conversationService.createConversation(conversationRequest,false);
+        var conv = conversationService.createConversation(conversationRequest, false);
+
+        ParticipantRandomResponse participantRandomResponse = ParticipantRandomResponse
+                .builder().conversationInfor(conv).build();
+
+        PartnerDTO partnerDTO;
+
+        List<PartnerDTO> lists = new ArrayList<>();
 
         for (String user: chatRandomDTO.getUsers()) {
 
             String[] params = user.split("-");
             Long uId = Long.parseLong(params[0].trim());
+
+            UserDTO us = userService.getUserById(uId);
+
+            partnerDTO = PartnerDTO
+                    .builder()
+                    .Id(us.getId())
+                    .bannedAt(us.getBannedDate())
+                    .image(us.getImageUrl())
+                    .isBanned(us.isBanned())
+                    .username(us.getUsername())
+                    .build();
+            lists.add(partnerDTO);
 
             var key = new ParticipantKey();
             var participant = ParticipantPO.builder()
@@ -111,6 +134,9 @@ public class ParticipantServiceImpl implements IParticipantService {
             participantRepository.save(participant);
         }
 
+        participantRandomResponse.setPartnerDTO(lists);
+
+        return participantRandomResponse;
     }
 
     /**
@@ -223,7 +249,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
-            conversationResponse = conversationService.createConversation(request, false);
+            conversationResponse = conversationService.createConversation(request, true);
         } catch (Exception e) {
             System.out.println(e);
         }
