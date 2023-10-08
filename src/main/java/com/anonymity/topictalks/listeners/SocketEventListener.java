@@ -10,6 +10,8 @@ import com.anonymity.topictalks.models.dtos.EngagementChatDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
+import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
@@ -226,8 +228,8 @@ public class SocketEventListener {
 
         client.sendEvent("userAccess",engagement);
 
-        onCreateChatRandom();
-
+        ParticipantRandomResponse p = onCreateChatRandom();
+        client.sendEvent("partiAccess", p);
     }
 
     @OnEvent("onLeaveChatRandom")
@@ -248,11 +250,11 @@ public class SocketEventListener {
     }
 
     @OnEvent("onCreateChatRandom")
-    public void onCreateChatRandom() {
+    public ParticipantRandomResponse onCreateChatRandom() {
 
         Collection<String> keys = clientChatRandom.keySet();
         List<String> lists = new ArrayList<>();
-
+        ParticipantRandomResponse participantRandomResponse = null;
         String prevTpcId = null;
         for (String key : keys) {
             String[] params = key.split("-");
@@ -262,7 +264,7 @@ public class SocketEventListener {
             lists.add(uId + "-" + tpcId);
             if (prevTpcId != null && prevTpcId.equals(tpcId.toString())) {
 
-                participantService.createChatRandom(
+                participantRandomResponse = participantService.createChatRandom(
                         ChatRandomDTO
                                 .builder()
                                 .users(lists)
@@ -326,6 +328,6 @@ public class SocketEventListener {
 //            logger.info("Key: " + key + ", Value: " + value);
 //        }
 
-
+        return participantRandomResponse;
     }
 }
