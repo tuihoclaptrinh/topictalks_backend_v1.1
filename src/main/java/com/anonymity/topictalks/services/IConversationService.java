@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 
 /**
@@ -12,6 +13,7 @@ import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
  */
 public interface IConversationService {
     ConversationResponse createConversation(ConversationRequest conversationRequest, boolean isGroupChat);
+    ConversationRandomResponse createConversationRandom(ConversationRequest conversationRequest, boolean isGroupChat);
     Boolean checkMatchingConversations(long userId1,long userId2);
 
 

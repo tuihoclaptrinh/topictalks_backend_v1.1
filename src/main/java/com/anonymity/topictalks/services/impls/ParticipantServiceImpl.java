@@ -99,7 +99,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 .topicChildrenId(chatRandomDTO.getTpcId())
                 .build();
 
-        var conv = conversationService.createConversation(conversationRequest, false);
+        var conv = conversationService.createConversationRandom(conversationRequest, false);
 
         ParticipantRandomResponse participantRandomResponse = ParticipantRandomResponse
                 .builder().conversationInfor(conv).build();
@@ -130,6 +130,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .id(key)
                     .userInfo(userRepository.findById(uId).orElse(null))
                     .conversationInfo(conversationRepository.findById(conv.getConversationId()).orElse(null))
+                    .isMember(true)
                     .build();
             participantRepository.save(participant);
         }
