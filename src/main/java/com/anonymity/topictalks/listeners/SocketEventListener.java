@@ -7,6 +7,7 @@ import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.dtos.EngagementChatDTO;
+import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
@@ -229,7 +230,15 @@ public class SocketEventListener {
         client.sendEvent("userAccess",engagement);
 
         ParticipantRandomResponse p = onCreateChatRandom();
-        client.sendEvent("partiAccess", p);
+
+        if(p!=null) {
+            for(PartnerDTO key: p.getPartnerDTO()) {
+                logger.info("Something on if {}", String.valueOf(key.getId()));
+                SocketIOClient client2 = clientMap.get(String.valueOf(key.getId()));
+                client2.sendEvent("partiAccess", p);
+            }
+        }
+
     }
 
     @OnEvent("onLeaveChatRandom")
@@ -271,17 +280,26 @@ public class SocketEventListener {
                                 .tpcId(tpcId)
                                 .build());
 
-//                logger.info("Inside the same value userId: {} - topic Children Id: {}", uId, tpcId);
-//                lists.forEach(System.out::println);
                 for (String user: lists) {
                     clientChatRandom.remove(user);
                 }
                 lists.clear();
                 logger.info("clear data on lists");
-            }
+//                SocketIOClient client = clientChatRandom.get(key);
+//                client.sendEvent("partiAccess", participantRandomResponse);
 
+//                logger.info("Inside the same value userId: {} - topic Children Id: {}", uId, tpcId);
+//                lists.forEach(System.out::println);
+
+            }
             prevTpcId = tpcId.toString();
         }
+
+//        for (String user: lists) {
+//            clientChatRandom.remove(user);
+//        }
+//        lists.clear();
+//        logger.info("clear data on lists");
 
         logger.info("Client remaining: {}", clientChatRandom.size());
 
@@ -329,5 +347,6 @@ public class SocketEventListener {
 //        }
 
         return participantRandomResponse;
+
     }
 }

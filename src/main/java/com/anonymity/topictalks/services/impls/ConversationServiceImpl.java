@@ -3,7 +3,9 @@ package com.anonymity.topictalks.services.impls;
 import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.exceptions.TopicChildrenNotFoundException;
+import com.anonymity.topictalks.models.dtos.TopicChildrenDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
@@ -47,6 +49,36 @@ public class ConversationServiceImpl implements IConversationService {
                 .chatName(conversation.getChatName())
                 .isGroupChat(conversation.getIsGroupChat())
                 .topicChildrenId(conversation.getTopicChildren().getId())
+                .adminId(conversation.getAdminId())
+                .build();
+    }
+
+    @Override
+    public ConversationRandomResponse createConversationRandom(ConversationRequest conversationRequest, boolean isGroupChat) {
+        var conversation = new ConversationPO();
+        TopicChildrenPO topicChildren = topicChildrenRepository
+                .findById(conversationRequest.getTopicChildrenId())
+                .orElseThrow(() -> new TopicChildrenNotFoundException("Topic Children not found"));
+
+        var tpc = TopicChildrenDTO
+                .builder()
+                .id(topicChildren.getId())
+                .tpcName(topicChildren.getTopicChildrenName())
+                .image(topicChildren.getImage())
+                .build();
+
+        conversation.setChatName(conversationRequest.getChatName());
+        conversation.setIsGroupChat(isGroupChat);
+        conversation.setTopicChildren(topicChildren);
+        conversation.setAdminId(isGroupChat==true? conversationRequest.getAdminId():0);
+
+        conversation = conversationRepository.save(conversation);
+
+        return ConversationRandomResponse.builder()
+                .conversationId(conversation.getId())
+                .chatName(conversation.getChatName())
+                .isGroupChat(conversation.getIsGroupChat())
+                .topicChildren(tpc)
                 .adminId(conversation.getAdminId())
                 .build();
     }
