@@ -17,7 +17,6 @@ public interface IAuthenticationService {
 
     Object register(RegisterRequest request);
     AuthenticationResponse authenticate(AuthenticationRequest request);
-
     Object authenticateGoogle(AuthenticationGoogleRequest request);
 
 }

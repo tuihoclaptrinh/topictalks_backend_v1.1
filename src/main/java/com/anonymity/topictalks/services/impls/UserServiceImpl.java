@@ -9,6 +9,7 @@ import com.anonymity.topictalks.utils.EmailUtils;
 import com.anonymity.topictalks.utils.OtpUtils;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -29,6 +30,8 @@ public class UserServiceImpl implements IUserService {
     private EmailUtils emailUtils;
     @Autowired
     private OtpUtils otpUtils;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public String verifyAccount(String email, String otp) {
@@ -57,6 +60,38 @@ public class UserServiceImpl implements IUserService {
         user.setOtpGeneratedTime(LocalDateTime.now());
         userRepository.save(user);
         return "Email sent... please verify account within 1 minute";
+    }
+
+    /**
+     * @param email
+     * @return
+     */
+    @Override
+    public String forgotPassword(String email) {
+        UserPO user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: {}"+ email));
+
+        try {
+            emailUtils.sendSetPasswordEmail(email);
+        } catch (MessagingException ex) {
+            throw new RuntimeException("Unable to send set password email please try again");
+        }
+        return "Please check your email to set new password to your account";
+    }
+
+    /**
+     * @param email
+     * @param newPassword
+     * @return
+     */
+    @Override
+    public String setPassword(String email, String newPassword) {
+        UserPO user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: {}"+ email));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return "New password set successfully !";
     }
 
     @Override
