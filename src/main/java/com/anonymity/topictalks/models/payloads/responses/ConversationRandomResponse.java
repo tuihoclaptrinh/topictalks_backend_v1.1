@@ -21,7 +21,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConversationRandomResponse implements Serializable {
-    private Long conversationId;
+    private Long id;
     private String chatName;
     private Boolean isGroupChat;
     private TopicChildrenDTO topicChildren;

@@ -23,7 +23,7 @@ spring:
       idle-timeout: 60000
     url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root # Database username
-    password: p4ssw0rd! # Database password
+    password: 1234 # Database password
   jpa:
     hibernate:
       ddl-auto: update # If the update data table does not exist, it will be automatically created.
@@ -63,9 +63,9 @@ socket-server:
   # Protocol upgrade timeout (milliseconds), default 10 seconds
   upgradeTimeout: 10000
   # Ping message timeout (milliseconds), default 60 seconds
-  pingTimeout: 60000
+  pingTimeout: 6000000
   # Ping message interval (milliseconds), default is 25 seconds.
-  pingInterval: 25000
+  pingInterval: 2500000
   #Set the maximum content length of HTTP interaction
   maxHttpContentLength: 1048576
   #Set the maximum length of data processed per frame to prevent others from using big data to attack the server

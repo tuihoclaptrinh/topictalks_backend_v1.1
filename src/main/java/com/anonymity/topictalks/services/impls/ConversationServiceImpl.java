@@ -63,7 +63,7 @@ public class ConversationServiceImpl implements IConversationService {
         var tpc = TopicChildrenDTO
                 .builder()
                 .id(topicChildren.getId())
-                .tpcName(topicChildren.getTopicChildrenName())
+                .topicChildrenName(topicChildren.getTopicChildrenName())
                 .image(topicChildren.getImage())
                 .build();
 
@@ -75,7 +75,7 @@ public class ConversationServiceImpl implements IConversationService {
         conversation = conversationRepository.save(conversation);
 
         return ConversationRandomResponse.builder()
-                .conversationId(conversation.getId())
+                .id(conversation.getId())
                 .chatName(conversation.getChatName())
                 .isGroupChat(conversation.getIsGroupChat())
                 .topicChildren(tpc)

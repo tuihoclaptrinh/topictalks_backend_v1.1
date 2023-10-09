@@ -18,6 +18,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TopicChildrenDTO {
     private Long id;
-    private String tpcName;
+    private String topicChildrenName;
     private String image;
 }

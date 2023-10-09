@@ -129,7 +129,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             var participant = ParticipantPO.builder()
                     .id(key)
                     .userInfo(userRepository.findById(uId).orElse(null))
-                    .conversationInfo(conversationRepository.findById(conv.getConversationId()).orElse(null))
+                    .conversationInfo(conversationRepository.findById(conv.getId()).orElse(null))
                     .isMember(true)
                     .build();
             participantRepository.save(participant);
