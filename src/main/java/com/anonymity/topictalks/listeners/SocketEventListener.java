@@ -242,10 +242,10 @@ public class SocketEventListener {
     }
 
     @OnEvent("onLeaveChatRandom")
-    public void leaveChatRandom(SocketIOClient client) {
+    public void leaveChatRandom(SocketIOClient client, ReceiveMessageDTO topicChildren) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
         String moveUser = urlParams.get("uid").get(0);
-        clientChatRandom.remove(moveUser);
+        clientChatRandom.remove(moveUser + "-" + topicChildren.getData().get("id").toString(),client);
         logger.info("Link closed, urlParams {}", urlParams);
         logger.info("Remaining number of people chat random: {}", clientChatRandom.size());
         client.sendEvent("userLeaved",
@@ -256,6 +256,7 @@ public class SocketEventListener {
                         .timeLeaved(LocalDateTime.now().toString())
                         .build()
         );
+
     }
 
     @OnEvent("onCreateChatRandom")
