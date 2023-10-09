@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.services;
 
+import com.anonymity.topictalks.models.payloads.requests.AuthenticationGoogleRequest;
 import com.anonymity.topictalks.models.payloads.requests.AuthenticationRequest;
 import com.anonymity.topictalks.models.payloads.requests.RegisterRequest;
 import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse;
@@ -17,5 +18,6 @@ public interface IAuthenticationService {
     Object register(RegisterRequest request);
     AuthenticationResponse authenticate(AuthenticationRequest request);
 
+    Object authenticateGoogle(AuthenticationGoogleRequest request);
 
 }
