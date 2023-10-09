@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author de140172 - author
@@ -160,13 +161,13 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                         .build();
             }
             var new_user = new UserPO();
-            new_user.setFullName("");
-            new_user.setUsername("USER-GOOGLE");
+            new_user.setFullName(request.getFullName());
+            new_user.setUsername("USER-GOOGLE-" + UUID.randomUUID().toString());
             new_user.setEmail(request.getEmail());
             new_user.setDob(null);
             new_user.setPassword("");
             new_user.setBio("");
-            new_user.setImageUrl("");
+            new_user.setImageUrl(request.getUrlImage());
             new_user.setGender("");
             new_user.setPhoneNumber("");
             new_user.setCountry("");
