@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.models.payloads.requests.AuthenticationGoogleRequest;
 import com.anonymity.topictalks.models.payloads.requests.AuthenticationRequest;
 import com.anonymity.topictalks.models.payloads.requests.RefreshTokenRequest;
 import com.anonymity.topictalks.models.payloads.requests.RegisterRequest;
@@ -46,6 +47,11 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @PostMapping("/authenticate/google")
+    public ResponseEntity<Object> loginGoogle(@RequestBody AuthenticationGoogleRequest request) {
+        return ResponseEntity.ok(authenticationService.authenticateGoogle(request));
     }
 
     @PostMapping("/refresh-token")
