@@ -3,6 +3,7 @@ package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
+import com.anonymity.topictalks.models.persists.user.UserPO;
 
 import java.util.List;
 
@@ -18,6 +19,9 @@ public interface IUserService {
     String verifyAccount(String email, String otp);
 
     String regenerateOtp(String email);
+
+    String forgotPassword(String email);
+    String setPassword(String email, String newPassword);
 
     boolean updateAvatar(String avatar, long id);
 

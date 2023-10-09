@@ -33,4 +33,19 @@ public class EmailUtils {
 
         javaMailSender.send(mimeMessage);
     }
+
+    public void sendSetPasswordEmail(String email) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject("Set Password");
+        mimeMessageHelper.setText("""
+        <div>
+          <a href="" target="_blank">click link set password</a>
+        </div>
+        """.formatted(email), true);
+
+        javaMailSender.send(mimeMessage);
+    }
+
 }
