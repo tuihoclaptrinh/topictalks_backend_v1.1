@@ -246,11 +246,12 @@ public class ParticipantServiceImpl implements IParticipantService {
             }
         }
         ConversationRequest request = new ConversationRequest();
+        request.setAdminId(0L);
         request.setChatName(partner.getUsername());
         request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
-            conversationResponse = conversationService.createConversation(request, true);
+            conversationResponse = conversationService.createConversation(request, false);
         } catch (Exception e) {
             System.out.println(e);
         }
