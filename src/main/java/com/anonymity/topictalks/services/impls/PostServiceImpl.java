@@ -114,7 +114,7 @@ public class PostServiceImpl implements IPostService {
                 }
             }
             List<LikePO> likeList = likeRepository.getAllByPostId(id);
-            if (!likeList.isEmpty()){
+            if (!likeList.isEmpty()) {
                 likeRepository.removeByPostId(id);
             }
             postRepository.deleteById(id);
@@ -203,6 +203,8 @@ public class PostServiceImpl implements IPostService {
                 postPO.getImage(),
                 postPO.getTopicParentId().getId(),
                 postPO.getAuthorId().getId(),
+                userRepository.findById(postPO.getAuthorId().getId()).get().getUsername(),
+                userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
                 commentService.getCommentsByPostId(postPO.getId()).size(),
                 likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
@@ -211,5 +213,4 @@ public class PostServiceImpl implements IPostService {
         );
         return postDto;
     }
-
 }

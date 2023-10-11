@@ -18,10 +18,11 @@ public class PostDTO {
     private String img_url;
     private long tparent_id;
     private long author_id;
+    private String username;
+    private String avatar_url;
     private long totalComment;
     private LikeDTO like;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private boolean isApproved;
-
 }
