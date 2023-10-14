@@ -104,6 +104,7 @@ public class CommentServiceImpl implements ICommentService {
         commentDTO.setId(commentPO.getId());
         commentDTO.setUserId(commentPO.getUserId().getId());
         commentDTO.setUsername(commentPO.getUserId().getUsername());
+        commentDTO.setUserImage(commentPO.getUserId().getImageUrl());
         commentDTO.setPostId(commentPO.getPostId().getId());
         commentDTO.setContent(commentPO.getContent());
         commentDTO.setCreateAt(commentPO.getCreatedAt());

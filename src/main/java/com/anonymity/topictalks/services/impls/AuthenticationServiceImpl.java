@@ -162,7 +162,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             }
             var new_user = new UserPO();
             new_user.setFullName(request.getFullName());
-            new_user.setUsername("USER-GOOGLE-" + UUID.randomUUID().toString());
+            new_user.setUsername("USER-GOOGLE-");
             new_user.setEmail(request.getEmail());
             new_user.setDob(null);
             new_user.setPassword("");
@@ -177,6 +177,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setCreatedAt(LocalDateTime.now());
             new_user.setUpdatedAt(null);
 
+            new_user = userRepository.save(new_user);
+            new_user.setUsername("Anominity" + new_user.getId());
             new_user = userRepository.save(new_user);
 
             var jwt = jwtService.generateToken(new_user);
