@@ -8,6 +8,7 @@ import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.AddFriendRequest;
 import com.anonymity.topictalks.models.payloads.responses.AddFriendResponse;
+import com.anonymity.topictalks.models.payloads.responses.FriendInforResponse;
 import com.anonymity.topictalks.models.payloads.responses.FriendResponse;
 import com.anonymity.topictalks.models.persists.user.FriendListPO;
 import com.anonymity.topictalks.models.persists.user.QFriendListPO;
@@ -46,7 +47,7 @@ public record FriendServiceImpl(
      * @return
      */
     @Override
-    public void requestAddFriend(AddFriendRequest request) {
+    public FriendInforResponse requestAddFriend(AddFriendRequest request) {
 
         QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
 
@@ -57,8 +58,8 @@ public record FriendServiceImpl(
                         .and(qFriendListPO.friendId.eq(userRepository.getOne(request.getFriendId()))))
                 .fetchOne();
 
-        if(null != friendListPO){
-            throw new GlobalException(400,"Already applied, please do not apply again");
+        if (null != friendListPO) {
+            throw new GlobalException(400, "Already applied, please do not apply again");
         }
 
         // Applicant's friend information
@@ -77,6 +78,7 @@ public record FriendServiceImpl(
 //            socketIOClient.sendEvent("newFriendsNotify",jsonObject);
 //        }
         var friendListRes = friendListRepository.save(userfriendListPO);
+        return  convertToFriendInfor(friendListRes);
 
     }
 
@@ -85,7 +87,7 @@ public record FriendServiceImpl(
      * @return
      */
     @Override
-    public void acceptedRequestFriend(AddFriendRequest request) {
+    public FriendInforResponse acceptedRequestFriend(AddFriendRequest request) {
         QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
         //Update own data
         long execute01 = jpaQueryFactory.update(qFriendListPO)
@@ -94,9 +96,15 @@ public record FriendServiceImpl(
                 .where(qFriendListPO.userId.eq(userRepository.getOne(request.getUserId()))
                         .and(qFriendListPO.friendId.eq(userRepository.getOne(request.getFriendId()))))
                 .execute();
-        if(execute01 != 1) {
-            throw new GlobalException(400,"operation failed");
+        if (execute01 != 1) {
+            throw new GlobalException(400, "operation failed");
         }
+        FriendListPO friend = jpaQueryFactory.select(qFriendListPO)
+                .from(qFriendListPO)
+                .where(qFriendListPO.userId.eq(userRepository.getOne(request.getUserId()))
+                        .and(qFriendListPO.friendId.eq(userRepository.getOne(request.getFriendId()))))
+                .fetchOne();
+        return convertToFriendInfor(friend);
     }
 
     /**
@@ -126,7 +134,7 @@ public record FriendServiceImpl(
                         qUserPO.role,
                         qUserPO.createdAt,
                         qUserPO.updatedAt
-                        )
+                )
         )
                 .from(qFriendListPO)
                 .leftJoin(qUserPO)
@@ -136,4 +144,32 @@ public record FriendServiceImpl(
 
         return lists;
     }
+
+    @Override
+    public List<FriendInforResponse> getAllFriendByUserId(long userId) {
+        List<FriendInforResponse> responsesList = new ArrayList<>();
+        List<FriendListPO> list = friendListRepository.findAllByUserId(userId);
+        if (list.size() == 0) return null;
+        for (FriendListPO friendListPO : list) {
+            FriendInforResponse response = convertToFriendInfor(friendListPO);
+            responsesList.add(response);
+        }
+        return responsesList;
+    }
+
+    private FriendInforResponse convertToFriendInfor(FriendListPO friend) {
+        FriendInforResponse response = new FriendInforResponse(
+                friend.getId(),
+                friend.getUserId().getId(),
+                friend.getFriendId().getId(),
+                friend.getFriendId().getUsername(),
+                friend.getIsPublic(),
+                friend.getIsAccept(),
+                friend.getUpdatedAt(),
+                friend.getCreatedAt()
+        );
+        return response;
+    }
+
+
 }

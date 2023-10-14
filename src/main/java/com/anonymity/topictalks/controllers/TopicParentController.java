@@ -1,7 +1,7 @@
 package com.anonymity.topictalks.controllers;
 
-import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.TopicParentRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicUpdateRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicParentService;
@@ -72,6 +72,39 @@ public class TopicParentController {
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
         dataResponse.setData(list);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/rename")
+    public ResponseEntity<?> updateTopicName(@RequestParam("id") long id, @RequestBody TopicUpdateRequest request) {
+        DataResponse dataResponse = new DataResponse();
+        if (topicParentService.checkDuplicateTopicName(request.getNewName()) == true) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//204
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("This topic name has already exist.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        TopicParentPO isUpdated = topicParentService.updateTopicName(id, request.getNewName());
+
+        if (isUpdated == null) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Failure to update.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(isUpdated);
 
         return ResponseEntity.ok(dataResponse);
     }

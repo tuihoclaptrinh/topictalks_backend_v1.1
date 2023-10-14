@@ -21,6 +21,8 @@ public interface IPostService {
 
     List<PostDTO> getAllPostsByIsApproved(boolean isApproved);
 
+    List<PostDTO> getAllPostsByParentTopicId(long id);
+
     PostPO aprrovePost(Long id);
 
     Object getPostByPostId(Long postId);

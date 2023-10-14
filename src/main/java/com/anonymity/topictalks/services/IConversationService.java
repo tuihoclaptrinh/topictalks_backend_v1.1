@@ -3,6 +3,7 @@ package com.anonymity.topictalks.services;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
+import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 
 /**
  * @author de140172 - author
@@ -13,9 +14,14 @@ import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
  */
 public interface IConversationService {
     ConversationResponse createConversation(ConversationRequest conversationRequest, boolean isGroupChat);
-    ConversationRandomResponse createConversationRandom(ConversationRequest conversationRequest, boolean isGroupChat);
-    Boolean checkMatchingConversations(long userId1,long userId2);
 
+    ConversationRandomResponse createConversationRandom(ConversationRequest conversationRequest, boolean isGroupChat);
+
+    Boolean checkMatchingConversations(long userId1, long userId2);
+
+    DataResponse updateTopicGroupChat(long conversationId, long newTopicId, long userIdUpdate);
+
+    DataResponse updateNameGroupChat(long conversationId, String newName, long userIdUpdate);
 
 
 }

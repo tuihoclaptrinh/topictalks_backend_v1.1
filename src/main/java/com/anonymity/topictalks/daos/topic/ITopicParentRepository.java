@@ -27,4 +27,6 @@ public interface ITopicParentRepository extends IBaseRepository<TopicParentPO, L
     List<TopicParentPO> findByTopicParentName(@Param(value = "topicParentName") String topicParentName);
 
 
+
+
 }

@@ -31,4 +31,21 @@ public class TopicParentServiceImpl implements ITopicParentService {
     public List<TopicParentPO> getAll() {
         return topicParentRepository.findAll();
     }
+
+    @Override
+    public TopicParentPO updateTopicName(long id, String newName) {
+        TopicParentPO topicParentPO = topicParentRepository.findById(id).orElse(null);
+        if (topicParentPO != null) {
+            topicParentPO.setId(id);
+            topicParentPO.setTopicParentName(newName);
+            topicParentPO.setUpdatedAt(LocalDateTime.now());
+            return topicParentRepository.save(topicParentPO);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean checkDuplicateTopicName(String newName) {
+        return topicParentRepository.findByTopicParentName(newName).size() > 0 ? true : false;
+    }
 }

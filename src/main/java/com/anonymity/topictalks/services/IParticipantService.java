@@ -22,7 +22,9 @@ import java.util.List;
  */
 public interface IParticipantService {
     void createChatSingle(ParticipantRequest participantRequest);
+
     ParticipantRandomResponse createChatRandom(ChatRandomDTO chatRandomDTO);
+
     String getUserIdsByConversation(ConversationPO conversationPO);
 
     List<PartnerDTO> getAllUserByConversationId(long id);
@@ -40,5 +42,7 @@ public interface IParticipantService {
     boolean checkAdminOfGroupChat(long userId, long conversationId);
 
     List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
+
+    boolean removeToGroupChat(long userId, long conversationId);
 
 }

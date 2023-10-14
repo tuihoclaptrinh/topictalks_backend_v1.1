@@ -167,6 +167,18 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    public List<PostDTO> getAllPostsByParentTopicId(long id) {
+        List<PostPO> postList = postRepository.findByTopicParentId(id);
+        if (postList.isEmpty()) return null;
+        List<PostDTO> postDtoList = new ArrayList<>();
+        for (PostPO list : postList) {
+            PostDTO postDto = convertToPostDto(list);
+            postDtoList.add(postDto);
+        }
+        return postDtoList;
+    }
+
+    @Override
     public PostPO aprrovePost(Long id) {
         boolean isExisted = postRepository.existsById(id);
         if (isExisted) {

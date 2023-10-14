@@ -11,5 +11,9 @@ public interface ITopicParentService {
 
     List<TopicParentPO> getAll();
 
+    TopicParentPO updateTopicName(long id, String newName);
+
+    boolean checkDuplicateTopicName(String newName);
+
 }
 

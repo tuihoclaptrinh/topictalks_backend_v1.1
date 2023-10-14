@@ -8,8 +8,14 @@ import java.util.List;
 
 public interface ITopicChildrenService {
     TopicChildrenPO create(TopicChildrenRequest request);
+
     List<TopicChildrenPO> getTopicChildrenByTopicParentId(long parentTopicId);
+
     TopicChildrenPO getTopicChildrenById(long TopicChildrenId);
+
+    TopicChildrenPO updateTopicName(long id, String newName);
+
+    boolean checkDuplicateTopicName(String newName, long topicParentId) ;
 
 }
 

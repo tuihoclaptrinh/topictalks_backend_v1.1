@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.models.dtos;
 
+import com.anonymity.topictalks.models.payloads.responses.LikeResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class PostDTO {
     private String username;
     private String avatar_url;
     private long totalComment;
-    private LikeDTO like;
+    private LikeResponse like;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private boolean isApproved;

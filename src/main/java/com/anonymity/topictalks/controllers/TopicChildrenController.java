@@ -1,9 +1,9 @@
 package com.anonymity.topictalks.controllers;
 
 import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicUpdateRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
-import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class TopicChildrenController {
             return ResponseEntity.ok(dataResponse);
         }
         TopicChildrenPO newTopicChildren = topicChildrenService.create(request);
-        if (newTopicChildren==null){
+        if (newTopicChildren == null) {
             dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             dataResponse.setDesc("This children topic has already exist.");
             dataResponse.setSuccess(false);
@@ -83,7 +83,7 @@ public class TopicChildrenController {
 
         TopicChildrenPO topicChildrenPO = topicChildrenService.getTopicChildrenById(id);
 
-        if (topicChildrenPO==null) {//NO CONTENT
+        if (topicChildrenPO == null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//204
             dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
@@ -96,6 +96,38 @@ public class TopicChildrenController {
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
         dataResponse.setData(topicChildrenPO);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/rename")
+    public ResponseEntity<?> updateTopicName(@RequestParam("pid") long topicParentId, @RequestParam("cid") long topicChildrenId, @RequestBody TopicUpdateRequest request) {
+        DataResponse dataResponse = new DataResponse();
+        if (topicChildrenService.checkDuplicateTopicName(request.getNewName(), topicParentId) == true) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//204
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("This topic name has already exist.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+        TopicChildrenPO isUpdated = topicChildrenService.updateTopicName(topicChildrenId, request.getNewName());
+
+        if (isUpdated == null) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Failure to update.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(isUpdated);
 
         return ResponseEntity.ok(dataResponse);
     }

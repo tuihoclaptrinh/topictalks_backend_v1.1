@@ -108,7 +108,7 @@ public class ParticipantServiceImpl implements IParticipantService {
 
         List<PartnerDTO> lists = new ArrayList<>();
 
-        for (String user: chatRandomDTO.getUsers()) {
+        for (String user : chatRandomDTO.getUsers()) {
 
             String[] params = user.split("-");
             Long uId = Long.parseLong(params[0].trim());
@@ -202,12 +202,12 @@ public class ParticipantServiceImpl implements IParticipantService {
                 partnerDTO.setImage(partner.getImageUrl());
                 partnerDTO.setUsername(partner.getUsername());
                 UserPO partnerInfor = userRepository.findById(partner.getId()).orElse(null);
-                ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(),partnerInfor);
+                ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), partnerInfor);
                 partnerDTO.setMember(participantPO.getIsMember());
                 listPartner.add(partnerDTO);
 
             }
-            ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(),userPO);
+            ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), userPO);
             participant.setIsMember(participantPO.getIsMember().toString());
             participant.setPartnerDTO(listPartner);
             responses.add(participant);
@@ -356,9 +356,9 @@ public class ParticipantServiceImpl implements IParticipantService {
                 .orElseThrow(() -> new IllegalArgumentException("Not found"));
         UserPO userPO = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Not found"));
-        boolean isApproved = participantRepository.existsByConversationInfoAndUserInfoAndIsMember(conversationPO,userPO,true);
-        if (!isApproved){
-            ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(conversationPO,userPO);
+        boolean isApproved = participantRepository.existsByConversationInfoAndUserInfoAndIsMember(conversationPO, userPO, true);
+        if (!isApproved) {
+            ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(conversationPO, userPO);
             participantPO.setIsMember(true);
             ParticipantPO approveParticipant = participantRepository.save(participantPO);
             ParticipantResponse response = new ParticipantResponse();
@@ -375,9 +375,9 @@ public class ParticipantServiceImpl implements IParticipantService {
     public boolean checkAdminOfGroupChat(long userId, long conversationId) {
         UserPO userInSession = userRepository.findById(userId).orElse(null);
         ConversationPO conversationPO = conversationRepository.findById(conversationId).orElse(null);
-        boolean isExisted = participantRepository.existsByConversationInfoAndUserInfoAndIsMember(conversationPO,userInSession,true);
-        if (isExisted){
-            if (conversationPO.getAdminId()==userId){
+        boolean isExisted = participantRepository.existsByConversationInfoAndUserInfoAndIsMember(conversationPO, userInSession, true);
+        if (isExisted) {
+            if (conversationPO.getAdminId() == userId) {
                 return true;
             }
             return false;
@@ -388,15 +388,15 @@ public class ParticipantServiceImpl implements IParticipantService {
     @Override
     public List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id) {
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
-        List<ConversationPO> list = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO,true);
+        List<ConversationPO> list = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO, true);
         if (list.isEmpty()) return null;
         List<ParticipantResponse> responseList = new ArrayList<>();
-        for (ConversationPO conversationPO: list) {
+        for (ConversationPO conversationPO : list) {
             ParticipantResponse response = new ParticipantResponse();
             response.setConversationInfor(conversationPO);
             List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
             List<PartnerDTO> partnerDtos = new ArrayList<>();
-            for (ParticipantPO po:poList) {
+            for (ParticipantPO po : poList) {
                 PartnerDTO partnerDTO = new PartnerDTO();
                 partnerDTO.setUsername(po.getUserInfo().getUsername());
                 partnerDTO.setImage(po.getUserInfo().getImageUrl());
@@ -413,5 +413,21 @@ public class ParticipantServiceImpl implements IParticipantService {
 
         return responseList;
     }
+
+    @Override
+    @Transactional
+    public boolean removeToGroupChat(long userId, long conversationId) {
+        ConversationPO conversationPO = conversationRepository.findById(conversationId)
+                .orElse(null);
+        UserPO userPO = userRepository.findById(userId)
+                .orElse(null);
+        boolean isExisted = participantRepository.existsByConversationInfoAndUserInfo(conversationPO, userPO);
+        if (conversationPO != null && userPO != null && isExisted) {
+            participantRepository.deleteByConversationInfoAndUserInfo(conversationPO, userPO);
+            return true;
+        }
+        return false;
+    }
+
 
 }

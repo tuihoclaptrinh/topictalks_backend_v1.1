@@ -25,8 +25,8 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
         TopicChildrenPO topicChildren = new TopicChildrenPO();
         TopicParentPO topicParent = topicParentRepository.findById(request.getTopicParentId())
                 .orElseThrow(() -> new IllegalArgumentException("Topic parent doesn't exist."));
-       List<TopicChildrenPO> list = topicChildrenRepository.findByTopicChildrenNameAndTopicParentId(request.getTopicChildrenName(), request.getTopicParentId());
-        if (!list.isEmpty()){
+        List<TopicChildrenPO> list = topicChildrenRepository.findByTopicChildrenNameAndTopicParentId(request.getTopicChildrenName(), request.getTopicParentId());
+        if (!list.isEmpty()) {
             return null;
         }
         topicChildren.setTopicChildrenName(request.getTopicChildrenName());
@@ -45,5 +45,22 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     @Override
     public TopicChildrenPO getTopicChildrenById(long TopicChildrenId) {
         return topicChildrenRepository.findById(TopicChildrenId);
+    }
+
+    @Override
+    public TopicChildrenPO updateTopicName(long id, String newName) {
+        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
+        if (topicChildrenPO != null) {
+            topicChildrenPO.setId(id);
+            topicChildrenPO.setTopicChildrenName(newName);
+            topicChildrenPO.setUpdatedAt(LocalDateTime.now());
+            return topicChildrenRepository.save(topicChildrenPO);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean checkDuplicateTopicName(String newName, long topicParentId) {
+        return topicChildrenRepository.findByTopicChildrenNameAndTopicParentId(newName, topicParentId).size() > 0 ? true : false;
     }
 }

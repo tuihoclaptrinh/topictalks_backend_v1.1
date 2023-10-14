@@ -116,7 +116,7 @@ public class PostController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/{authorId}/all-posts")
+    @GetMapping("/all-posts/aid={authorId}")
     public ResponseEntity<?> getAllPostsByAuthorId(@PathVariable Long authorId) {
         DataResponse dataResponse = new DataResponse();
         dataResponse.setStatus(HttpStatus.OK.value());//200
@@ -124,6 +124,19 @@ public class PostController {
         dataResponse.setSuccess(true);
 //        dataResponse.setData(postService.getAllPostByAuthorIdAndRole(authorId));
         dataResponse.setData(postService.getAllPostByAuthorId(authorId));
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/all-posts/tpid={parentTopicId}")
+    public ResponseEntity<?> getAllPostsByParentTopicId(@PathVariable Long parentTopicId) {
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(postService.getAllPostsByParentTopicId(parentTopicId));
 
         return ResponseEntity.ok(dataResponse);
     }

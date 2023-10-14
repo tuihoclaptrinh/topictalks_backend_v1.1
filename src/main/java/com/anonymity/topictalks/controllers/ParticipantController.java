@@ -191,4 +191,37 @@ public class ParticipantController {
         }
     }
 
+    @DeleteMapping("/remove-member")
+    public ResponseEntity<?> removeToChatGroup(
+            @RequestParam("aid") Long userInSessionId,
+            @RequestParam("uid") Long memberId,
+            @RequestParam("cid") Long conversationId) {
+        DataResponse dataResponse = new DataResponse();
+
+        boolean isAdmin = participantService.checkAdminOfGroupChat(userInSessionId, conversationId);
+        if (!isAdmin) {
+            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());//403
+            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());//BAD REQUEST
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Not permission");
+
+            return ResponseEntity.ok(dataResponse);
+        } else {
+            boolean isRemoved = participantService.removeToGroupChat(memberId, conversationId);
+            if (!isRemoved) {
+                dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
+                dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+                dataResponse.setSuccess(false);
+                dataResponse.setData("Can't found this member in group chat.");
+
+                return ResponseEntity.ok(dataResponse);
+            }
+            dataResponse.setStatus(HttpStatus.OK.value());//200
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setSuccess(true);
+            dataResponse.setData("This member has removed out of group chat successfully.");
+            return ResponseEntity.ok(dataResponse);
+        }
+    }
+
 }

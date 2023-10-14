@@ -5,6 +5,7 @@ import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.LikeDTO;
 import com.anonymity.topictalks.models.payloads.requests.LikeRequest;
+import com.anonymity.topictalks.models.payloads.responses.LikeResponse;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
@@ -52,18 +53,19 @@ public class LikeServiceImpl implements ILikeService {
     }
 
     @Override
-    public LikeDTO getAllUserLikeByPostId(long postId) {
+    public LikeResponse getAllUserLikeByPostId(long postId) {
         boolean isPostExisted = postRepository.existsById(postId);
         if (isPostExisted) {
-            LikeDTO likeDTO = new LikeDTO();
+            LikeResponse response = new LikeResponse();
             List<LikePO> list = likeRepository.getAllByPostId(postId);
-            likeDTO.setTotalLike(list.size());
-            List<String> usernameList = new ArrayList<>();
-            for (LikePO like : list) {
-                usernameList.add(like.getUserInfo().getUsername());
+            response.setTotalLike(list.size());
+            List<LikeDTO> inforLike = new ArrayList<>();
+            for (LikePO infor : list) {
+                LikeDTO likeDTO = new LikeDTO(infor.getUserId(),infor.getUserInfo().getUsername());
+                inforLike.add(likeDTO);
             }
-            likeDTO.setUsername(usernameList);
-            return likeDTO;
+            response.setUserLike(inforLike);
+            return response;
         }
         return null;
     }

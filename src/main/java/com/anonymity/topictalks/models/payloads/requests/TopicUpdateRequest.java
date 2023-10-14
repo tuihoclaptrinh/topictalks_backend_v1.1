@@ -1,17 +1,14 @@
-package com.anonymity.topictalks.models.dtos;
+package com.anonymity.topictalks.models.payloads.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class LikeDTO {
-    private long id;
-    private String username;
+public class TopicUpdateRequest {
+    private String newName;
 }

@@ -3,7 +3,11 @@ package com.anonymity.topictalks.daos.user;
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.user.FriendListPO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author de140172 - author
@@ -15,4 +19,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IFriendListRepository extends IBaseRepository<FriendListPO, Long> {
+    @Query(value = "SELECT * FROM friend_list f WHERE f.user_id= :userId", nativeQuery = true)
+    List<FriendListPO> findAllByUserId(@Param(value = "userId") long userId);
 }

@@ -1,12 +1,18 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.AddFriendRequest;
+import com.anonymity.topictalks.models.payloads.responses.DataResponse;
+import com.anonymity.topictalks.models.payloads.responses.FriendInforResponse;
 import com.anonymity.topictalks.models.payloads.responses.FriendResponse;
+import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.services.IFriendService;
 import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,28 +28,77 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/friends")
-@PreAuthorize("hasAnyRole('USER')")
+@PreAuthorize("hasAnyRole('USER','ADMIN')")
 @Tag(name = "Friend Controller", description = "")
 public class FriendController {
 
     @Autowired
     private IFriendService friendService;
+
     @PostMapping("/applyAddFriends")
-    public ResponseData applyAddFriends(@RequestBody AddFriendRequest request){
-        friendService.requestAddFriend(request);
-        return ResponseData.ofSuccess("Apply successful",null);
+    public ResponseEntity<?> applyAddFriends(@RequestBody AddFriendRequest request) {
+        DataResponse dataResponse = new DataResponse();
+        try {
+            FriendInforResponse response = friendService.requestAddFriend(request);
+            dataResponse.setStatus(HttpStatus.OK.value());//200
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setSuccess(true);
+            dataResponse.setData(response);
+            return ResponseEntity.ok(dataResponse);
+        }catch (GlobalException e) {
+            dataResponse.setStatus(e.getCode());
+            dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData(e.getMessage());
+            return ResponseEntity.ok(dataResponse);
+        }
     }
 
     @PostMapping("/acceptFriendsApply")
-    public ResponseData acceptFriendsApply(@RequestBody AddFriendRequest request){
-        friendService.acceptedRequestFriend(request);
-        return ResponseData.ofSuccess("success",null);
+    public ResponseEntity<?> acceptFriendsApply(@RequestBody AddFriendRequest request) {
+        DataResponse dataResponse = new DataResponse();
+        try {
+            FriendInforResponse response = friendService.acceptedRequestFriend(request);
+            dataResponse.setStatus(HttpStatus.OK.value());//200
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setSuccess(true);
+            dataResponse.setData(response);
+            return ResponseEntity.ok(dataResponse);
+        }catch (GlobalException e) {
+            dataResponse.setStatus(e.getCode());
+            dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData(e.getMessage());
+            return ResponseEntity.ok(dataResponse);
+        }
     }
 
-    @GetMapping("/list")
-    public ResponseData listFriend(@RequestBody UserDTO userDTO) {
-        List<FriendResponse> friends = friendService.getAllFriend(userDTO);
-        return ResponseData.ofSuccess("success", friends);
-    }
+//    @GetMapping("/list")
+//    public ResponseData listFriend(@RequestBody UserDTO userDTO) {
+//        List<FriendResponse> friends = friendService.getAllFriend(userDTO);
+//        return ResponseData.ofSuccess("success", friends);
+//    }
 
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<?> listFriendByUserId(@PathVariable long userId) {
+        DataResponse dataResponse = new DataResponse();
+
+        List<FriendInforResponse> list = friendService.getAllFriendByUserId(userId);
+
+        if (list == null) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//204
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Empty");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(list);
+
+        return ResponseEntity.ok(dataResponse);
+    }
 }

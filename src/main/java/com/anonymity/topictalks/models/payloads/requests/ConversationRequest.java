@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.models.payloads.requests;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ConversationRequest implements Serializable {
     private String chatName;
+    @Nullable
     private Long topicChildrenId;
     private Long adminId;
 }
