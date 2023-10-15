@@ -19,7 +19,9 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +36,13 @@ import java.util.List;
 
 @Service
 @Slf4j
-public record FriendServiceImpl(
-        IUserRepository userRepository,
-        IFriendListRepository friendListRepository,
-        JPAQueryFactory jpaQueryFactory
-)
-        implements IFriendService {
-
-
+public class FriendServiceImpl implements IFriendService {
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private IFriendListRepository friendListRepository;
+    @Autowired
+    private JPAQueryFactory jpaQueryFactory;
     /**
      * @param request
      * @return
@@ -87,6 +88,7 @@ public record FriendServiceImpl(
      * @return
      */
     @Override
+    @Transactional
     public FriendInforResponse acceptedRequestFriend(AddFriendRequest request) {
         QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
         //Update own data
