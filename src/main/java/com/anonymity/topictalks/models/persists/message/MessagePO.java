@@ -81,7 +81,7 @@ public class MessagePO extends DateAudit implements Serializable {
     /**
      * Represents the conversation to which this message belongs.
      */
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "conversation_id", nullable = false)
     private ConversationPO conversationId;
 

@@ -2,7 +2,10 @@ package com.anonymity.topictalks.services.impls;
 
 import com.alibaba.fastjson.JSON;
 import com.anonymity.topictalks.daos.message.IConversationRepository;
+import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
+import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.exceptions.TopicChildrenNotFoundException;
 import com.anonymity.topictalks.models.dtos.TopicChildrenDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
@@ -11,7 +14,9 @@ import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
+import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +39,8 @@ public class ConversationServiceImpl implements IConversationService {
 
     private final IConversationRepository conversationRepository;
     private final ITopicChildrenRepository topicChildrenRepository;
+    private final IParticipantRepository participantRepository;
+    private final IUserRepository userRepository;
 
     @Override
     public ConversationResponse createConversation(ConversationRequest conversationRequest, boolean isGroupChat) {
@@ -156,7 +163,7 @@ public class ConversationServiceImpl implements IConversationService {
                     dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
                     dataResponse.setData(JSON.parseObject("{\"message\":\"" + e.getMessage() + "\"}"));
                 }
-            }else {
+            } else {
                 dataResponse.setSuccess(false);
                 dataResponse.setStatus(HttpStatus.FORBIDDEN.value());
                 dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());
@@ -169,6 +176,26 @@ public class ConversationServiceImpl implements IConversationService {
             dataResponse.setData(JSON.parseObject("{\"message\":\"Failure to update name for this group chat\"}"));
         }
         return dataResponse;
+    }
+
+    @Override
+    public void deleteByConversationId(long conversationId, long userId) {
+        ConversationPO conversationPO = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new GlobalException(404, "Not found this conversation"));
+        UserPO userPO = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(404, "Not found this user"));
+        ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(conversationPO,userPO);
+        if (participantPO!=null) {
+            if ((conversationPO.getIsGroupChat() == true && conversationPO.getAdminId() == userId)
+                    || conversationPO.getIsGroupChat()==false){
+                try {
+                    conversationRepository.deleteById(conversationId);
+                } catch (GlobalException e) {
+                    throw new GlobalException(400, "Failure to remove this conversation");
+                }
+            } else throw new GlobalException(403, "Access Denied");
+
+        } else throw new GlobalException(403, "Access Denied");
     }
 
     private ConversationResponse convertToConversationResponse(ConversationPO conversationPO) {

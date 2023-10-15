@@ -23,5 +23,6 @@ public interface IConversationService {
 
     DataResponse updateNameGroupChat(long conversationId, String newName, long userIdUpdate);
 
+    void deleteByConversationId(long conversationId, long userId);
 
 }

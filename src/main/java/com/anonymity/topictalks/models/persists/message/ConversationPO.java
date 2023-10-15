@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * The {@code ConversationPO} class represents a conversation entity in the application.
@@ -89,4 +90,6 @@ public class ConversationPO extends DateAudit implements Serializable {
     @Column(name = "adminId",nullable = true)
     private long adminId;
 
+    @OneToMany(mappedBy = "conversationInfo", cascade = CascadeType.ALL)
+    private List<ParticipantPO> participants;
 }
