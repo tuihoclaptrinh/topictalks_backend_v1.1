@@ -148,7 +148,8 @@ public record FriendServiceImpl(
     @Override
     public List<FriendInforResponse> getAllFriendByUserId(long userId) {
         List<FriendInforResponse> responsesList = new ArrayList<>();
-        List<FriendListPO> list = friendListRepository.findAllByUserId(userId);
+//        List<FriendListPO> list = friendListRepository.findAllByUserId(userId);
+        List<FriendListPO> list = friendListRepository.findAllByUserIdOrAndFriendId(userId,userId);
         if (list.size() == 0) return null;
         for (FriendListPO friendListPO : list) {
             FriendInforResponse response = convertToFriendInfor(friendListPO);

@@ -21,4 +21,8 @@ import java.util.List;
 public interface IFriendListRepository extends IBaseRepository<FriendListPO, Long> {
     @Query(value = "SELECT * FROM friend_list f WHERE f.user_id= :userId", nativeQuery = true)
     List<FriendListPO> findAllByUserId(@Param(value = "userId") long userId);
+
+    @Query(value = "SELECT * FROM friend_list f WHERE f.user_id= :userId or f.friend_id = :friendId ", nativeQuery = true)
+    List<FriendListPO> findAllByUserIdOrAndFriendId(@Param(value = "userId") long userId, @Param(value = "friendId") long friendId);
+
 }
