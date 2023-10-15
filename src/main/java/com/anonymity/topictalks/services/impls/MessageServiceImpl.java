@@ -61,6 +61,9 @@ public class MessageServiceImpl implements IMessageService {
             receiveMessageDTO.setUserId(listMessage.get(i).getSenderId().getId());
             receiveMessageDTO.setUsername(listMessage.get(i).getSenderId().getUsername());
             receiveMessageDTO.setConversationId(listMessage.get(i).getConversationId().getId());
+            receiveMessageDTO.setGroupChat(listMessage.get(i).getConversationId().getIsGroupChat());
+            receiveMessageDTO.setGroupChatName(listMessage.get(i).getConversationId().getIsGroupChat() == true ?
+                    listMessage.get(i).getConversationId().getChatName() : null);
             String message = listMessage.get(i).getContent();
             receiveMessageDTO.setData(JSON.parseObject("{\"message\":\"" + message + "\"}"));
             receiveMessageDTO.setTimeAt(String.valueOf(listMessage.get(i).getCreatedAt()));
@@ -86,7 +89,7 @@ public class MessageServiceImpl implements IMessageService {
         UserPO partner = userRepository.findById(partnerId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
 
-        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userInSessionId, partnerId,false);
+        List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(userInSessionId, partnerId, false);
         if (!isConversationMatched.isEmpty()) {
             ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
                     .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
@@ -98,6 +101,7 @@ public class MessageServiceImpl implements IMessageService {
                 response.setUsername(partner.getUsername());
                 response.setConversationId(conversationPO.getId());
                 response.setTimeAt(null);
+                response.setGroupChat(false);
                 response.setData(JSON.parseObject("{\"message\":\"\"}"));
                 response.setUserId(partnerId);
                 List<ReceiveMessageDTO> responseMessageDTOList = new ArrayList<>();
@@ -106,11 +110,11 @@ public class MessageServiceImpl implements IMessageService {
             }
         }
         ConversationRequest request = new ConversationRequest();
-        request.setChatName("You, " + partner.getUsername());
+        request.setChatName(partner.getUsername());
         request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
-            conversationResponse = conversationService.createConversation(request,false);
+            conversationResponse = conversationService.createConversation(request, false);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -136,6 +140,7 @@ public class MessageServiceImpl implements IMessageService {
         response.setUsername(partner.getUsername());
         response.setConversationId(conversationResponse.getConversationId());
         response.setTimeAt(null);
+        response.setGroupChat(false);
         response.setData(JSON.parseObject("{\"message\":\"\"}"));
         response.setUserId(partnerId);
         List<ReceiveMessageDTO> responseMessageDTOList = new ArrayList<>();

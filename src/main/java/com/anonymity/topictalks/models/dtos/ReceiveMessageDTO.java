@@ -1,6 +1,9 @@
 package com.anonymity.topictalks.models.dtos;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +33,10 @@ public class ReceiveMessageDTO implements Serializable {
     private String timeAt;
     private Long targetId;
     private Long conversationId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("groupChatName")
+    private String groupChatName;
+    private boolean isGroupChat;
     private JSONObject data;
 
 }
