@@ -157,12 +157,12 @@ public class FriendServiceImpl implements IFriendService {
 
     @Override
     @Transactional
-    public void rejectFriendship(FriendRequest request) {
+    public void rejectFriendship(long userId, long friendId) {
         QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
         long deletedRows = jpaQueryFactory
                 .delete(qFriendListPO)
-                .where(qFriendListPO.userId.eq(userRepository.getOne(request.getUserId()))
-                        .and(qFriendListPO.friendId.eq(userRepository.getOne(request.getFriendId()))))
+                .where(qFriendListPO.userId.eq(userRepository.getOne(userId))
+                        .and(qFriendListPO.friendId.eq(userRepository.getOne(friendId))))
                 .execute();
         if (deletedRows ==0) {
             throw new GlobalException(400, "Reject failed");

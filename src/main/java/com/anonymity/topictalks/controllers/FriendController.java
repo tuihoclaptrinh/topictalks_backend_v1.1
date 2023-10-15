@@ -99,10 +99,10 @@ public class FriendController {
     }
 
     @DeleteMapping("/rejectFriendsApply")
-    public ResponseEntity<?> rejectFriendsApply(@RequestBody FriendRequest request) {
+    public ResponseEntity<?> rejectFriendsApply(@RequestParam("uid") long userId, @RequestParam("fid") long friendId) {
         DataResponse dataResponse = new DataResponse();
         try {
-            friendService.rejectFriendship(request);
+            friendService.rejectFriendship(userId, friendId);
             dataResponse.setStatus(HttpStatus.OK.value());//200
             dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
             dataResponse.setSuccess(true);

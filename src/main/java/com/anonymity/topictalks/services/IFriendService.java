@@ -24,5 +24,5 @@ public interface IFriendService {
 
     List<FriendInforResponse> getAllFriendByUserId(long userId);
 
-    void rejectFriendship(FriendRequest request);
+    void rejectFriendship(long userId, long friendId);
 }
