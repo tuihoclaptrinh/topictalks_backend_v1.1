@@ -1,21 +1,16 @@
 package com.anonymity.topictalks.services.impls;
 
-import com.alibaba.fastjson.JSONObject;
 import com.anonymity.topictalks.daos.user.IFriendListRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
-import com.anonymity.topictalks.listeners.SocketEventListener;
 import com.anonymity.topictalks.models.dtos.UserDTO;
-import com.anonymity.topictalks.models.payloads.requests.AddFriendRequest;
-import com.anonymity.topictalks.models.payloads.responses.AddFriendResponse;
+import com.anonymity.topictalks.models.payloads.requests.FriendRequest;
 import com.anonymity.topictalks.models.payloads.responses.FriendInforResponse;
 import com.anonymity.topictalks.models.payloads.responses.FriendResponse;
 import com.anonymity.topictalks.models.persists.user.FriendListPO;
 import com.anonymity.topictalks.models.persists.user.QFriendListPO;
 import com.anonymity.topictalks.models.persists.user.QUserPO;
-import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IFriendService;
-import com.corundumstudio.socketio.SocketIOClient;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +43,7 @@ public class FriendServiceImpl implements IFriendService {
      * @return
      */
     @Override
-    public FriendInforResponse requestAddFriend(AddFriendRequest request) {
+    public FriendInforResponse requestAddFriend(FriendRequest request) {
 
         QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
 
@@ -89,7 +84,7 @@ public class FriendServiceImpl implements IFriendService {
      */
     @Override
     @Transactional
-    public FriendInforResponse acceptedRequestFriend(AddFriendRequest request) {
+    public FriendInforResponse acceptedRequestFriend(FriendRequest request) {
         QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
         //Update own data
         long execute01 = jpaQueryFactory.update(qFriendListPO)
@@ -158,6 +153,20 @@ public class FriendServiceImpl implements IFriendService {
             responsesList.add(response);
         }
         return responsesList;
+    }
+
+    @Override
+    @Transactional
+    public void rejectFriendship(FriendRequest request) {
+        QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
+        long deletedRows = jpaQueryFactory
+                .delete(qFriendListPO)
+                .where(qFriendListPO.userId.eq(userRepository.getOne(request.getUserId()))
+                        .and(qFriendListPO.friendId.eq(userRepository.getOne(request.getFriendId()))))
+                .execute();
+        if (deletedRows ==0) {
+            throw new GlobalException(400, "Reject failed");
+        }
     }
 
     private FriendInforResponse convertToFriendInfor(FriendListPO friend) {

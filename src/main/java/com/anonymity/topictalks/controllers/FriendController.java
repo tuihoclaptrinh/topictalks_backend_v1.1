@@ -1,14 +1,10 @@
 package com.anonymity.topictalks.controllers;
 
 import com.anonymity.topictalks.exceptions.GlobalException;
-import com.anonymity.topictalks.models.dtos.UserDTO;
-import com.anonymity.topictalks.models.payloads.requests.AddFriendRequest;
+import com.anonymity.topictalks.models.payloads.requests.FriendRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.payloads.responses.FriendInforResponse;
-import com.anonymity.topictalks.models.payloads.responses.FriendResponse;
-import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.services.IFriendService;
-import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +32,7 @@ public class FriendController {
     private IFriendService friendService;
 
     @PostMapping("/applyAddFriends")
-    public ResponseEntity<?> applyAddFriends(@RequestBody AddFriendRequest request) {
+    public ResponseEntity<?> applyAddFriends(@RequestBody FriendRequest request) {
         DataResponse dataResponse = new DataResponse();
         try {
             FriendInforResponse response = friendService.requestAddFriend(request);
@@ -55,7 +51,7 @@ public class FriendController {
     }
 
     @PostMapping("/acceptFriendsApply")
-    public ResponseEntity<?> acceptFriendsApply(@RequestBody AddFriendRequest request) {
+    public ResponseEntity<?> acceptFriendsApply(@RequestBody FriendRequest request) {
         DataResponse dataResponse = new DataResponse();
         try {
             FriendInforResponse response = friendService.acceptedRequestFriend(request);
@@ -100,5 +96,24 @@ public class FriendController {
         dataResponse.setData(list);
 
         return ResponseEntity.ok(dataResponse);
+    }
+
+    @DeleteMapping("/rejectFriendsApply")
+    public ResponseEntity<?> rejectFriendsApply(@RequestBody FriendRequest request) {
+        DataResponse dataResponse = new DataResponse();
+        try {
+            friendService.rejectFriendship(request);
+            dataResponse.setStatus(HttpStatus.OK.value());//200
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setSuccess(true);
+            dataResponse.setData("Reject friend successfully");
+            return ResponseEntity.ok(dataResponse);
+        }catch (GlobalException e) {
+            dataResponse.setStatus(e.getCode());
+            dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData(e.getMessage());
+            return ResponseEntity.ok(dataResponse);
+        }
     }
 }

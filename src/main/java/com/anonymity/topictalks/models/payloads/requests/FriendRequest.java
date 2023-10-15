@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddFriendRequest {
+public class FriendRequest {
     private long userId;
     private long friendId;
 
