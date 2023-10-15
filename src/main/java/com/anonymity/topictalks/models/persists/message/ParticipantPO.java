@@ -70,7 +70,7 @@ public class ParticipantPO extends DateAudit implements Serializable {
     /**
      * Represents the conversation to which the participant belongs.
      */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @MapsId("conversationId")
     @JoinColumn(name = "conversation_id")
     private ConversationPO conversationInfo;

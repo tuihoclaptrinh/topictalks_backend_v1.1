@@ -4,7 +4,7 @@ import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
-import com.anonymity.topictalks.listeners.SocketEventListener;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
@@ -22,16 +22,12 @@ import com.anonymity.topictalks.services.IConversationService;
 import com.anonymity.topictalks.services.IParticipantService;
 import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
-import com.corundumstudio.socketio.SocketIOClient;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,19 +56,14 @@ public class ParticipantServiceImpl implements IParticipantService {
     @Override
     @Transactional
     public void createChatSingle(ParticipantRequest participantRequest) {
-
         Map<Long, Long> result = randomUserUtil.randomUserChatting(participantRequest);
-
         var conversationRequest = ConversationRequest
                 .builder()
                 .chatName(null)
                 .topicChildrenId(participantRequest.getTopicChildId())
                 .build();
-
         for (Map.Entry<Long, Long> entry : result.entrySet()) {
-
             var conversationResponse = conversationService.createConversation(conversationRequest, false);
-
             var key = new ParticipantKey();
             var participant = ParticipantPO.builder()
                     .id(key)
@@ -88,33 +79,23 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .build();
             participantRepository.save(participant2);
         }
-
     }
 
     @Override
     public ParticipantRandomResponse createChatRandom(ChatRandomDTO chatRandomDTO) {
-
         var conversationRequest = ConversationRequest.builder()
                 .chatName("RANDOM-CHAT-ANONYMOUS")
                 .topicChildrenId(chatRandomDTO.getTpcId())
                 .build();
-
         var conv = conversationService.createConversationRandom(conversationRequest, false);
-
         ParticipantRandomResponse participantRandomResponse = ParticipantRandomResponse
                 .builder().conversationInfor(conv).build();
-
         PartnerDTO partnerDTO;
-
         List<PartnerDTO> lists = new ArrayList<>();
-
         for (String user : chatRandomDTO.getUsers()) {
-
             String[] params = user.split("-");
             Long uId = Long.parseLong(params[0].trim());
-
             UserDTO us = userService.getUserById(uId);
-
             partnerDTO = PartnerDTO
                     .builder()
                     .Id(us.getId())
@@ -124,7 +105,6 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .username(us.getUsername())
                     .build();
             lists.add(partnerDTO);
-
             var key = new ParticipantKey();
             var participant = ParticipantPO.builder()
                     .id(key)
@@ -134,9 +114,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .build();
             participantRepository.save(participant);
         }
-
         participantRandomResponse.setPartnerDTO(lists);
-
         return participantRandomResponse;
     }
 
@@ -156,7 +134,6 @@ public class ParticipantServiceImpl implements IParticipantService {
         String result = userIds.stream()
                 .map(Object::toString) // Convert Long to String
                 .collect(Collectors.joining(",")); // Join with commas and space
-
         return result;
     }
 
@@ -410,23 +387,19 @@ public class ParticipantServiceImpl implements IParticipantService {
             response.setIsMember(null);
             responseList.add(response);
         }
-
         return responseList;
     }
 
     @Override
     @Transactional
-    public boolean removeToGroupChat(long userId, long conversationId) {
-        ConversationPO conversationPO = conversationRepository.findById(conversationId)
-                .orElse(null);
-        UserPO userPO = userRepository.findById(userId)
-                .orElse(null);
-        boolean isExisted = participantRepository.existsByConversationInfoAndUserInfo(conversationPO, userPO);
-        if (conversationPO != null && userPO != null && isExisted) {
-            participantRepository.deleteByConversationInfoAndUserInfo(conversationPO, userPO);
-            return true;
+    public void removeToGroupChat(long userId, long conversationId) {
+        UserPO user = userRepository.findById(userId).orElseThrow(() -> new GlobalException(404, "User not found"));
+        ConversationPO conversation = conversationRepository.findById(conversationId).orElseThrow(() -> new GlobalException(404, "User not found"));
+        try{
+            participantRepository.deleteByConversationInfoAndUserInfo(conversation,user);
+        } catch (GlobalException e){
+            throw new GlobalException(404,"This participant not found");
         }
-        return false;
     }
 
 

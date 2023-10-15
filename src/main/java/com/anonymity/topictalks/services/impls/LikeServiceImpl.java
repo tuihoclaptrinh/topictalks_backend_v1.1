@@ -11,13 +11,11 @@ import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.ILikeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class LikeServiceImpl implements ILikeService {
         UserPO userPO = userRepository.findById(request.getUserId()).orElse(null);
         PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
         boolean isLiked = likeRepository.existsByUserIdAndPostId(request.getUserId(), request.getPostId());
-        if (postPO != null && userPO != null && !isLiked) {
+        if (postPO != null && userPO != null && isLiked) {
             LikePO likePO = new LikePO();
             likePO.setUserId(request.getUserId());
             likePO.setPostId(request.getPostId());
@@ -43,13 +41,16 @@ public class LikeServiceImpl implements ILikeService {
     }
 
     @Override
-    public boolean unlike(long userId, long postId) {
-        boolean isLiked = likeRepository.existsByUserIdAndPostId(userId, postId);
-        if (isLiked) {
-            likeRepository.deleteByUserIdAndPostId(userId, postId);
-            return true;
+    public void unlike(long userId, long postId) {
+        Optional<PostPO> postOptional = postRepository.findById(postId);
+        if (postOptional.isPresent()) {
+            PostPO post = postOptional.get();
+            List<LikePO> likes = post.getLikes();
+
+            likes.removeIf(like -> like.getUserInfo().getId().equals(userId));
+
+            postRepository.save(post);
         }
-        return false;
     }
 
     @Override
@@ -61,7 +62,7 @@ public class LikeServiceImpl implements ILikeService {
             response.setTotalLike(list.size());
             List<LikeDTO> inforLike = new ArrayList<>();
             for (LikePO infor : list) {
-                LikeDTO likeDTO = new LikeDTO(infor.getUserId(),infor.getUserInfo().getUsername());
+                LikeDTO likeDTO = new LikeDTO(infor.getUserId(), infor.getUserInfo().getUsername());
                 inforLike.add(likeDTO);
             }
             response.setUserLike(inforLike);

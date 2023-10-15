@@ -43,6 +43,6 @@ public interface IParticipantService {
 
     List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
 
-    boolean removeToGroupChat(long userId, long conversationId);
+    void removeToGroupChat(long userId, long conversationId);
 
 }

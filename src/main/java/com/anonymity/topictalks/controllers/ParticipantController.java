@@ -1,15 +1,12 @@
 package com.anonymity.topictalks.controllers;
 
-import com.anonymity.topictalks.models.dtos.PostDTO;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.payloads.requests.ConversationMatcherRequest;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
-import com.anonymity.topictalks.models.payloads.requests.PostRequest;
 import com.anonymity.topictalks.models.payloads.requests.ProcessMemberGroupChatRequest;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
-import com.anonymity.topictalks.models.persists.message.ParticipantPO;
-import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.services.IConversationService;
 import com.anonymity.topictalks.services.IParticipantService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -207,20 +204,20 @@ public class ParticipantController {
 
             return ResponseEntity.ok(dataResponse);
         } else {
-            boolean isRemoved = participantService.removeToGroupChat(memberId, conversationId);
-            if (!isRemoved) {
-                dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
-                dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
-                dataResponse.setSuccess(false);
-                dataResponse.setData("Can't found this member in group chat.");
-
+            try {
+                participantService.removeToGroupChat(memberId, conversationId);
+                dataResponse.setStatus(HttpStatus.OK.value());//200
+                dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+                dataResponse.setSuccess(true);
+                dataResponse.setData("This member has removed out of group chat successfully.");
+                return ResponseEntity.ok(dataResponse);
+            } catch (GlobalException e) {
+                dataResponse.setStatus(e.getCode());//200
+                dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());//OK
+                dataResponse.setSuccess(true);
+                dataResponse.setData(e.getMessage());
                 return ResponseEntity.ok(dataResponse);
             }
-            dataResponse.setStatus(HttpStatus.OK.value());//200
-            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
-            dataResponse.setSuccess(true);
-            dataResponse.setData("This member has removed out of group chat successfully.");
-            return ResponseEntity.ok(dataResponse);
         }
     }
 

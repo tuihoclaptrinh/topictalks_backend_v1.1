@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface ILikeService {
     LikePO like(LikeRequest request);
-    boolean unlike(long userId, long postId);
+
+    void unlike(long userId, long postId);
+
     LikeResponse getAllUserLikeByPostId(long postId);
 }

@@ -56,19 +56,20 @@ public class LikeController {
     @DeleteMapping("/remove/uid={userId}&&pid={postId}")
     public ResponseEntity<?> remove(@PathVariable Long userId, @PathVariable Long postId) {
         DataResponse dataResponse = new DataResponse();
-        boolean isUnliked = likeService.unlike(userId, postId);
-        if (!isUnliked) {
+        try {
+            likeService.unlike(userId, postId);
+            dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+            dataResponse.setSuccess(true);
+            dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+            dataResponse.setData("Un-like successfully");
+            return ResponseEntity.ok(dataResponse);
+        } catch (NullPointerException e) {
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value()); //201
             dataResponse.setSuccess(true);
             dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//CREATED
             dataResponse.setData("Failure to unlike");
             return ResponseEntity.ok(dataResponse);
         }
-        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
-        dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
-        dataResponse.setData("Un-like successfully");
-        return ResponseEntity.ok(dataResponse);
     }
 
 }

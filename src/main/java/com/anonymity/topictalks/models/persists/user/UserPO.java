@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.models.persists.user;
 
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
+import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.utils.enums.ERole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -18,6 +19,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The {@code UserPO} class represents a user entity in the application. It is annotated with {@code @Entity} to
@@ -235,6 +237,9 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     @Enumerated(EnumType.STRING)
     private ERole role;
 
+    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.REMOVE)
+    private List<ParticipantPO> participants;
+
     /**
      * Get the authorities granted to the user based on their role.
      *
@@ -304,5 +309,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     public boolean isEnabled() {
         return true;
     }
+
 
 }

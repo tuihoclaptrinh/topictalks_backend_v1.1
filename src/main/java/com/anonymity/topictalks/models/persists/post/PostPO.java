@@ -11,6 +11,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@code PostPO} class represents a post entity in the application.
@@ -114,5 +116,8 @@ public class PostPO extends DateAudit implements Serializable {
     @Lob
     @Column(name = "image", columnDefinition = "LONGTEXT", nullable = true)
     private String image;
+
+    @OneToMany(mappedBy = "postInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikePO> likes = new ArrayList<>();
 
 }

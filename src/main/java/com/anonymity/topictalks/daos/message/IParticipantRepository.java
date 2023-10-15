@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,8 +29,6 @@ public interface IParticipantRepository extends IBaseRepository<ParticipantPO, P
     List<ParticipantPO> findAllByUserInfo(UserPO userPO);
 
     boolean existsByConversationInfoAndUserInfoAndIsMember(ConversationPO conversationPO, UserPO userPO, boolean isMember);
-
-    boolean existsByConversationInfoAndUserInfo(ConversationPO conversationPO, UserPO userPO);
 
     @Query(value = "SELECT a.user_id FROM participant a, conversation b WHERE b.conversation_id= :conversation_id AND a.conversation_id= :conversation_id AND a.user_id != :user_id", nativeQuery = true)
     List<Long> getPartnerIdByConversationIdAndUserId(@Param(value = "conversation_id") long conversation_id, @Param(value = "user_id") long user_id);
