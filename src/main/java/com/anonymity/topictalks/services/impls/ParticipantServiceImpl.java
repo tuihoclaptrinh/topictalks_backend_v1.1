@@ -6,6 +6,7 @@ import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
+import com.anonymity.topictalks.models.dtos.ConversationDTO;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
@@ -164,7 +165,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<ParticipantPO> list = participantRepository.findAllByUserInfo(userPO);
         for (int i = 0; i < list.size(); i++) {
             ParticipantResponse participant = new ParticipantResponse();
-            participant.setConversationInfor(list.get(i).getConversationInfo());
+            participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo()));
             List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
                     list.get(i).getConversationInfo().getId(),
                     list.get(i).getUserInfo().getId());
@@ -207,7 +208,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
             List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
             for (int i = 0; i < list.size(); i++) {
-                participant.setConversationInfor(list.get(i).getConversationInfo());
+                participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo()));
                 PartnerDTO partnerDTO = new PartnerDTO();
                 partnerDTO.setId(partner.getId());
                 partnerDTO.setBanned(partner.getIsBanned());
@@ -252,7 +253,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         participantPO2.setUpdatedAt(LocalDateTime.now());
         participantRepository.save(participantPO2);
 
-        participant.setConversationInfor(conversationPO);
+        participant.setConversationInfor(convertToConversationDTO(conversationPO));
         PartnerDTO partnerDTO = new PartnerDTO();
         partnerDTO.setId(partnerId);
         partnerDTO.setUsername(partner.getUsername());
@@ -280,7 +281,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         participantPO.setIsMember(false);
         ParticipantPO participantPO1 = participantRepository.save(participantPO);
         ParticipantResponse participantResponse = new ParticipantResponse();
-        participantResponse.setConversationInfor(conversationPO);
+        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO));
         List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
         List<PartnerDTO> partnerList = new ArrayList<>();
         for (ParticipantPO participant : list) {
@@ -312,7 +313,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         ParticipantPO po = participantRepository.save(participantPO);
 
         ParticipantResponse participantResponse = new ParticipantResponse();
-        participantResponse.setConversationInfor(conversationPO);
+        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO));
         PartnerDTO partnerDTO = new PartnerDTO();
         partnerDTO.setUsername(userPO.getUsername());
         partnerDTO.setId(userPO.getId());
@@ -340,7 +341,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             ParticipantPO approveParticipant = participantRepository.save(participantPO);
             ParticipantResponse response = new ParticipantResponse();
             List<PartnerDTO> list = getAllUserByConversationId(conversationId);
-            response.setConversationInfor(conversationPO);
+            response.setConversationInfor(convertToConversationDTO(conversationPO));
             response.setPartnerDTO(list);
             response.setIsMember(approveParticipant.getIsMember().toString());
             return response;
@@ -370,7 +371,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<ParticipantResponse> responseList = new ArrayList<>();
         for (ConversationPO conversationPO : list) {
             ParticipantResponse response = new ParticipantResponse();
-            response.setConversationInfor(conversationPO);
+            response.setConversationInfor(convertToConversationDTO(conversationPO));
             List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
             List<PartnerDTO> partnerDtos = new ArrayList<>();
             for (ParticipantPO po : poList) {
@@ -395,12 +396,19 @@ public class ParticipantServiceImpl implements IParticipantService {
     public void removeToGroupChat(long userId, long conversationId) {
         UserPO user = userRepository.findById(userId).orElseThrow(() -> new GlobalException(404, "User not found"));
         ConversationPO conversation = conversationRepository.findById(conversationId).orElseThrow(() -> new GlobalException(404, "User not found"));
-        try{
-            participantRepository.deleteByConversationInfoAndUserInfo(conversation,user);
-        } catch (GlobalException e){
-            throw new GlobalException(404,"This participant not found");
+        try {
+            participantRepository.deleteByConversationInfoAndUserInfo(conversation, user);
+        } catch (GlobalException e) {
+            throw new GlobalException(404, "This participant not found");
         }
     }
 
+    private ConversationDTO convertToConversationDTO(ConversationPO conversation) {
+        return new ConversationDTO(conversation.getId(),
+                conversation.getChatName(),
+                conversation.getIsGroupChat(),
+                conversation.getTopicChildren(),
+                conversation.getAdminId());
+    }
 
 }

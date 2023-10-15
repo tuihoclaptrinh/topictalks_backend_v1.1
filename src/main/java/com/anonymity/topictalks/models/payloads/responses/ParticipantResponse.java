@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.models.payloads.responses;
 
+import com.anonymity.topictalks.models.dtos.ConversationDTO;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParticipantResponse implements Serializable {
-    private ConversationPO conversationInfor;
+    private ConversationDTO conversationInfor;
 
     private List<PartnerDTO> partnerDTO;
 
