@@ -3,6 +3,7 @@ package com.anonymity.topictalks.models.persists.user;
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.utils.enums.ERole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -238,6 +239,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     private ERole role;
 
     @OneToMany(mappedBy = "userInfo", cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<ParticipantPO> participants;
 
     /**

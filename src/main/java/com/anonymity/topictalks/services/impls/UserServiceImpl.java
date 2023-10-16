@@ -107,27 +107,6 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
-    private UserDTO convertUserPOToUserDTO(UserPO userPO) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(userPO.getId());
-        userDTO.setFullName(userPO.getFullName());
-        userDTO.setUsername(userPO.getUsername());
-        userDTO.setEmail(userPO.getEmail());
-        userDTO.setPhoneNumber(userPO.getPhoneNumber());
-        userDTO.setDob(userPO.getDob());
-        userDTO.setBio(userPO.getBio());
-        userDTO.setCountry(userPO.getCountry());
-        userDTO.setGender(userPO.getGender());
-        userDTO.setImageUrl(userPO.getImageUrl());
-        userDTO.setRole(userPO.getRole());
-        userDTO.setCreatedAt(userPO.getCreatedAt());
-        userDTO.setUpdatedAt(userPO.getUpdatedAt());
-        userDTO.setBanned(userPO.getIsBanned());
-        userDTO.setBannedDate(userPO.getBannedDate());
-
-        return userDTO;
-    }
-
     @Override
     public List<UserDTO> findAllUsers() {
         List<UserPO> userPOList = userRepository.findAll();
@@ -210,5 +189,26 @@ public class UserServiceImpl implements IUserService {
             return convertUserPOToUserDTO(userRepository.save(userPO));
         }
         return null;
+    }
+
+    public UserDTO convertUserPOToUserDTO(UserPO userPO) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(userPO.getId());
+        userDTO.setFullName(userPO.getFullName());
+        userDTO.setUsername(userPO.getUsername());
+        userDTO.setEmail(userPO.getEmail());
+        userDTO.setPhoneNumber(userPO.getPhoneNumber());
+        userDTO.setDob(userPO.getDob());
+        userDTO.setBio(userPO.getBio());
+        userDTO.setCountry(userPO.getCountry());
+        userDTO.setGender(userPO.getGender());
+        userDTO.setImageUrl(userPO.getImageUrl());
+        userDTO.setRole(userPO.getRole());
+        userDTO.setCreatedAt(userPO.getCreatedAt());
+        userDTO.setUpdatedAt(userPO.getUpdatedAt());
+        userDTO.setIsBanned(userPO.getIsBanned());
+        userDTO.setBannedDate(userPO.getBannedDate());
+
+        return userDTO;
     }
 }

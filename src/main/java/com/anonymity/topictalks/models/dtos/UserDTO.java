@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserDTO implements Serializable {
-    private long id;
+    private Long id;
     private String fullName;
     private String username;
     private String email;
@@ -25,7 +25,7 @@ public class UserDTO implements Serializable {
     private String gender;
     private String country;
     private String imageUrl;
-    private boolean isBanned;
+    private Boolean isBanned;
     private Instant bannedDate;
     private ERole role;
     private LocalDateTime updatedAt;

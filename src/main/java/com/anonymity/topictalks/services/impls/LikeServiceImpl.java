@@ -4,13 +4,19 @@ import com.anonymity.topictalks.daos.post.ILikeRepository;
 import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.LikeDTO;
+import com.anonymity.topictalks.models.dtos.LikeListDTO;
+import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.LikeRequest;
 import com.anonymity.topictalks.models.payloads.responses.LikeResponse;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.ILikeService;
+import com.anonymity.topictalks.services.IPostService;
+import com.anonymity.topictalks.services.IUserService;
+import jakarta.persistence.Converter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,13 +35,13 @@ public class LikeServiceImpl implements ILikeService {
         UserPO userPO = userRepository.findById(request.getUserId()).orElse(null);
         PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
         boolean isLiked = likeRepository.existsByUserIdAndPostId(request.getUserId(), request.getPostId());
-        if (postPO != null && userPO != null && isLiked) {
-            LikePO likePO = new LikePO();
-            likePO.setUserId(request.getUserId());
-            likePO.setPostId(request.getPostId());
-            likePO.setUserInfo(userPO);
-            likePO.setPostInfo(postPO);
-            return likeRepository.save(likePO);
+        if (postPO != null && userPO != null && !isLiked) {
+            LikePO like = new LikePO();
+            like.setUserId(request.getUserId());
+            like.setPostId(request.getPostId());
+            like.setUserInfo(userPO);
+            like.setPostInfo(postPO);
+            return likeRepository.save(like);
         }
         return null;
     }
@@ -60,14 +66,15 @@ public class LikeServiceImpl implements ILikeService {
             LikeResponse response = new LikeResponse();
             List<LikePO> list = likeRepository.getAllByPostId(postId);
             response.setTotalLike(list.size());
-            List<LikeDTO> inforLike = new ArrayList<>();
+            List<LikeListDTO> inforLike = new ArrayList<>();
             for (LikePO infor : list) {
-                LikeDTO likeDTO = new LikeDTO(infor.getUserId(), infor.getUserInfo().getUsername());
-                inforLike.add(likeDTO);
+                LikeListDTO likeListDTO = new LikeListDTO(infor.getUserId(), infor.getUserInfo().getUsername());
+                inforLike.add(likeListDTO);
             }
             response.setUserLike(inforLike);
             return response;
         }
         return null;
     }
+
 }
