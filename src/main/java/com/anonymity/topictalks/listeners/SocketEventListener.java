@@ -10,6 +10,7 @@ import com.anonymity.topictalks.models.dtos.EngagementChatDTO;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
+import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
@@ -17,6 +18,7 @@ import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
+import com.anonymity.topictalks.services.INotificationService;
 import com.anonymity.topictalks.services.IParticipantService;
 import com.anonymity.topictalks.services.ISocketService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
@@ -65,6 +67,7 @@ public class SocketEventListener {
     private final IParticipantService participantService;
     private final ISocketService socketService;
     private final IParticipantRepository participantRepository;
+    private final INotificationService notificationService;
 
     @OnConnect
     public void eventOnConnect(SocketIOClient client) {
@@ -91,7 +94,7 @@ public class SocketEventListener {
                 .conversationId(conversationRepository.findById(receiveMessageDTO.getConversationId()).orElse(null))
                 .content(receiveMessageDTO.getData().get("message").toString())
                 .build();
-        messageRepository.save(messagePO);
+        MessagePO messageSaved = messageRepository.save(messagePO);
 
         if (true) {
             var conversation = conversationRepository.getOne(receiveMessageDTO.getConversationId());
@@ -111,6 +114,12 @@ public class SocketEventListener {
                     SocketIOClient ioClient = clientMap.get(conversationOne.toString());
                     if (null != ioClient) {
                         ioClient.sendEvent("sendMessage", receiveMessageDTO);
+                        NotiRequest notiRequest = NotiRequest
+                                .builder()
+                                .messageId(messageSaved.getId())
+                                .userId(userId)
+                                .build();
+                        notificationService.saveNotiMessage(notiRequest);
                     }
                 }
             }
