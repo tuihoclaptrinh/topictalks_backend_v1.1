@@ -173,8 +173,11 @@ public class FriendServiceImpl implements IFriendService {
         FriendInforResponse response = new FriendInforResponse(
                 friend.getId(),
                 friend.getUserId().getId(),
+                friend.getUserId().getUsername(),
+                friend.getUserId().getImageUrl(),
                 friend.getFriendId().getId(),
                 friend.getFriendId().getUsername(),
+                friend.getFriendId().getImageUrl(),
                 friend.getIsPublic(),
                 friend.getIsAccept(),
                 friend.getUpdatedAt(),

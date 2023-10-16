@@ -14,8 +14,11 @@ import java.time.LocalDateTime;
 public class FriendInforResponse {
     private long friendListId;
     private long userid;
+    private String userName;
+    private String userUrl;
     private long friendId;
     private String friendName;
+    private String friendUrl;
     private boolean isPublic;
     private boolean isAccept;
     private LocalDateTime updatedAt;
