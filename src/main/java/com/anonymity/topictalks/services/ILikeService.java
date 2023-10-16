@@ -5,8 +5,6 @@ import com.anonymity.topictalks.models.payloads.requests.LikeRequest;
 import com.anonymity.topictalks.models.payloads.responses.LikeResponse;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 
-import java.util.List;
-
 public interface ILikeService {
     LikePO like(LikeRequest request);
 

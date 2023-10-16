@@ -1,6 +1,6 @@
 package com.anonymity.topictalks.models.payloads.responses;
 
-import com.anonymity.topictalks.models.dtos.LikeDTO;
+import com.anonymity.topictalks.models.dtos.LikeListDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +15,5 @@ import java.util.List;
 @AllArgsConstructor
 public class LikeResponse implements Serializable {
     private long totalLike;
-    private List<LikeDTO> userLike;
+    private List<LikeListDTO> userLike;
 }

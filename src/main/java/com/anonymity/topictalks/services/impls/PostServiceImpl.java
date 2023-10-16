@@ -207,7 +207,7 @@ public class PostServiceImpl implements IPostService {
         postRepository.save(postPO);
     }
 
-    private PostDTO convertToPostDto(PostPO postPO) {
+    public PostDTO convertToPostDto(PostPO postPO) {
         PostDTO postDto = new PostDTO(
                 postPO.getId(),
                 postPO.getTitle(),

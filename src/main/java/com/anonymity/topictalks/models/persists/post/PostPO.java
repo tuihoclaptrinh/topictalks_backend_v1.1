@@ -3,6 +3,7 @@ package com.anonymity.topictalks.models.persists.post;
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -117,7 +118,8 @@ public class PostPO extends DateAudit implements Serializable {
     @Column(name = "image", columnDefinition = "LONGTEXT", nullable = true)
     private String image;
 
-    @OneToMany(mappedBy = "postInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "postInfo", cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<LikePO> likes = new ArrayList<>();
 
 }

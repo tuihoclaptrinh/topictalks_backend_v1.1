@@ -1,11 +1,13 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.models.dtos.LikeDTO;
 import com.anonymity.topictalks.models.payloads.requests.LikeRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.services.ILikeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
