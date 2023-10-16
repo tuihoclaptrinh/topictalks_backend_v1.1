@@ -42,13 +42,20 @@ public class NotificationServiceImpl implements INotificationService {
      */
     @Override
     public void saveNotiMessage(NotiRequest request) {
-        MessageNotificationPO noti = MessageNotificationPO
-                .builder()
-                .id(request.getId())
-                .messageId(messageRepository.findById(request.getMessageId()).orElse(null))
-                .userId(userRepository.findById(request.getUserId()).orElse(null))
-                .build();
-        messageNotificationRepository.save(noti);
+        QMessageNotificationPO qMessageNotificationPO = QMessageNotificationPO.messageNotificationPO;
+        MessageNotificationPO noti1 = jpaQueryFactory.select(qMessageNotificationPO)
+                .from(qMessageNotificationPO)
+                .where(qMessageNotificationPO.messageId.id.eq(request.getMessageId()))
+                .fetchOne();
+        if(noti1 == null) {
+            MessageNotificationPO noti = MessageNotificationPO
+                    .builder()
+                    .id(request.getId())
+                    .messageId(messageRepository.findById(request.getMessageId()).orElse(null))
+                    .userId(userRepository.findById(request.getUserId()).orElse(null))
+                    .build();
+            messageNotificationRepository.save(noti);
+        }
     }
 
     /**
