@@ -13,17 +13,22 @@ import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResp
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
-import com.anonymity.topictalks.models.persists.message.ConversationPO;
-import com.anonymity.topictalks.models.persists.message.ParticipantPO;
+import com.anonymity.topictalks.models.persists.message.*;
+import com.anonymity.topictalks.models.persists.notification.QMessageNotificationPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.anonymity.topictalks.models.persists.user.QUserPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,12 +40,14 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ConversationServiceImpl implements IConversationService {
 
     private final IConversationRepository conversationRepository;
     private final ITopicChildrenRepository topicChildrenRepository;
     private final IParticipantRepository participantRepository;
     private final IUserRepository userRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public ConversationResponse createConversation(ConversationRequest conversationRequest, boolean isGroupChat) {
@@ -196,6 +203,27 @@ public class ConversationServiceImpl implements IConversationService {
             } else throw new GlobalException(403, "Access Denied");
 
         } else throw new GlobalException(403, "Access Denied");
+    }
+
+    /**
+     * @param conversationId
+     */
+    @Override
+    @Transactional
+    public void deleteConversationByUser(long conversationId) {
+        QConversationPO qConversationPO = QConversationPO.conversationPO;
+        QParticipantPO qParticipantPO = QParticipantPO.participantPO;
+
+        List<ParticipantPO> participants = jpaQueryFactory.select(qParticipantPO)
+                .from(qParticipantPO)
+                .where(qParticipantPO.conversationInfo.id.eq(conversationId))
+                .fetch();
+        long deletedCount = jpaQueryFactory.delete(qConversationPO)
+                .where(qConversationPO.id.eq(conversationId))
+                .execute();
+
+        log.info("Deleted {} Conversation", deletedCount);
+
     }
 
     private ConversationResponse convertToConversationResponse(ConversationPO conversationPO) {

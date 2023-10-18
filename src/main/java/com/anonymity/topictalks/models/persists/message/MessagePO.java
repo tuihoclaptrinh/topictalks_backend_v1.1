@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -81,8 +83,9 @@ public class MessagePO extends DateAudit implements Serializable {
     /**
      * Represents the conversation to which this message belongs.
      */
-    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "conversation_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ConversationPO conversationId;
 
 }

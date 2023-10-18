@@ -42,11 +42,11 @@ public class ConversationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @DeleteMapping("")
-    public ResponseEntity<?> removeConversation(@RequestParam("cid") Long conversationId,@RequestParam("uid") Long userId) {
+    @DeleteMapping
+    public ResponseEntity<?> removeConversation(@RequestParam("cid") Long conversationId) {
         DataResponse dataResponse = new DataResponse();
         try {
-            conversationService.deleteByConversationId(conversationId,userId);
+            conversationService.deleteConversationByUser(conversationId);
             dataResponse.setStatus(HttpStatus.OK.value());
             dataResponse.setSuccess(true);
             dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());

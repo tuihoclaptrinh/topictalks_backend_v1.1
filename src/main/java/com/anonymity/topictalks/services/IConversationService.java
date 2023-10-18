@@ -25,4 +25,6 @@ public interface IConversationService {
 
     void deleteByConversationId(long conversationId, long userId);
 
+    void deleteConversationByUser(long conversationId);
+
 }

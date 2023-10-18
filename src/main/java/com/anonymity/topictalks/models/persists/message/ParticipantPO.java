@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -73,6 +75,7 @@ public class ParticipantPO extends DateAudit implements Serializable {
     @ManyToOne
     @MapsId("conversationId")
     @JoinColumn(name = "conversation_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ConversationPO conversationInfo;
 
     /**
