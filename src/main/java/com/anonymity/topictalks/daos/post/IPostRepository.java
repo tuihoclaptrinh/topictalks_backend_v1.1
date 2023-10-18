@@ -29,4 +29,9 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
 
     @Query(value = "SELECT * FROM post p WHERE p.topic_parent_id = :topic_parent_id", nativeQuery = true)
     List<PostPO> findByTopicParentId(@Param(value = "topic_parent_id") long topic_parent_id);
+
+    @Query(value = "SELECT * FROM post p WHERE p.post_id = :post_id AND p.is_approved = :is_approved", nativeQuery = true)
+    PostPO findByIdAndIsApproved(@Param(value = "post_id") long postId, @Param(value="is_approved") boolean isApproved);
+
+
 }

@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.LikeDTO;
 import com.anonymity.topictalks.models.payloads.requests.LikeRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
@@ -40,15 +41,15 @@ public class LikeController {
         LikePO addLike = likeService.like(request);
 
         if (addLike == null) {
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value()); //201
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
             dataResponse.setSuccess(true);
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//CREATED
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setData("Failure to like");
             return ResponseEntity.ok(dataResponse);
         }
-        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+        dataResponse.setStatus(HttpStatus.CREATED.value());
         dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
         dataResponse.setData(addLike);
         return ResponseEntity.ok(dataResponse);
     }
@@ -60,16 +61,16 @@ public class LikeController {
         DataResponse dataResponse = new DataResponse();
         try {
             likeService.unlike(userId, postId);
-            dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+            dataResponse.setStatus(HttpStatus.CREATED.value());
             dataResponse.setSuccess(true);
-            dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+            dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
             dataResponse.setData("Un-like successfully");
             return ResponseEntity.ok(dataResponse);
-        } catch (NullPointerException e) {
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value()); //201
-            dataResponse.setSuccess(true);
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//CREATED
-            dataResponse.setData("Failure to unlike");
+        } catch (GlobalException e) {
+            dataResponse.setStatus(e.getCode());
+            dataResponse.setSuccess(false);
+            dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());
+            dataResponse.setData(e.getMessage());
             return ResponseEntity.ok(dataResponse);
         }
     }

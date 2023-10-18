@@ -19,7 +19,12 @@ import java.util.List;
 @Repository
 public interface ILikeRepository extends IBaseRepository<LikePO, LikeKey> {
     boolean existsByUserIdAndPostId(long userId, long postId);
+
     void deleteByUserIdAndPostId(long userId, long postId);
+
     void removeByPostId(long postId);
+
     List<LikePO> getAllByPostId(long postId);
+
+    LikePO findByUserIdAndPostId(long userId, long postId);
 }

@@ -3,6 +3,7 @@ package com.anonymity.topictalks.services.impls;
 import com.anonymity.topictalks.daos.post.ILikeRepository;
 import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.LikeDTO;
 import com.anonymity.topictalks.models.dtos.LikeListDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
@@ -33,30 +34,35 @@ public class LikeServiceImpl implements ILikeService {
     @Override
     public LikePO like(LikeRequest request) {
         UserPO userPO = userRepository.findById(request.getUserId()).orElse(null);
-        PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
+        PostPO postOptional = postRepository.findByIdAndIsApproved(request.getPostId(), true);
+//        System.out.println("=======> Post infor: "+postOptional!=null? postOptional.toString():null);
         boolean isLiked = likeRepository.existsByUserIdAndPostId(request.getUserId(), request.getPostId());
-        if (postPO != null && userPO != null && !isLiked) {
+        if (postOptional != null && userPO != null && !isLiked) {
             LikePO like = new LikePO();
             like.setUserId(request.getUserId());
             like.setPostId(request.getPostId());
             like.setUserInfo(userPO);
-            like.setPostInfo(postPO);
+            like.setPostInfo(postOptional);
             return likeRepository.save(like);
         }
+        System.out.println("========================> null");
         return null;
     }
 
     @Override
     public void unlike(long userId, long postId) {
-        Optional<PostPO> postOptional = postRepository.findById(postId);
-        if (postOptional.isPresent()) {
-            PostPO post = postOptional.get();
-            List<LikePO> likes = post.getLikes();
-
-            likes.removeIf(like -> like.getUserInfo().getId().equals(userId));
-
-            postRepository.save(post);
-        }
+        PostPO postOptional = postRepository.findByIdAndIsApproved(postId, true);
+        Optional<UserPO> userOptional = userRepository.findById(userId);
+        if (postOptional != null && userOptional.isPresent()) {
+            LikePO likePO = likeRepository.findByUserIdAndPostId(userId, postId);
+            if (likePO != null) {
+                try {
+                    likeRepository.delete(likePO);
+                } catch (GlobalException e) {
+                    throw new GlobalException(403, "Failure to un-like");
+                }
+            } else throw new GlobalException(404, "Not found");
+        } else throw new GlobalException(404, "Not found");
     }
 
     @Override
