@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "MessageNoti", description = "The Notification API")
 public class INotificationController {
 
-    private INotificationService notificationService;
+    private final INotificationService notificationService;
 
     @PostMapping("/pushNoti")
     public ResponseData saveNotiMessage(@RequestBody NotiRequest request) {

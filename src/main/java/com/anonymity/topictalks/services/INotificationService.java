@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
+import com.anonymity.topictalks.models.payloads.responses.NotiResponse;
 import com.anonymity.topictalks.models.persists.notification.MessageNotificationPO;
 
 import java.util.List;
@@ -15,6 +16,6 @@ import java.util.List;
 public interface INotificationService {
 
     void saveNotiMessage(NotiRequest request);
-    List<MessageNotificationPO> notiList(Long userId);
+    List<NotiResponse> notiList(Long userId);
 
 }

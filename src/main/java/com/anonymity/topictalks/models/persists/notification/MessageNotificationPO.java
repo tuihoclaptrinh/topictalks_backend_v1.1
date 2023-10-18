@@ -68,16 +68,19 @@ public class MessageNotificationPO extends DateAudit implements Serializable {
     /**
      * Represents the user to whom the notification is associated.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private UserPO userId;
 
     /**
      * Represents the message for which the notification is generated.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "message_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private MessagePO messageId;
+
+    @Column(name = "is_read", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isRead;
 
 }

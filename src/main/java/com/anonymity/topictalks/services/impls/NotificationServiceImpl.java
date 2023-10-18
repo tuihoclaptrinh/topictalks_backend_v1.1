@@ -4,10 +4,16 @@ import com.anonymity.topictalks.daos.message.IMessageRepository;
 import com.anonymity.topictalks.daos.notification.IMessageNotificationRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
+import com.anonymity.topictalks.models.payloads.responses.NotiResponse;
+import com.anonymity.topictalks.models.persists.message.QConversationPO;
+import com.anonymity.topictalks.models.persists.message.QMessagePO;
 import com.anonymity.topictalks.models.persists.notification.MessageNotificationPO;
 import com.anonymity.topictalks.models.persists.notification.QMessageNotificationPO;
+import com.anonymity.topictalks.models.persists.user.QUserPO;
 import com.anonymity.topictalks.services.INotificationService;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -63,11 +69,28 @@ public class NotificationServiceImpl implements INotificationService {
      * @return
      */
     @Override
-    public List<MessageNotificationPO> notiList(Long userId) {
+    public List<NotiResponse> notiList(Long userId) {
         QMessageNotificationPO qMessageNotificationPO = QMessageNotificationPO.messageNotificationPO;
-        List<MessageNotificationPO> listNotiUser = jpaQueryFactory.select(
-                Projections.bean(qMessageNotificationPO)
+        QMessagePO qMessagePO = QMessagePO.messagePO;
+        QConversationPO qConversationPO = QConversationPO.conversationPO;
+        QUserPO qUserPO = QUserPO.userPO;
+        List<NotiResponse> listNotiUser = jpaQueryFactory.select(
+                Projections.bean(NotiResponse.class,
+                        qMessageNotificationPO.id.as("notiId"),
+                        qMessageNotificationPO.userId.id.as("userId"),
+                        qUserPO.username.as("username"),
+                        qConversationPO.chatName.as("chatName"),
+                        qMessageNotificationPO.messageId.id.as("messageId"),
+                        qMessagePO.conversationId.id.as("conversationId"),
+                        qConversationPO.isGroupChat.as("isGroupChat"),
+                        qMessageNotificationPO.isRead.as("isRead"))
         ).from(qMessageNotificationPO)
+                .join(qMessagePO)
+                .on(qMessageNotificationPO.messageId.id.eq(qMessagePO.id))
+                .join(qConversationPO)
+                .on(qMessagePO.conversationId.id.eq(qConversationPO.id))
+                .join(qUserPO)
+                .on(qMessageNotificationPO.userId.id.eq(qUserPO.id))
                 .where(qMessageNotificationPO.userId.eq(userRepository.findById(userId).orElse(null)))
                 .fetch();
         return listNotiUser;
