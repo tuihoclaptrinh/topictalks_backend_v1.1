@@ -4,11 +4,10 @@ import com.anonymity.topictalks.models.persists.audit.DateAudit;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import java.io.Serial;
 import java.io.Serializable;

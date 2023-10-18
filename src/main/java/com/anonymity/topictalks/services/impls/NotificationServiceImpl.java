@@ -19,6 +19,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,5 +95,21 @@ public class NotificationServiceImpl implements INotificationService {
                 .where(qMessageNotificationPO.userId.eq(userRepository.findById(userId).orElse(null)))
                 .fetch();
         return listNotiUser;
+    }
+
+    /**
+     * @param notiId
+     */
+    @Override
+    @Transactional
+    public long updateReadNoti(Long notiId) {
+        QMessageNotificationPO qMessageNotificationPO = QMessageNotificationPO.messageNotificationPO;
+
+        long updateCount = jpaQueryFactory.update(qMessageNotificationPO)
+                .where(qMessageNotificationPO.id.eq(notiId))
+                .set(qMessageNotificationPO.isRead, true)
+                .execute();
+
+        return updateCount;
     }
 }

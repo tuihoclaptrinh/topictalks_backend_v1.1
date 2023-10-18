@@ -212,16 +212,9 @@ public class ConversationServiceImpl implements IConversationService {
     @Transactional
     public void deleteConversationByUser(long conversationId) {
         QConversationPO qConversationPO = QConversationPO.conversationPO;
-        QParticipantPO qParticipantPO = QParticipantPO.participantPO;
-
-        List<ParticipantPO> participants = jpaQueryFactory.select(qParticipantPO)
-                .from(qParticipantPO)
-                .where(qParticipantPO.conversationInfo.id.eq(conversationId))
-                .fetch();
         long deletedCount = jpaQueryFactory.delete(qConversationPO)
                 .where(qConversationPO.id.eq(conversationId))
                 .execute();
-
         log.info("Deleted {} Conversation", deletedCount);
 
     }

@@ -35,4 +35,9 @@ public class INotificationController {
         return ResponseData.ofSuccess("success", notificationService.notiList(userId));
     }
 
+    @PutMapping("/{notiId}")
+    public ResponseData readNotification(@PathVariable("notiId") Long notiId) {
+        return ResponseData.ofSuccess("success", "Read {} notification!"+  notificationService.updateReadNoti(notiId));
+    }
+
 }

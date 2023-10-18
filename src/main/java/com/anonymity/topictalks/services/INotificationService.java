@@ -18,4 +18,6 @@ public interface INotificationService {
     void saveNotiMessage(NotiRequest request);
     List<NotiResponse> notiList(Long userId);
 
+    long updateReadNoti(Long notiId);
+
 }
