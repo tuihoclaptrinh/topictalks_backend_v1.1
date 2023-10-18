@@ -26,7 +26,7 @@ spring:
     password: p4ssw0rd! # Database password
   jpa:
     hibernate:
-      ddl-auto: update # If the update data table does not exist, it will be automatically created.
+      ddl-auto: create-drop # If the update data table does not exist, it will be automatically created.
     show-sql: true # Show SQL statements
     properties:
       hibernate:

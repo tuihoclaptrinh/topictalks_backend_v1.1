@@ -4,6 +4,7 @@ import com.anonymity.topictalks.models.persists.audit.DateAudit;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import jakarta.persistence.*;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
@@ -75,8 +76,10 @@ public class MessageNotificationPO extends DateAudit implements Serializable {
      * Represents the message for which the notification is generated.
      */
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "message_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "message_id",
+            referencedColumnName = "message_id",
+            foreignKey = @ForeignKey(name = "FKzqwe9h5n8tc94ojsislgnb2de",
+                    foreignKeyDefinition = "FOREIGN KEY (message_id) REFERENCES message (message_id) ON UPDATE CASCADE ON DELETE CASCADE"))
     private MessagePO messageId;
 
     @Column(name = "is_read", columnDefinition = "BOOLEAN DEFAULT FALSE")
