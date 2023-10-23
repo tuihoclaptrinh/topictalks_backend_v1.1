@@ -30,6 +30,7 @@ public interface IParticipantService {
     List<PartnerDTO> getAllUserByConversationId(long id);
 
     List<ParticipantResponse> getAllParticipantByUserId(long id);
+    ParticipantResponse getParticipantByConversationIdAndUserId(long conversationId,long userId);
 
     ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId, long topicChildrenId);
 

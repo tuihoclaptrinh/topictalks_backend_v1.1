@@ -23,10 +23,10 @@ spring:
       idle-timeout: 60000
     url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root # Database username
-    password: p4ssw0rd! # Database password
+    password: 1234 # Database password
   jpa:
     hibernate:
-      ddl-auto: create-drop # If the update data table does not exist, it will be automatically created.
+      ddl-auto: update # If the update data table does not exist, it will be automatically created.
     show-sql: true # Show SQL statements
     properties:
       hibernate:

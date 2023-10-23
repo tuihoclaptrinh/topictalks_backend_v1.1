@@ -194,6 +194,45 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
+    public ParticipantResponse getParticipantByConversationIdAndUserId(long conversationId, long userId) {
+        ConversationPO conversationInfo = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist."));
+
+        UserPO userPO = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+
+        ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(conversationInfo, userPO);
+        if (participantPO == null) {
+            throw new IllegalArgumentException("Participant not found for this conversation and user.");
+        }
+
+        ParticipantResponse participantResponse = new ParticipantResponse();
+        participantResponse.setConversationInfor(convertToConversationDTO(participantPO.getConversationInfo()));
+        List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
+                participantPO.getConversationInfo().getId(),
+                participantPO.getUserInfo().getId());
+        List<PartnerDTO> listPartner = new ArrayList<>();
+        for (Long partnerId : partnerIdList) {
+            UserPO partner = userRepository.findById(partnerId)
+                    .orElseThrow(() -> new IllegalArgumentException("This user hasn't existed."));
+            PartnerDTO partnerDTO = new PartnerDTO();
+            partnerDTO.setId(partner.getId());
+            partnerDTO.setBanned(partner.getIsBanned());
+            partnerDTO.setBannedAt(partner.getIsBanned() ? null : partner.getBannedDate());
+            partnerDTO.setImage(partner.getImageUrl());
+            partnerDTO.setUsername(partner.getUsername());
+            UserPO partnerInfo = userRepository.findById(partner.getId()).orElse(null);
+            ParticipantPO partnerParticipantPO = participantRepository.findByConversationInfoAndAndUserInfo(participantPO.getConversationInfo(), partnerInfo);
+            partnerDTO.setMember(partnerParticipantPO.getIsMember());
+            listPartner.add(partnerDTO);
+        }
+        participantResponse.setIsMember(participantPO.getIsMember().toString());
+        participantResponse.setPartnerDTO(listPartner);
+
+        return participantResponse;
+    }
+
+    @Override
     public ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId, long topicChildrenId) {
         UserPO user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));

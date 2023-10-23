@@ -88,19 +88,19 @@ public class SocketEventListener {
 
     @OnEvent("sendMessage")
     public void onSendMessage(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
-        NotiRequest notiRequest;
+//        NotiRequest notiRequest;
         MessagePO messagePO = MessagePO.builder()
                 .senderId(userRepository.findById(receiveMessageDTO.getUserId()).orElse(null))
                 .conversationId(conversationRepository.findById(receiveMessageDTO.getConversationId()).orElse(null))
                 .content(receiveMessageDTO.getData().get("message").toString())
                 .build();
         MessagePO messageSaved = messageRepository.save(messagePO);
-        notiRequest = NotiRequest
-                .builder()
-                .messageId(messageSaved.getId())
-                .userId(receiveMessageDTO.getUserId())
-                .build();
-        notificationService.saveNotiMessage(notiRequest);
+//        notiRequest = NotiRequest
+//                .builder()
+//                .messageId(messageSaved.getId())
+//                .userId(receiveMessageDTO.getUserId())
+//                .build();
+//        notificationService.saveNotiMessage(notiRequest);
 
         if (true) {
             var conversation = conversationRepository.getOne(receiveMessageDTO.getConversationId());
@@ -120,12 +120,12 @@ public class SocketEventListener {
                     SocketIOClient ioClient = clientMap.get(conversationOne.toString());
                     if (null != ioClient) {
                         ioClient.sendEvent("sendMessage", receiveMessageDTO);
-                        notiRequest = NotiRequest
-                                .builder()
-                                .messageId(messageSaved.getId())
-                                .userId(userId)
-                                .build();
-                        notificationService.saveNotiMessage(notiRequest);
+//                        notiRequest = NotiRequest
+//                                .builder()
+//                                .messageId(messageSaved.getId())
+//                                .userId(userId)
+//                                .build();
+//                        notificationService.saveNotiMessage(notiRequest);
                     }
                 }
             }

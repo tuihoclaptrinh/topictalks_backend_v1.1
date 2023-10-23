@@ -59,7 +59,7 @@ public class PostController {
 
             return ResponseEntity.ok(dataResponse);
         }
-        PostPO postUpdated = postService.updatePost(id, postRequest);
+        PostDTO postUpdated = postService.updatePost(id, postRequest);
 
         if (postUpdated == null) {//NOT FOUND
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
@@ -73,7 +73,7 @@ public class PostController {
         dataResponse.setStatus(HttpStatus.OK.value());//200
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
-        dataResponse.setData("Updated successfully");
+        dataResponse.setData(postUpdated);
         return ResponseEntity.ok(dataResponse);
     }
 
@@ -144,7 +144,7 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePostById(@PathVariable("id") long id) {
+        public ResponseEntity<?> deletePostById(@PathVariable("id") long id) {
         DataResponse dataResponse = new DataResponse();
 
         boolean isRemoved = postService.removePostById(id);

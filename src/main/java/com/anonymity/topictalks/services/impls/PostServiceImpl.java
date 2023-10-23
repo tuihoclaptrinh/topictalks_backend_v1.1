@@ -83,22 +83,20 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public PostPO updatePost(Long id, PostRequest request) {
+    public PostDTO updatePost(Long id, PostRequest request) {
         Optional<PostPO> postExist = postRepository.findById(id);
-        if (!postExist.isEmpty()) {
-            PostPO post = new PostPO();
+        if (postExist.isPresent()) {
+            PostPO post = postExist.get();
             TopicParentPO topicParent = topicParentRepository.findById(request.getTparent_id())
                     .orElseThrow(() -> new IllegalArgumentException("Topic parent doesn't exist."));
-            post.setId(id);
-            post.setAuthorId(postExist.get().getAuthorId());
             post.setTitle(request.getTitle());
             post.setContent(request.getContent());
             post.setImage(request.getImage() != null ? request.getImage() : "");
             post.setTopicParentId(topicParent);
-            post.setIsApproved(postExist.get().getIsApproved());
-            post.setCreatedAt(postExist.get().getCreatedAt());
             post.setUpdatedAt(LocalDateTime.now());
-            return postRepository.save(post);
+
+            PostDTO postDto = convertToPostDto(post);
+            return postDto;
         }
         return null;
     }

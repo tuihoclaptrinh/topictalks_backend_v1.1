@@ -9,7 +9,7 @@ import java.util.List;
 public interface IPostService {
     PostPO createPost(PostRequest request);
 
-    PostPO updatePost(Long id, PostRequest request);
+    PostDTO updatePost(Long id, PostRequest request);
 
     boolean removePostById(long id);
 

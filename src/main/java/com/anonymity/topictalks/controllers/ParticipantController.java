@@ -51,6 +51,28 @@ public class ParticipantController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @GetMapping("/uid={userId}&&cid={conversationId}")
+    public ResponseEntity<?> getParticipantByConversationIdAndUserId(
+            @PathVariable("conversationId") long conversationId,
+            @PathVariable("userId") long userId) {
+        DataResponse dataResponse = new DataResponse();
+        ParticipantResponse participant = participantService.getParticipantByConversationIdAndUserId(conversationId, userId);
+
+        if (participant == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+        } else {
+            dataResponse.setStatus(HttpStatus.OK.value());
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+            dataResponse.setSuccess(true);
+            dataResponse.setData(participant);
+        }
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
     @PostMapping("/{id}")
     public ResponseEntity<?> getParticipantByPartnerId(@PathVariable("id") long id, @RequestBody ConversationMatcherRequest request) {
         DataResponse dataResponse = new DataResponse();
