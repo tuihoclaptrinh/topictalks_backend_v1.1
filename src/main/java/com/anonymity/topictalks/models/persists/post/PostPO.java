@@ -118,6 +118,10 @@ public class PostPO extends DateAudit implements Serializable {
     @Column(name = "image", columnDefinition = "LONGTEXT", nullable = true)
     private String image;
 
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private StatusPO status;
+
     @OneToMany(mappedBy = "postInfo", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<LikePO> likes = new ArrayList<>();

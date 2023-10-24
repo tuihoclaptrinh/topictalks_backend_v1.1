@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.models.payloads.requests;
 
+import com.anonymity.topictalks.validations.annotations.NullOrNotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,6 @@ public class PostRequest {
     private String title;
     private String content;
     private String image;
+    @NullOrNotBlank
+    private String status_id;
 }

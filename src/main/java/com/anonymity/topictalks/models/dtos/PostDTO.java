@@ -19,6 +19,7 @@ public class PostDTO {
     private String img_url;
     private long tparent_id;
     private long author_id;
+    private String status;
     private String username;
     private String avatar_url;
     private long totalComment;
