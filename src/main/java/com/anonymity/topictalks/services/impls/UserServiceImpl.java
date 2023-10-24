@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.persists.user.UserPO;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -69,7 +73,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public String forgotPassword(String email) {
         UserPO user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: {}"+ email));
+                .orElseThrow(() -> new RuntimeException("User not found with email: {}" + email));
 
         try {
             emailUtils.sendSetPasswordEmail(email);
@@ -87,7 +91,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public String setPassword(String email, String newPassword) {
         UserPO user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: {}"+ email));
+                .orElseThrow(() -> new RuntimeException("User not found with email: {}" + email));
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
@@ -138,7 +142,7 @@ public class UserServiceImpl implements IUserService {
     public boolean checkDuplicateEmail(long id, String email) {
         UserDTO userDTO = getUserById(id);
         if (!userDTO.getEmail().toLowerCase(Locale.ROOT).equalsIgnoreCase(email.toLowerCase(Locale.ROOT)) &&
-                !userRepository.findByUsername(email).isEmpty()) {
+                !userRepository.findByEmail(email).isEmpty()) {
             return true;
         }
         return false;
@@ -161,18 +165,29 @@ public class UserServiceImpl implements IUserService {
         if (isExisted) {
             UserPO userPO = userRepository.findById(id).orElse(null);
             userPO.setId(id);
+            String email = userPO.getEmail();
             userPO.setFullName(request.getFullName());
-            userPO.setEmail(request.getEmail());
-            userPO.setUsername(request.getUsername());
-            userPO.setDob(request.getDob());
+            if (request.getEmail() != null) {
+                userPO.setEmail(request.getEmail());
+            } else {
+                userPO.setEmail(email);
+            }
+            String pattern = "yyyy-MM-dd";
+            String fixedTime = "00:00:00";
+            try {
+                LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
+                Instant instant = dateTime.toInstant(ZoneOffset.UTC);
+                userPO.setDob(instant);
+            } catch (DateTimeParseException e) {
+                System.out.println("Error parsing the date string: " + e.getMessage());
+                throw new GlobalException(e.getErrorIndex(), e.getMessage());
+            }
             userPO.setCountry(request.getCountry());
             userPO.setPhoneNumber(request.getPhoneNumber());
             userPO.setBio(request.getBio());
-            userPO.setImageUrl(request.getAvatar());
             userPO.setGender(request.getGender());
             userPO.setUpdatedAt(LocalDateTime.now());
             return convertUserPOToUserDTO(userRepository.save(userPO));
-
         }
         return null;
     }

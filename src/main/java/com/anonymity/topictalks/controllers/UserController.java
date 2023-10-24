@@ -34,6 +34,7 @@ public class UserController {
                                                 @RequestParam String otp) {
         return new ResponseEntity<>(userService.verifyAccount(email, otp), HttpStatus.OK);
     }
+
     @PostMapping("/regenerate-otp")
     public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
         return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
@@ -53,8 +54,8 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> create(@RequestBody AvatarRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        boolean isSuccess = userService.updateAvatar(request.getImage(),request.getUserId());
-        if (bindingResult.hasErrors() || isSuccess==false) {//BAD REQUEST
+        boolean isSuccess = userService.updateAvatar(request.getImage(), request.getUserId());
+        if (bindingResult.hasErrors() || isSuccess == false) {//BAD REQUEST
             dataResponse.setStatus(HttpStatus.FORBIDDEN.value());//400
             dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());//BAD REQUEST
             dataResponse.setSuccess(false);
@@ -92,6 +93,7 @@ public class UserController {
 
         return ResponseEntity.ok(dataResponse);
     }
+
     @GetMapping("/{id}")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> findUserById(@PathVariable("id") long id) {
@@ -129,26 +131,17 @@ public class UserController {
 
             return ResponseEntity.ok(dataResponse);
         }
+        if (request.getEmail() != null) {
+            if (userService.checkDuplicateEmail(id, request.getEmail()) == true) {
+                dataResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+                dataResponse.setDesc("Update user failure");
+                dataResponse.setSuccess(false);
+                dataResponse.setData(JSON.parseObject("{\"message\":\"This email has already in use by another account\"}"));
 
-        if (userService.checkDuplicateEmail(id,request.getEmail())==true){
-            dataResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-            dataResponse.setDesc("Update user failure");
-            dataResponse.setSuccess(false);
-            dataResponse.setData(JSON.parseObject("{\"message\":\"This email has already in use by another account\"}"));
+                return ResponseEntity.ok(dataResponse);
 
-            return ResponseEntity.ok(dataResponse);
-
+            }
         }
-        if (userService.checkDuplicateUsername(id,request.getUsername())==true){
-            dataResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-            dataResponse.setDesc("Update user failure");
-            dataResponse.setSuccess(false);
-            dataResponse.setData(JSON.parseObject("{\"message\":\"This username has already in use by another account\"}"));
-
-            return ResponseEntity.ok(dataResponse);
-
-        }
-
         Object userUpdated = userService.updateUser(id, request);
 
         if (userUpdated == null) {//NOT FOUND
