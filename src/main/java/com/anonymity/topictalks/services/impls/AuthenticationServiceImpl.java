@@ -12,8 +12,12 @@ import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IAuthenticationService;
 import com.anonymity.topictalks.services.IJwtService;
 import com.anonymity.topictalks.services.IRefreshTokenService;
+import com.anonymity.topictalks.utils.EmailUtils;
+import com.anonymity.topictalks.utils.OtpUtils;
 import com.anonymity.topictalks.utils.enums.ERole;
 import com.anonymity.topictalks.utils.enums.ETokenType;
+import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,11 +28,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author de140172 - author
@@ -48,6 +52,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final IUserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final IRefreshTokenService refreshTokenService;
+    private final OtpUtils otpUtils;
+    private final EmailUtils emailUtils;
 
     @Override
     public Object register(RegisterRequest request) {
@@ -66,12 +72,24 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                     .message(error.getMessage())
                     .build();
         }
+        String otp = otpUtils.generateOtp();
+        try {
+            emailUtils.sendOtpEmail(request.getEmail(), otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send otp please try again");
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         var new_user = new UserPO();
         new_user.setFullName("");
         new_user.setUsername(request.getUsername());
         new_user.setEmail(request.getEmail().toLowerCase(Locale.ROOT));
         new_user.setDob(null);
         new_user.setPassword(passwordEncoder.encode(request.getPassword()));
+        new_user.setOtp(otp);
+        new_user.setOtpGeneratedTime(LocalDateTime.now());
         new_user.setBio("");
         new_user.setImageUrl("");
         new_user.setGender("");

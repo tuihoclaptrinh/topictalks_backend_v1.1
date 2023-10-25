@@ -17,6 +17,7 @@
 		<java.version>17</java.version>
 		<netty-socketio.version>2.0.3</netty-socketio.version>
 		<querydsl.version>5.0.0</querydsl.version>
+		<freemarker.version>2.3.28</freemarker.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -64,6 +65,13 @@
 		<!-- =============================================================== -->
 		<!-- external library dependencies -->
 		<!-- =============================================================== -->
+
+		<!--Template engine-->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>${freemarker.version}</version>
+		</dependency>
 
 		<!--query dsl-->
 		<!-- Querydsl Core -->

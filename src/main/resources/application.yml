@@ -35,11 +35,11 @@ spring:
     basename: messages
   jackson:
     time-zone: Asia/Ho_Chi_Minh
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: hoangtuananh57tht1@gmail.com
-    password: fypfbljiqelcxvas # fypf blji qelc xvas
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: hoangtuananh57tht1@gmail.com
+#    password: fypfbljiqelcxvas # fypf blji qelc xvas
 
 ## Configuration jwt
 application:
@@ -76,4 +76,17 @@ logging: # Log pattern for console output
   pattern:
     console: "%clr(%d{dd-MM-yyy HH:mm:ss.SSS}){faint} %highlight(%-5level) %magenta(${PID}) --- %cyan([%t]) %yellow(%logger{50}).%green(%M) : %msg%n"
 
-
+#Token properties
+app:
+  token:
+    email:
+      verification:
+        duration: 3600000
+    password:
+      reset:
+        duration: 3600000
+    refresh:
+      duration: 2592000000
+  velocity:
+    templates:
+      location: /templates/

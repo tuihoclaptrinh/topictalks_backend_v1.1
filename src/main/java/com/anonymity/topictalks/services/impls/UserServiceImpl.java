@@ -1,28 +1,23 @@
 package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.user.IUserRepository;
-import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.EmailUtils;
 import com.anonymity.topictalks.utils.OtpUtils;
+import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.io.IOException;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -59,6 +54,10 @@ public class UserServiceImpl implements IUserService {
             emailUtils.sendOtpEmail(email, otp);
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send otp please try again");
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
@@ -79,6 +78,10 @@ public class UserServiceImpl implements IUserService {
             emailUtils.sendSetPasswordEmail(email);
         } catch (MessagingException ex) {
             throw new RuntimeException("Unable to send set password email please try again");
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return "Please check your email to set new password to your account";
     }
@@ -201,16 +204,16 @@ public class UserServiceImpl implements IUserService {
             } else {
                 userPO.setEmail(email);
             }
-            String pattern = "yyyy-MM-dd";
-            String fixedTime = "00:00:00";
-            try {
-                LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
-                Instant instant = dateTime.toInstant(ZoneOffset.UTC);
-                userPO.setDob(instant);
-            } catch (DateTimeParseException e) {
-                System.out.println("Error parsing the date string: " + e.getMessage());
-                throw new GlobalException(e.getErrorIndex(), e.getMessage());
-            }
+//            String pattern = "yyyy-MM-dd";
+//            String fixedTime = "00:00:00";
+//            try {
+//                LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
+//                LocalDateTime instant = dateTime.toInstant(ZoneOffset.UTC);
+            userPO.setDob(request.getDob());
+//            } catch (DateTimeParseException e) {
+//                System.out.println("Error parsing the date string: " + e.getMessage());
+//                throw new GlobalException(e.getErrorIndex(), e.getMessage());
+//            }
             userPO.setCountry(request.getCountry());
             userPO.setPhoneNumber(request.getPhoneNumber());
             userPO.setBio(request.getBio());
