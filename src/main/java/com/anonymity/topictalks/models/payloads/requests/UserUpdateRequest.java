@@ -21,7 +21,7 @@ public class UserUpdateRequest implements Serializable {
     @NullOrNotBlank
     private String email;
     private String phoneNumber;
-    private String dob;
+    private LocalDateTime dob
     private String bio;
     private String gender;
     private String country;

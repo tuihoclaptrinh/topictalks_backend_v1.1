@@ -2,6 +2,7 @@ package com.anonymity.topictalks;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * The {@code TopicTalksBackEndApplication} class serves as the entry point for the Spring Boot application.
@@ -14,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * the web server.
  */
 @SpringBootApplication
+@EnableScheduling
 public class TopicTalksBackEndApplication {
 
 	/**

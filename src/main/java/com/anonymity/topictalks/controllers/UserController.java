@@ -50,6 +50,12 @@ public class UserController {
         return new ResponseEntity<>(userService.setPassword(email, newPassword), HttpStatus.OK);
     }
 
+    @PostMapping("/unban/{userId}")
+    public ResponseEntity<String> unban(@PathVariable("userId") Long id) {
+        userService.unBanUser(id);
+        return new ResponseEntity<>("Unbanned!", HttpStatus.OK);
+    }
+
     @PostMapping("/upload")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> create(@RequestBody AvatarRequest request, BindingResult bindingResult) {

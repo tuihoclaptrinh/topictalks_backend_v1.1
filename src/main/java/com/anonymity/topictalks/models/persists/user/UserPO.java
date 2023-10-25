@@ -211,7 +211,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
             name = "dob",
             nullable = true
     )
-    private Instant dob;
+    private LocalDateTime dob;
 
 
     /**
@@ -231,7 +231,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
             name = "banned_date",
             nullable = true
     )
-    private Instant bannedDate;
+    private LocalDateTime bannedDate;
 
     /**
      * The user's role, represented as an enumeration.
