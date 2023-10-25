@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
@@ -79,6 +80,27 @@ public class PostController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PutMapping("/update-status")
+    public ResponseEntity<?> updateStatusPost(@RequestParam("pid") long postId, @RequestParam("sid") long statusId) {
+        DataResponse dataResponse = new DataResponse();
+        try {
+            PostDTO postUpdated = postService.updateStatusPost(postId, statusId);
+            dataResponse.setStatus(HttpStatus.OK.value());//200
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setSuccess(true);
+            dataResponse.setData(postUpdated);
+            return ResponseEntity.ok(dataResponse);
+        } catch (GlobalException e) {
+            dataResponse.setStatus(e.getCode());//200
+            dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());//OK
+            dataResponse.setSuccess(false);
+            dataResponse.setData(e.getMessage());
+            return ResponseEntity.ok(dataResponse);
+        }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("{id}/all")
     public ResponseEntity<?> getAllPosts(@PathVariable long id) {
         DataResponse dataResponse = new DataResponse();
@@ -144,7 +166,7 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @DeleteMapping("/{id}")
-        public ResponseEntity<?> deletePostById(@PathVariable("id") long id) {
+    public ResponseEntity<?> deletePostById(@PathVariable("id") long id) {
         DataResponse dataResponse = new DataResponse();
 
         boolean isRemoved = postService.removePostById(id);

@@ -1,11 +1,14 @@
 package com.anonymity.topictalks.models.payloads.requests;
 
 import com.anonymity.topictalks.utils.enums.ERole;
+import com.anonymity.topictalks.validations.annotations.NullOrNotBlank;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
@@ -13,14 +16,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateRequest {
+public class UserUpdateRequest implements Serializable {
     private String fullName;
-    private String username;
+    @NullOrNotBlank
     private String email;
     private String phoneNumber;
-    private LocalDateTime dob;
+    private LocalDateTime dob
     private String bio;
     private String gender;
     private String country;
-    private String avatar;
 }

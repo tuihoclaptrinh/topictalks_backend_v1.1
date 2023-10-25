@@ -25,6 +25,10 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
     @Query(value = "SELECT * FROM post p WHERE p.author_id = :authorId AND p.is_approved = :isApproved", nativeQuery = true)
     List<PostPO> findByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved);
 
+    @Query(value = "SELECT * FROM post p WHERE p.author_id = :authorId AND p.is_approved = :isApproved AND p.status_id=1", nativeQuery = true)
+    List<PostPO> findByAuthorIdAndIsApprovedAndStatusId(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved);
+
+
     List<PostPO> findAllByIsApproved(boolean isApproved);
 
     @Query(value = "SELECT * FROM post p WHERE p.topic_parent_id = :topic_parent_id", nativeQuery = true)
@@ -32,6 +36,11 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
 
     @Query(value = "SELECT * FROM post p WHERE p.post_id = :post_id AND p.is_approved = :is_approved", nativeQuery = true)
     PostPO findByIdAndIsApproved(@Param(value = "post_id") long postId, @Param(value="is_approved") boolean isApproved);
+
+    @Query(value = "SELECT * FROM post p" +
+            "JOIN status s ON p.status_id = s.id AND s.id in (1,2) AND p.author_id= :friendId AND p.is_approved=true;", nativeQuery = true)
+    List<PostPO> findByFriendId(@Param(value = "friendId") long friendId);
+
 
 
 }

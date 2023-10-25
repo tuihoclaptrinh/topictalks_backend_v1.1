@@ -23,6 +23,10 @@ public interface IFriendListRepository extends IBaseRepository<FriendListPO, Lon
     List<FriendListPO> findAllByUserId(@Param(value = "userId") long userId);
 
     @Query(value = "SELECT * FROM friend_list f WHERE f.user_id= :userId or f.friend_id = :friendId ", nativeQuery = true)
-    List<FriendListPO> findAllByUserIdOrAndFriendId(@Param(value = "userId") long userId, @Param(value = "friendId") long friendId);
+    List<FriendListPO> findAllByUserIdAndFriendId(@Param(value = "userId") long userId, @Param(value = "friendId") long friendId);
+
+    @Query(value = "SELECT * FROM `topic-talks-app`.friend_list f WHERE (f.user_id= :userId AND f.friend_id = :friendId) OR (f.user_id= :friendId AND f.friend_id = :userId) ", nativeQuery = true)
+    FriendListPO findByUserIdAndFriendId(@Param(value = "userId") long userId, @Param(value = "friendId") long friendId);
+
 
 }

@@ -3,14 +3,19 @@ package com.anonymity.topictalks.services.impls;
 import com.anonymity.topictalks.daos.post.ICommentRepository;
 import com.anonymity.topictalks.daos.post.ILikeRepository;
 import com.anonymity.topictalks.daos.post.IPostRepository;
+import com.anonymity.topictalks.daos.post.IStatusRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
+import com.anonymity.topictalks.daos.user.IFriendListRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
 import com.anonymity.topictalks.models.persists.post.CommentPO;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
+import com.anonymity.topictalks.models.persists.post.StatusPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
+import com.anonymity.topictalks.models.persists.user.FriendListPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.ICommentService;
 import com.anonymity.topictalks.services.ILikeService;
@@ -36,6 +41,11 @@ public class PostServiceImpl implements IPostService {
     private IUserRepository userRepository;
     @Autowired
     private ITopicParentRepository topicParentRepository;
+    @Autowired
+    private IFriendListRepository friendListRepository;
+
+    @Autowired
+    private IStatusRepository statusRepository;
 
     private final ICommentRepository commentRepository;
 
@@ -77,6 +87,20 @@ public class PostServiceImpl implements IPostService {
         post.setImage(request.getImage() != null ? request.getImage() : "");
         post.setTopicParentId(topicParent);
         post.setIsApproved(false);
+        /**
+         * If status_id =1 ---> statusName: Public
+         * If status_id =2 ---> statusName: Friend
+         * If status_id =3 ---> statusName: Private
+         */
+
+        if (request.getStatus_id() == null) {
+            StatusPO statusPO = statusRepository.findById(Long.valueOf(3)).orElse(null);
+            System.out.println("=====================> check status: " + statusPO.toString());
+            post.setStatus(statusPO);
+        } else {
+            StatusPO statusPO = statusRepository.findById(Long.valueOf(request.getStatus_id())).orElse(null);
+            post.setStatus(statusPO);
+        }
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
@@ -91,7 +115,8 @@ public class PostServiceImpl implements IPostService {
                     .orElseThrow(() -> new IllegalArgumentException("Topic parent doesn't exist."));
             post.setTitle(request.getTitle());
             post.setContent(request.getContent());
-            post.setImage(request.getImage() != null ? request.getImage() : "");
+            String imgUrl = post.getImage();
+            post.setImage(request.getImage() != null ? request.getImage() : imgUrl);
             post.setTopicParentId(topicParent);
             post.setUpdatedAt(LocalDateTime.now());
 
@@ -99,6 +124,18 @@ public class PostServiceImpl implements IPostService {
             return postDto;
         }
         return null;
+    }
+
+    @Override
+    public PostDTO updateStatusPost(Long id, Long statusId) {
+        PostPO postPO = postRepository.findById(id).orElse(null);
+        StatusPO statusPO = statusRepository.findById(statusId).orElse(null);
+        if (postPO != null) {
+            if (statusPO != null) {
+                postPO.setStatus(statusPO);
+            } else throw new GlobalException(403, "This status hasn't exist in system.");
+        } else throw new GlobalException(403, "This post hasn't exist in system.");
+        return convertToPostDto(postRepository.save(postPO));
     }
 
     @Override
@@ -177,6 +214,25 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    public List<PostDTO> getAllPostsByUserId(long userId, long userInSessionId) {
+        FriendListPO friendListPO = friendListRepository.findByUserIdAndFriendId(userId,userInSessionId);
+        if (friendListPO!= null){
+            List<PostPO> list = postRepository.findByFriendId(userId);
+            List<PostDTO> listDto = new ArrayList<>();
+            for (PostPO po:list) {
+                listDto.add(convertToPostDto(po));
+            }
+            return listDto;
+        }
+        List<PostPO> list = postRepository.findByAuthorIdAndIsApprovedAndStatusId(userId,true);
+        List<PostDTO> listDto = new ArrayList<>();
+        for (PostPO po:list) {
+            listDto.add(convertToPostDto(po));
+        }
+        return listDto;
+    }
+
+    @Override
     public PostPO aprrovePost(Long id) {
         boolean isExisted = postRepository.existsById(id);
         if (isExisted) {
@@ -213,6 +269,7 @@ public class PostServiceImpl implements IPostService {
                 postPO.getImage(),
                 postPO.getTopicParentId().getId(),
                 postPO.getAuthorId().getId(),
+                postPO.getStatus().getStatusName(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().getUsername(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
                 commentService.getCommentsByPostId(postPO.getId()).size(),
