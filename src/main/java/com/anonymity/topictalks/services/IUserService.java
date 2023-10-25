@@ -5,6 +5,7 @@ import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,6 +27,7 @@ public interface IUserService {
     boolean updateAvatar(String avatar, long id);
 
     List<UserDTO> findAllUsers();
+    List<UserDTO> getAllUsersBanned(LocalDateTime bannedDate);
 
     UserDTO getUserById(long id);
 
@@ -38,4 +40,6 @@ public interface IUserService {
     boolean checkDuplicateEmail(long id, String email);
 
     boolean checkDuplicateUsername(long id, String username);
+
+    void unBanUser(long id);
 }

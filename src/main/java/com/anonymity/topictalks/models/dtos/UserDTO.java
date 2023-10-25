@@ -20,13 +20,13 @@ public class UserDTO implements Serializable {
     private String username;
     private String email;
     private String phoneNumber;
-    private Instant dob;
+    private LocalDateTime dob;
     private String bio;
     private String gender;
     private String country;
     private String imageUrl;
     private Boolean isBanned;
-    private Instant bannedDate;
+    private LocalDateTime bannedDate;
     private ERole role;
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;

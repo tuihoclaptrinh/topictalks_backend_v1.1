@@ -118,6 +118,21 @@ public class UserServiceImpl implements IUserService {
         return userDTOList;
     }
 
+    /**
+     * @param bannedDate
+     * @return
+     */
+    @Override
+    public List<UserDTO> getAllUsersBanned(LocalDateTime bannedDate) {
+        List<UserPO> userPOList = userRepository.findAllByBannedDate(bannedDate);
+        List<UserDTO> userDTOList = new ArrayList<>();
+        for (UserPO list : userPOList) {
+            UserDTO userDTO = convertUserPOToUserDTO(list);
+            userDTOList.add(userDTO);
+        }
+        return userDTOList;
+    }
+
     @Override
     public UserDTO getUserById(long id) {
         UserPO userPO = userRepository.findById(id).orElse(null);
@@ -154,6 +169,20 @@ public class UserServiceImpl implements IUserService {
         return false;
     }
 
+    /**
+     * @param id
+     */
+    @Override
+    public void unBanUser(long id) {
+        boolean isExisted = userRepository.existsById(id);
+
+        if(isExisted) {
+            UserPO userPO = userRepository.findById(id).orElse(null);
+            userPO.setIsBanned(false);
+            userRepository.save(userPO);
+        }
+    }
+
     @Override
     public Object updateUser(long id, UserUpdateRequest request) {
         boolean isExisted = userRepository.existsById(id);
@@ -182,7 +211,7 @@ public class UserServiceImpl implements IUserService {
         boolean isExisted = userRepository.existsById(id);
         if (isExisted) {
             UserPO userPO = userRepository.findById(id).orElse(null);
-            userPO.setBannedDate(Instant.now());
+            userPO.setBannedDate(LocalDateTime.now());
             userPO.setIsBanned(true);
             userPO.setUpdatedAt(LocalDateTime.now());
 
