@@ -17,5 +17,5 @@ public class PostRequest {
     private String content;
     private String image;
     @NullOrNotBlank
-    private String status_id;
+    private Long status_id;
 }

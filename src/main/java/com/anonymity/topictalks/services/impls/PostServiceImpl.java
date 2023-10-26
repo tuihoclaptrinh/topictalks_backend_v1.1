@@ -119,6 +119,8 @@ public class PostServiceImpl implements IPostService {
             post.setImage(request.getImage() != null ? request.getImage() : imgUrl);
             post.setTopicParentId(topicParent);
             post.setUpdatedAt(LocalDateTime.now());
+            StatusPO statusPO = statusRepository.findById(Long.valueOf(request.getStatus_id())).orElse(null);
+            post.setStatus(statusPO);
 
             PostDTO postDto = convertToPostDto(post);
             return postDto;
@@ -196,7 +198,12 @@ public class PostServiceImpl implements IPostService {
         List<PostDTO> postDtoList = new ArrayList<>();
         for (PostPO list : postList) {
             PostDTO postDto = convertToPostDto(list);
-            postDtoList.add(postDto);
+            if(!isApproved) {
+                postDtoList.add(postDto);
+            } else if(postDto.getStatus() != 3 && isApproved) {
+                postDtoList.add(postDto);
+            }
+
         }
         return postDtoList;
     }
@@ -272,7 +279,7 @@ public class PostServiceImpl implements IPostService {
                 postPO.getImage(),
                 postPO.getTopicParentId().getId(),
                 postPO.getAuthorId().getId(),
-                postPO.getStatus().getStatusName(),
+                postPO.getStatus().getId(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().getUsername(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().isActive(),
