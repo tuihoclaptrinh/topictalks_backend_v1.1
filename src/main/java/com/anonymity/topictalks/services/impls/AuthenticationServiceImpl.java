@@ -12,6 +12,7 @@ import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IAuthenticationService;
 import com.anonymity.topictalks.services.IJwtService;
 import com.anonymity.topictalks.services.IRefreshTokenService;
+import com.anonymity.topictalks.services.NicknameService;
 import com.anonymity.topictalks.utils.EmailUtils;
 import com.anonymity.topictalks.utils.OtpUtils;
 import com.anonymity.topictalks.utils.enums.ERole;
@@ -33,6 +34,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * @author de140172 - author
@@ -54,6 +56,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final IRefreshTokenService refreshTokenService;
     private final OtpUtils otpUtils;
     private final EmailUtils emailUtils;
+    private final NicknameService nicknameService;
 
     @Override
     public Object register(RegisterRequest request) {
@@ -77,12 +80,18 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             emailUtils.sendOtpEmail(request.getEmail(), otp);
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send otp please try again");
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (TemplateException | IOException e) {
             throw new RuntimeException(e);
         }
+        var random = new Random();
+        var nickName = nicknameService.generateUserNickname();
+        var userByNickname = userRepository.findByNickname(nickName);
         var new_user = new UserPO();
+        if(userByNickname.isPresent()) {
+            new_user.setNickname(nickName + random.nextInt(100 - 1 + 1) + 1);
+        } else {
+            new_user.setNickname(nickName);
+        }
         new_user.setFullName("");
         new_user.setUsername(request.getUsername());
         new_user.setEmail(request.getEmail().toLowerCase(Locale.ROOT));
