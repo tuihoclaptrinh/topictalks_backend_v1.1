@@ -16,9 +16,11 @@ public class FriendInforResponse {
     private long userid;
     private String userName;
     private String userUrl;
+    private boolean userActive;
     private long friendId;
     private String friendName;
     private String friendUrl;
+    private boolean friendActive;
     private boolean isPublic;
     private boolean isAccept;
     private LocalDateTime updatedAt;

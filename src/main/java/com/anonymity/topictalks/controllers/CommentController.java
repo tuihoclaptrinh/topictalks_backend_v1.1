@@ -73,7 +73,7 @@ public class CommentController {
         dataResponse.setStatus(HttpStatus.OK.value());//200
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
-        dataResponse.setData("Updated successfully");
+        dataResponse.setData(commentUpdated);
         return ResponseEntity.ok(dataResponse);
     }
 

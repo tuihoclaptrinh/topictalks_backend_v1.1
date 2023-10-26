@@ -26,6 +26,8 @@ public interface IUserService {
 
     boolean updateAvatar(String avatar, long id);
 
+    boolean updateActive(boolean active, long id);
+
     List<UserDTO> findAllUsers();
     List<UserDTO> getAllUsersBanned(LocalDateTime bannedDate);
 

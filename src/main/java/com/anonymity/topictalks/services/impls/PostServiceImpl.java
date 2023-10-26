@@ -207,8 +207,11 @@ public class PostServiceImpl implements IPostService {
         if (postList.isEmpty()) return null;
         List<PostDTO> postDtoList = new ArrayList<>();
         for (PostPO list : postList) {
-            PostDTO postDto = convertToPostDto(list);
-            postDtoList.add(postDto);
+            if(list.getIsApproved()) {
+                PostDTO postDto = convertToPostDto(list);
+                postDtoList.add(postDto);
+            }
+
         }
         return postDtoList;
     }
@@ -272,6 +275,7 @@ public class PostServiceImpl implements IPostService {
                 postPO.getStatus().getStatusName(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().getUsername(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
+                userRepository.findById(postPO.getAuthorId().getId()).get().isActive(),
                 commentService.getCommentsByPostId(postPO.getId()).size(),
                 likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),

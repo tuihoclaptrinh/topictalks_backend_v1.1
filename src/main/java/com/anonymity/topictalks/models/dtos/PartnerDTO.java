@@ -19,4 +19,5 @@ public class PartnerDTO {
     private String image;
     private LocalDateTime bannedAt;
     private boolean isMember;
+    private boolean active;
 }

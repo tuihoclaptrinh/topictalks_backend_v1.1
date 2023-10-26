@@ -17,10 +17,7 @@ import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
-import com.anonymity.topictalks.services.IConversationService;
-import com.anonymity.topictalks.services.INotificationService;
-import com.anonymity.topictalks.services.IParticipantService;
-import com.anonymity.topictalks.services.ISocketService;
+import com.anonymity.topictalks.services.*;
 import com.anonymity.topictalks.utils.RandomUserUtils;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnConnect;
@@ -68,11 +65,14 @@ public class SocketEventListener {
     private final ISocketService socketService;
     private final IParticipantRepository participantRepository;
     private final INotificationService notificationService;
+    private final IUserService userService;
 
     @OnConnect
     public void eventOnConnect(SocketIOClient client) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
         clientMap.put(urlParams.get("uid").get(0),client);
+        String userId = urlParams.get("uid").get(0);
+        userService.updateActive(true, Long.parseLong(userId));
         logger.info("link open, urlParams {}",urlParams);
         logger.info("Number of people joining: {}",clientMap.size());
     }
@@ -81,6 +81,7 @@ public class SocketEventListener {
     public void eventOnDisConnect(SocketIOClient client) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
         String moveUser = urlParams.get("uid").get(0);
+        userService.updateActive(false, Long.parseLong(moveUser));
         clientMap.remove(moveUser);
         logger.info("Link closed, urlParams {}", urlParams);
         logger.info("Remaining number of people: {}", clientMap.size());

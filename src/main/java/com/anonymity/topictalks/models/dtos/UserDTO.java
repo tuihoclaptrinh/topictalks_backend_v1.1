@@ -28,6 +28,7 @@ public class UserDTO implements Serializable {
     private Boolean isBanned;
     private LocalDateTime bannedDate;
     private ERole role;
+    private boolean active;
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 }

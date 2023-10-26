@@ -104,6 +104,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .image(us.getImageUrl())
                     .isBanned(us.getIsBanned())
                     .username(us.getUsername())
+                    .active(us.isActive())
                     .build();
             lists.add(partnerDTO);
             var key = new ParticipantKey();
@@ -151,6 +152,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             partnerDTO.setImage(po.getUserInfo().getImageUrl());
             partnerDTO.setBanned(po.getUserInfo().getIsBanned());
             partnerDTO.setBannedAt(po.getUserInfo().getBannedDate());
+            partnerDTO.setActive(po.getUserInfo().isActive());
             partnerDTO.setMember(po.getIsMember());
             partnerDTOList.add(partnerDTO);
         }
@@ -179,6 +181,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
                 partnerDTO.setImage(partner.getImageUrl());
                 partnerDTO.setUsername(partner.getUsername());
+                partnerDTO.setActive(partner.isActive());
                 UserPO partnerInfor = userRepository.findById(partner.getId()).orElse(null);
                 ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), partnerInfor);
                 partnerDTO.setMember(participantPO.getIsMember());
@@ -221,6 +224,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             partnerDTO.setBannedAt(partner.getIsBanned() ? null : partner.getBannedDate());
             partnerDTO.setImage(partner.getImageUrl());
             partnerDTO.setUsername(partner.getUsername());
+            partnerDTO.setActive(partner.isActive());
             UserPO partnerInfo = userRepository.findById(partner.getId()).orElse(null);
             ParticipantPO partnerParticipantPO = participantRepository.findByConversationInfoAndAndUserInfo(participantPO.getConversationInfo(), partnerInfo);
             partnerDTO.setMember(partnerParticipantPO.getIsMember());
@@ -254,6 +258,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
                 partnerDTO.setImage(partner.getImageUrl());
                 partnerDTO.setUsername(partner.getUsername());
+                partnerDTO.setActive(partner.isActive());
                 partnerDTO.setMember(true);
                 listPartner.add(partnerDTO);
 
@@ -299,6 +304,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         partnerDTO.setBanned(partner.getIsBanned());
         partnerDTO.setBannedAt(partner.getBannedDate());
         partnerDTO.setImage(partner.getImageUrl());
+        partnerDTO.setActive(partner.isActive());
         partnerDTO.setMember(true);
         listPartner.add(partnerDTO);
         participant.setPartnerDTO(listPartner);
@@ -331,6 +337,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             partner.setBanned(participant.getUserInfo().getIsBanned());
             partner.setBannedAt(participant.getUserInfo().getBannedDate());
             partner.setMember(participant.getIsMember());
+            partner.setActive(participant.getUserInfo().isActive());
             partnerList.add(partner);
         }
         participantResponse.setPartnerDTO(partnerList);
@@ -360,6 +367,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         partnerDTO.setImage(userPO.getImageUrl());
         partnerDTO.setBanned(userPO.getIsBanned());
         partnerDTO.setBannedAt(userPO.getBannedDate());
+        partnerDTO.setActive(userPO.isActive());
         List<PartnerDTO> list = new ArrayList<>();
         list.add(partnerDTO);
         participantResponse.setPartnerDTO(list);
@@ -420,6 +428,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 partnerDTO.setId(po.getUserInfo().getId());
                 partnerDTO.setMember(po.getIsMember());
                 partnerDTO.setBanned(po.getUserInfo().getIsBanned());
+                partnerDTO.setActive(po.getUserInfo().isActive());
                 partnerDTO.setBannedAt(po.getUserInfo().getBannedDate());
                 partnerDtos.add(partnerDTO);
             }

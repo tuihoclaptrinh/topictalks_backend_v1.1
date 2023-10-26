@@ -113,6 +113,18 @@ public class UserServiceImpl implements IUserService {
             return false;
         }
     }
+    @Override
+    public boolean updateActive(boolean active, long id) {
+        UserPO userPO = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+        userPO.setActive(active);
+        try {
+            userRepository.save(userPO);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 
     @Override
     public List<UserDTO> findAllUsers() {
@@ -251,6 +263,7 @@ public class UserServiceImpl implements IUserService {
         userDTO.setGender(userPO.getGender());
         userDTO.setImageUrl(userPO.getImageUrl());
         userDTO.setRole(userPO.getRole());
+        userDTO.setActive(userPO.isActive());
         userDTO.setCreatedAt(userPO.getCreatedAt());
         userDTO.setUpdatedAt(userPO.getUpdatedAt());
         userDTO.setIsBanned(userPO.getIsBanned());

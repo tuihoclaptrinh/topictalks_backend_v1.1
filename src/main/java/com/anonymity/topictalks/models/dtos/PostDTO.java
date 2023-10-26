@@ -22,6 +22,7 @@ public class PostDTO {
     private String status;
     private String username;
     private String avatar_url;
+    private boolean author_active;
     private long totalComment;
     private LikeResponse like;
     private LocalDateTime created_at;
