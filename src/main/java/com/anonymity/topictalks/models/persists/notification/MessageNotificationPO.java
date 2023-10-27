@@ -1,11 +1,13 @@
 package com.anonymity.topictalks.models.persists.notification;
 
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
+import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import jakarta.persistence.*;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
@@ -72,17 +74,24 @@ public class MessageNotificationPO extends DateAudit implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     private UserPO userId;
 
+    @NotNull
+    private Long partnerId;
+
     /**
      * Represents the message for which the notification is generated.
      */
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "message_id",
-            referencedColumnName = "message_id",
+    @JoinColumn(name = "conversation_id",
+            referencedColumnName = "conversation_id",
             foreignKey = @ForeignKey(name = "FKzqwe9h5n8tc94ojsislgnb2de",
-                    foreignKeyDefinition = "FOREIGN KEY (message_id) REFERENCES message (message_id) ON UPDATE CASCADE ON DELETE CASCADE"))
-    private MessagePO messageId;
+                    foreignKeyDefinition = "FOREIGN KEY (conversation_id) REFERENCES conversation (conversation_id) ON UPDATE CASCADE ON DELETE CASCADE"))
+    private ConversationPO conversationId;
 
     @Column(name = "is_read", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isRead;
+
+    @NotNull
+    @Column(name = "message_noti")
+    private String messageNoti;
 
 }

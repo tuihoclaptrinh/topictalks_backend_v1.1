@@ -25,8 +25,8 @@ public class INotificationController {
     private final INotificationService notificationService;
 
     @PostMapping("/pushNoti")
-    public ResponseData saveNotiMessage(@RequestBody NotiRequest request) {
-        notificationService.saveNotiMessage(request);
+    public ResponseData saveNotification(@RequestBody NotiRequest request) {
+        notificationService.saveNotification(request);
         return ResponseData.ofSuccess("success", "save notification successfully");
     }
 

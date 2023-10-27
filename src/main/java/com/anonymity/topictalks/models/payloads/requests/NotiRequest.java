@@ -1,5 +1,7 @@
 package com.anonymity.topictalks.models.payloads.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +19,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL) // Bỏ qua các trường có giá trị null trong JSON
+@JsonIgnoreProperties(ignoreUnknown = true) // Bỏ qua các trường không xác định trong JSON
 public class NotiRequest {
-    private Long id;
     private Long userId;
-    private Long messageId;
+    private Long conversationId;
+    private Long postId;
+    private String messageNoti;
 }

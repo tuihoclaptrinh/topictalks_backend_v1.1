@@ -15,7 +15,8 @@ import java.util.List;
  */
 public interface INotificationService {
 
-    void saveNotiMessage(NotiRequest request);
+    void saveNotification(NotiRequest request);
+
     List<NotiResponse> notiList(Long userId);
 
     long updateReadNoti(Long notiId);

@@ -3,7 +3,6 @@ package com.anonymity.topictalks.daos.notification;
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.notification.MessageNotificationPO;
 import com.anonymity.topictalks.models.persists.notification.PostNotificationPO;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,7 +18,7 @@ import java.util.List;
  */
 
 @Repository
-public interface IMessageNotificationRepository extends IBaseRepository<MessageNotificationPO, Long> {
-    @Query(value = "SELECT DISTINCT * FROM message_notification m WHERE m.user_id = :userId OR m.partner_id = :userId ", nativeQuery = true)
-    List<MessageNotificationPO> findAllByUserId(@Param(value = "userId") long userId);
+public interface IPostNotificationRepository extends IBaseRepository<PostNotificationPO, Long> {
+    @Query(value = "SELECT DISTINCT * FROM post_notification p WHERE p.user_id = :userId OR p.partner_id = :userId ", nativeQuery = true)
+    List<PostNotificationPO> findAllByUserId(@Param(value = "userId") long userId);
 }

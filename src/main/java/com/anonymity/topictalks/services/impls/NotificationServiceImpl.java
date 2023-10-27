@@ -1,14 +1,24 @@
 package com.anonymity.topictalks.services.impls;
 
+import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IMessageRepository;
+import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.notification.IMessageNotificationRepository;
+import com.anonymity.topictalks.daos.notification.IPostNotificationRepository;
+import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
 import com.anonymity.topictalks.models.payloads.responses.NotiResponse;
+import com.anonymity.topictalks.models.persists.message.ConversationPO;
+import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.models.persists.message.QConversationPO;
 import com.anonymity.topictalks.models.persists.message.QMessagePO;
 import com.anonymity.topictalks.models.persists.notification.MessageNotificationPO;
+import com.anonymity.topictalks.models.persists.notification.PostNotificationPO;
 import com.anonymity.topictalks.models.persists.notification.QMessageNotificationPO;
+import com.anonymity.topictalks.models.persists.notification.QPostNotificationPO;
+import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.user.QUserPO;
 import com.anonymity.topictalks.services.INotificationService;
 import com.querydsl.core.types.Projections;
@@ -22,6 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -38,9 +50,17 @@ public class NotificationServiceImpl implements INotificationService {
     @Autowired
     private IMessageNotificationRepository messageNotificationRepository;
     @Autowired
+    private IPostNotificationRepository postNotificationRepository;
+    @Autowired
     private IUserRepository userRepository;
     @Autowired
+    private IParticipantRepository participantRepository;
+    @Autowired
     private IMessageRepository messageRepository;
+    @Autowired
+    private IConversationRepository conversationRepository;
+    @Autowired
+    private IPostRepository postRepository;
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
 
@@ -48,20 +68,58 @@ public class NotificationServiceImpl implements INotificationService {
      * @param request
      */
     @Override
-    public void saveNotiMessage(NotiRequest request) {
-        QMessageNotificationPO qMessageNotificationPO = QMessageNotificationPO.messageNotificationPO;
-        MessageNotificationPO noti1 = jpaQueryFactory.select(qMessageNotificationPO)
-                .from(qMessageNotificationPO)
-                .where(qMessageNotificationPO.messageId.id.eq(request.getMessageId()))
-                .fetchOne();
-        if(noti1 == null) {
-            MessageNotificationPO noti = MessageNotificationPO
+    public void saveNotification(NotiRequest request) {
+        if (request.getConversationId() != null) {
+            ConversationPO conversationPO = conversationRepository.findById(request.getConversationId()).orElse(null);
+            List<Long> partnerIdList = new ArrayList<>();
+            if (conversationPO != null) {
+                if (conversationPO.getIsGroupChat() == false) {
+                    partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
+                            request.getConversationId(),
+                            request.getUserId());
+                    if (partnerIdList.size() != 0) {
+                        MessageNotificationPO noti = MessageNotificationPO
+                                .builder()
+                                .partnerId(partnerIdList.get(0))
+                                .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
+                                .userId(userRepository.findById(request.getUserId()).orElse(null))
+                                .messageNoti(request.getMessageNoti())
+                                .build();
+                        messageNotificationRepository.save(noti);
+                    } else {
+                        throw new GlobalException(403, "Bad request");
+                    }
+                } else {
+                    partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
+                            request.getConversationId(),
+                            request.getUserId());
+                    if (partnerIdList.size() != 0) {
+                        for (Long partnerId : partnerIdList) {
+                            MessageNotificationPO noti = MessageNotificationPO
+                                    .builder()
+                                    .partnerId(partnerId)
+                                    .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
+                                    .userId(userRepository.findById(request.getUserId()).orElse(null))
+                                    .messageNoti(request.getMessageNoti())
+                                    .build();
+                            messageNotificationRepository.save(noti);
+                        }
+
+                    } else {
+                        throw new GlobalException(403, "Bad request");
+                    }
+                }
+            }
+        } else if (request.getPostId() != null) {
+            PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
+            PostNotificationPO post = PostNotificationPO
                     .builder()
-                    .id(request.getId())
-                    .messageId(messageRepository.findById(request.getMessageId()).orElse(null))
+                    .postId(postPO)
                     .userId(userRepository.findById(request.getUserId()).orElse(null))
+                    .messageNoti(request.getMessageNoti())
+                    .partnerId(postPO.getAuthorId().getId())
                     .build();
-            messageNotificationRepository.save(noti);
+            postNotificationRepository.save(post);
         }
     }
 
@@ -69,32 +127,69 @@ public class NotificationServiceImpl implements INotificationService {
      * @param userId
      * @return
      */
+//    @Override
+//    public List<NotiResponse> notiList(Long userId) {
+//        QMessageNotificationPO qMessageNotificationPO = QMessageNotificationPO.messageNotificationPO;
+//        QMessagePO qMessagePO = QMessagePO.messagePO;
+//        QConversationPO qConversationPO = QConversationPO.conversationPO;
+//        QUserPO qUserPO = QUserPO.userPO;
+//        List<NotiResponse> listNotiUser = jpaQueryFactory.select(
+//                Projections.bean(NotiResponse.class,
+//                        qMessageNotificationPO.id.as("notiId"),
+//                        qMessageNotificationPO.userId.id.as("userId"),
+//                        qUserPO.username.as("username"),
+//                        qConversationPO.chatName.as("chatName"),
+//                        qMessageNotificationPO.messageId.id.as("messageId"),
+//                        qMessagePO.conversationId.id.as("conversationId"),
+//                        qConversationPO.isGroupChat.as("isGroupChat"),
+//                        qMessageNotificationPO.isRead.as("isRead"))
+//        ).from(qMessageNotificationPO)
+//                .join(qMessagePO)
+//                .on(qMessageNotificationPO.messageId.id.eq(qMessagePO.id))
+//                .join(qConversationPO)
+//                .on(qMessagePO.conversationId.id.eq(qConversationPO.id))
+//                .join(qUserPO)
+//                .on(qMessageNotificationPO.userId.id.eq(qUserPO.id))
+//                .where(qMessageNotificationPO.userId.eq(userRepository.findById(userId).orElse(null)))
+//                .fetch();
+//        return listNotiUser;
+//    }
     @Override
     public List<NotiResponse> notiList(Long userId) {
-        QMessageNotificationPO qMessageNotificationPO = QMessageNotificationPO.messageNotificationPO;
-        QMessagePO qMessagePO = QMessagePO.messagePO;
-        QConversationPO qConversationPO = QConversationPO.conversationPO;
-        QUserPO qUserPO = QUserPO.userPO;
-        List<NotiResponse> listNotiUser = jpaQueryFactory.select(
-                Projections.bean(NotiResponse.class,
-                        qMessageNotificationPO.id.as("notiId"),
-                        qMessageNotificationPO.userId.id.as("userId"),
-                        qUserPO.username.as("username"),
-                        qConversationPO.chatName.as("chatName"),
-                        qMessageNotificationPO.messageId.id.as("messageId"),
-                        qMessagePO.conversationId.id.as("conversationId"),
-                        qConversationPO.isGroupChat.as("isGroupChat"),
-                        qMessageNotificationPO.isRead.as("isRead"))
-        ).from(qMessageNotificationPO)
-                .join(qMessagePO)
-                .on(qMessageNotificationPO.messageId.id.eq(qMessagePO.id))
-                .join(qConversationPO)
-                .on(qMessagePO.conversationId.id.eq(qConversationPO.id))
-                .join(qUserPO)
-                .on(qMessageNotificationPO.userId.id.eq(qUserPO.id))
-                .where(qMessageNotificationPO.userId.eq(userRepository.findById(userId).orElse(null)))
-                .fetch();
-        return listNotiUser;
+        List<PostNotificationPO> postNoti = postNotificationRepository.findAllByUserId(userId);
+        List<MessageNotificationPO> messNoti = messageNotificationRepository.findAllByUserId(userId);
+        List<NotiResponse> list = new ArrayList<>();
+
+        for (PostNotificationPO post : postNoti) {
+            NotiResponse response = new NotiResponse();
+            response.setNotiId(post.getId());
+            response.setUserId(post.getUserId().getId());
+            response.setUsername(post.getUserId().getUsername());
+            response.setPartnerId(post.getPartnerId());
+            response.setPartnerUsername(post.getPostId().getAuthorId().getUsername());
+            response.setMessageNoti(post.getMessageNoti());
+            response.setPostId(post.getPostId().getId());
+            response.setIsRead(post.getIsRead());
+            response.setCreateAt(post.getCreatedAt());
+            list.add(response);
+        }
+        for (MessageNotificationPO message : messNoti) {
+            NotiResponse response = new NotiResponse();
+            response.setNotiId(message.getId());
+            response.setUserId(message.getUserId().getId());
+            response.setUsername(message.getUserId().getUsername());
+            response.setPartnerId(message.getPartnerId());
+            response.setPartnerUsername(userRepository.findById(message.getPartnerId()).get().getUsername());
+            response.setMessageNoti(message.getMessageNoti());
+            response.setChatName(message.getConversationId().getChatName());
+            response.setConversationId(message.getConversationId().getId());
+            response.setIsGroupChat(message.getConversationId().getIsGroupChat());
+            response.setIsRead(message.getIsRead());
+            response.setCreateAt(message.getCreatedAt());
+            list.add(response);
+        }
+        Collections.sort(list, Comparator.comparing(NotiResponse::getCreateAt));
+        return list;
     }
 
     /**

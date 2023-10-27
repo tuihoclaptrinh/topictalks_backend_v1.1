@@ -4,10 +4,14 @@ import com.anonymity.topictalks.models.dtos.ConversationDTO;
 import com.anonymity.topictalks.models.dtos.MessageDTO;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * @author de140172 - author
@@ -21,13 +25,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotiResponse {
     private Long notiId;
     private Long userId;
     private String username;
+    private Long partnerId;
+    private String partnerUsername;
     private String chatName;
-    private Long messageId;
+    private String messageNoti;
     private Long conversationId;
+    private Long postId;
     private Boolean isGroupChat;
     private Boolean isRead;
+    @JsonIgnore
+    private LocalDateTime createAt;
 }
