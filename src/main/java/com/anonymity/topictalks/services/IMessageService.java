@@ -19,6 +19,6 @@ public interface IMessageService {
 
     MessagePO saveMessage(MessagePO message);
 
-    List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId, Long topicChildrenId);
+    List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId);
 
 }
