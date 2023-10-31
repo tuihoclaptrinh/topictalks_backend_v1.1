@@ -19,6 +19,6 @@ import java.util.List;
 
 @Repository
 public interface IPostNotificationRepository extends IBaseRepository<PostNotificationPO, Long> {
-    @Query(value = "SELECT DISTINCT * FROM post_notification p WHERE p.user_id = :userId OR p.partner_id = :userId ", nativeQuery = true)
+    @Query(value = "SELECT * FROM post_notification p WHERE p.user_id = :userId", nativeQuery = true)
     List<PostNotificationPO> findAllByUserId(@Param(value = "userId") long userId);
 }

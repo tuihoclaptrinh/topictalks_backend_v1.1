@@ -71,43 +71,28 @@ public class NotificationServiceImpl implements INotificationService {
     public void saveNotification(NotiRequest request) {
         if (request.getConversationId() != null) {
             ConversationPO conversationPO = conversationRepository.findById(request.getConversationId()).orElse(null);
-            List<Long> partnerIdList = new ArrayList<>();
             if (conversationPO != null) {
                 if (conversationPO.getIsGroupChat() == false) {
-                    partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
-                            request.getConversationId(),
-                            request.getUserId());
-                    if (partnerIdList.size() != 0) {
                         MessageNotificationPO noti = MessageNotificationPO
                                 .builder()
-                                .partnerId(partnerIdList.get(0))
+                                .partnerId(request.getPartnerId())
                                 .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
                                 .userId(userRepository.findById(request.getUserId()).orElse(null))
                                 .messageNoti(request.getMessageNoti())
                                 .build();
                         messageNotificationRepository.save(noti);
-                    } else {
-                        throw new GlobalException(403, "Bad request");
-                    }
                 } else {
-                    partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
-                            request.getConversationId(),
-                            request.getUserId());
-                    if (partnerIdList.size() != 0) {
-                        for (Long partnerId : partnerIdList) {
+
+
+
                             MessageNotificationPO noti = MessageNotificationPO
                                     .builder()
-                                    .partnerId(partnerId)
+                                    .partnerId(request.getPartnerId())
                                     .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
                                     .userId(userRepository.findById(request.getUserId()).orElse(null))
                                     .messageNoti(request.getMessageNoti())
                                     .build();
                             messageNotificationRepository.save(noti);
-                        }
-
-                    } else {
-                        throw new GlobalException(403, "Bad request");
-                    }
                 }
             }
         } else if (request.getPostId() != null) {
@@ -167,7 +152,7 @@ public class NotificationServiceImpl implements INotificationService {
             response.setUsername(post.getUserId().getUsername());
             response.setPartnerId(post.getPartnerId());
             response.setPartnerUsername(post.getPostId().getAuthorId().getUsername());
-            response.setMessageNoti(post.getMessageNoti());
+            response.setMessage(post.getMessageNoti());
             response.setPostId(post.getPostId().getId());
             response.setIsRead(post.getIsRead());
             response.setCreateAt(post.getCreatedAt());
@@ -180,7 +165,7 @@ public class NotificationServiceImpl implements INotificationService {
             response.setUsername(message.getUserId().getUsername());
             response.setPartnerId(message.getPartnerId());
             response.setPartnerUsername(userRepository.findById(message.getPartnerId()).get().getUsername());
-            response.setMessageNoti(message.getMessageNoti());
+            response.setMessage(message.getMessageNoti());
             response.setChatName(message.getConversationId().getChatName());
             response.setConversationId(message.getConversationId().getId());
             response.setIsGroupChat(message.getConversationId().getIsGroupChat());

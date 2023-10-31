@@ -5,10 +5,7 @@ import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IMessageRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
-import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
-import com.anonymity.topictalks.models.dtos.EngagementChatDTO;
-import com.anonymity.topictalks.models.dtos.PartnerDTO;
-import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
+import com.anonymity.topictalks.models.dtos.*;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
@@ -16,6 +13,7 @@ import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomRespo
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
+import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.*;
 import com.anonymity.topictalks.utils.RandomUserUtils;
@@ -54,6 +52,7 @@ public class SocketEventListener {
     private Logger logger = LoggerFactory.getLogger(SocketEventListener.class);
     public static Map<String, SocketIOClient> clientMap = new ConcurrentHashMap<>();
     public static Map<String, SocketIOClient> clientChatRandom = new ConcurrentHashMap<>();
+    public static Map<String, SocketIOClient> clientJoinRoom = new ConcurrentHashMap<>();
     public static Map<Long, Long> userChatRandom = new HashMap<>();
 
     private final IMessageRepository messageRepository;
@@ -70,11 +69,11 @@ public class SocketEventListener {
     @OnConnect
     public void eventOnConnect(SocketIOClient client) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
-        clientMap.put(urlParams.get("uid").get(0),client);
+        clientMap.put(urlParams.get("uid").get(0), client);
         String userId = urlParams.get("uid").get(0);
         userService.updateActive(true, Long.parseLong(userId));
-        logger.info("link open, urlParams {}",urlParams);
-        logger.info("Number of people joining: {}",clientMap.size());
+        logger.info("link open, urlParams {}", urlParams);
+        logger.info("Number of people joining: {}", clientMap.size());
     }
 
     @OnDisconnect
@@ -96,39 +95,61 @@ public class SocketEventListener {
                 .content(receiveMessageDTO.getData().get("message").toString())
                 .build();
         MessagePO messageSaved = messageRepository.save(messagePO);
-//        notiRequest = NotiRequest
-//                .builder()
-//                .messageId(messageSaved.getId())
-//                .userId(receiveMessageDTO.getUserId())
-//                .build();
-//        notificationService.saveNotiMessage(notiRequest);
-
         if (true) {
             var conversation = conversationRepository.getOne(receiveMessageDTO.getConversationId());
-            String[] split = participantService.getUserIdsByConversation(conversation).split(",");
+//            String[] split = participantService.getUserIdsByConversation(conversation).split(",");
+            List<Long> listUserIdInConversation = participantService.getListUserIdByConversation(conversation);
             Long userId = receiveMessageDTO.getUserId();
             UserPO userPO = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
             receiveMessageDTO.setUsername(userPO.getUsername());
             receiveMessageDTO.setTimeAt(LocalDateTime.now().toString());
-            for (String s : split) {
+            List<Long> userOfflineList = new ArrayList<>();
+            Collection<String> keys = clientJoinRoom.keySet();
+            Stack<NotifiDTO> stack = new Stack<>();
+            for (String key : keys) {
+                String[] params = key.split("-");
+                NotifiDTO notiMessDTO = new NotifiDTO(
+                        Long.parseLong(params[0].trim()),
+                        Long.parseLong(params[1].trim())
+                );
+                stack.push(notiMessDTO);
+            }
+//            for (String s : split) {
+            for (long s : listUserIdInConversation) {
                 if (StringUtils.isEmpty(s)) {
                     continue;
                 }
-                Long conversationOne = Long.valueOf(s);
+                Long userIdJoin = Long.valueOf(s);
 
-                if (!userId.equals(conversationOne)) {
-                    SocketIOClient ioClient = clientMap.get(conversationOne.toString());
-                    if (null != ioClient) {
+                if (!userId.equals(userIdJoin)) {
+                    SocketIOClient ioClient = clientMap.get(userIdJoin.toString());
+                    if (ioClient != null) {
                         ioClient.sendEvent("sendMessage", receiveMessageDTO);
-//                        notiRequest = NotiRequest
-//                                .builder()
-//                                .messageId(messageSaved.getId())
-//                                .userId(userId)
-//                                .build();
-//                        notificationService.saveNotiMessage(notiRequest);
+                    }
+                    boolean isUserOffline = true;
+                    for (NotifiDTO notiMessDTO : stack) {
+                        logger.info("notiMessDTO.getUserId() {}", notiMessDTO.getUserId());
+                        logger.info("notiMessDTO.getConversationId() {}, userIdJoin222 {},conversation.getId() {}", notiMessDTO.getConversationId(), userIdJoin,conversation.getId());
+                        if (notiMessDTO.getUserId() == userIdJoin && notiMessDTO.getConversationId() == conversation.getId()) {
+                            isUserOffline = false;
+                            break;
+                        }
+                    }
+
+                    if (isUserOffline) {
+                        userOfflineList.add(userIdJoin);
                     }
                 }
+            }
+            for (Long user : userOfflineList) {
+                logger.info("user {}", user);
+                NotiRequest request = new NotiRequest();
+                request.setConversationId(conversation.getId());
+                request.setUserId(user);
+                request.setMessageNoti("New message: " + receiveMessageDTO.getData().toString());
+                request.setPartnerId(userId);
+                notificationService.saveNotification(request);
             }
 
         } else {
@@ -152,74 +173,74 @@ public class SocketEventListener {
     }
 
     @OnEvent("onJoinRoom")
-    public void onJoinRoom(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
-
-        logger.info("onJoinRoom {}", receiveMessageDTO);
-        if (true) {
-            SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
-            if (null != socketIOClient) {
-                socketIOClient.sendEvent("onJoinRoom", receiveMessageDTO);
-            } else {
-                logger.info("Offline users: {} ,UserId {}", receiveMessageDTO.getTargetId(), receiveMessageDTO.getTargetId());
-            }
-        }
-
+    public void onJoinRoom(SocketIOClient client, Long conversationId) {
+        Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
+        String userId = urlParams.get("uid").get(0);
+        clientJoinRoom.put(userId + "-" + conversationId.toString(), client);
+        logger.info("Link closed, urlParams {}, converId {}", urlParams, conversationId);
+        logger.info("Number of people joining to chat Room: {}", clientJoinRoom.size());
     }
 
     @OnEvent("onLeftRoom")
-    public void onLeftRoom(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
-        logger.info("onLeftRoom {}", receiveMessageDTO);
-        if (true) {
-            SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
-            if (null != socketIOClient) {
-                socketIOClient.sendEvent("onLeftRoom", receiveMessageDTO);
-            } else {
-                logger.info("Offline users：{} ,UserId {}", receiveMessageDTO.getTargetId(), receiveMessageDTO.getTargetId());
+    public void onLeftRoom(SocketIOClient client, Long conversationId) {
+        Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
+        String userId = urlParams.get("uid").get(0);
+
+        for (Map.Entry<String, SocketIOClient> entry : clientJoinRoom.entrySet()) {
+            String key = entry.getKey();
+            String existingUserId = key.split("-")[0];
+            String exitingConverId = key.split("-")[1];
+            if (existingUserId.equals(userId) && exitingConverId.equals(conversationId.toString())) {
+                clientJoinRoom.remove(key);
+                break;
             }
         }
+
+        logger.info("Link closed, urlParams {}, converId {}", urlParams, conversationId);
+        logger.info("Remaining number of people in the chat Room: {}", clientJoinRoom.size());
     }
 
     @OnEvent("1V1CommunicateVideo")
-    public void on1V1CommunicateVideo(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
-        logger.info("1V1CommunicateVideo {}",receiveMessageDTO);
-        if(true) { // group friend type
+    public void on1V1CommunicateVideo(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
+        logger.info("1V1CommunicateVideo {}", receiveMessageDTO);
+        if (true) { // group friend type
             SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
-            if(null != socketIOClient){
-                socketIOClient.sendEvent("1V1CommunicateVideo",receiveMessageDTO);
-            }else {
-                logger.info("Not online user: {}, user Id {}",receiveMessageDTO.getTargetName(),receiveMessageDTO.getTargetId());
+            if (null != socketIOClient) {
+                socketIOClient.sendEvent("1V1CommunicateVideo", receiveMessageDTO);
+            } else {
+                logger.info("Not online user: {}, user Id {}", receiveMessageDTO.getTargetName(), receiveMessageDTO.getTargetId());
                 SocketIOClient socketIOClient02 = clientMap.get(receiveMessageDTO.getUserId().toString());
-                socketIOClient02.sendEvent("notOnline","The other party is not online");
+                socketIOClient02.sendEvent("notOnline", "The other party is not online");
             }
         }
     }
 
     @OnEvent("1V1CommunicatePhone")
-    public void on1V1CommunicatePhone(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
-        logger.info("1V1CommunicatePhone {}",receiveMessageDTO);
-        if(true) { // group friend type
+    public void on1V1CommunicatePhone(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
+        logger.info("1V1CommunicatePhone {}", receiveMessageDTO);
+        if (true) { // group friend type
             SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
-            if(null != socketIOClient){
-                socketIOClient.sendEvent("1V1CommunicatePhone",receiveMessageDTO);
-            }else {
-                logger.info("Not online user: {}, user Id {}",receiveMessageDTO.getTargetName(),receiveMessageDTO.getTargetId());
+            if (null != socketIOClient) {
+                socketIOClient.sendEvent("1V1CommunicatePhone", receiveMessageDTO);
+            } else {
+                logger.info("Not online user: {}, user Id {}", receiveMessageDTO.getTargetName(), receiveMessageDTO.getTargetId());
                 SocketIOClient socketIOClient02 = clientMap.get(receiveMessageDTO.getUserId().toString());
-                socketIOClient02.sendEvent("notOnline","The other party is not online");
+                socketIOClient02.sendEvent("notOnline", "The other party is not online");
             }
         }
     }
 
     @OnEvent("ManyToManyCommunicateVideo")
-    public void onManyToManyCommunicateVideo(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO){
-        logger.info("ManyToManyCommunicateVideo {}",receiveMessageDTO);
-        if(true) { // group friend type
+    public void onManyToManyCommunicateVideo(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
+        logger.info("ManyToManyCommunicateVideo {}", receiveMessageDTO);
+        if (true) { // group friend type
             SocketIOClient socketIOClient = clientMap.get(receiveMessageDTO.getTargetId().toString());
-            if(null != socketIOClient){
-                socketIOClient.sendEvent("ManyToManyCommunicateVideo",receiveMessageDTO);
-            }else {
-                logger.info("Not online user: {}, user ID {}",receiveMessageDTO.getTargetName(),receiveMessageDTO.getTargetId());
+            if (null != socketIOClient) {
+                socketIOClient.sendEvent("ManyToManyCommunicateVideo", receiveMessageDTO);
+            } else {
+                logger.info("Not online user: {}, user ID {}", receiveMessageDTO.getTargetName(), receiveMessageDTO.getTargetId());
                 SocketIOClient socketIOClient02 = clientMap.get(receiveMessageDTO.getUserId().toString());
-                socketIOClient02.sendEvent("notOnline","The other party is not online");
+                socketIOClient02.sendEvent("notOnline", "The other party is not online");
             }
         }
     }
@@ -227,9 +248,9 @@ public class SocketEventListener {
     @OnEvent("onAccessChatRandom")
     public void accessChatRandom(SocketIOClient client, ReceiveMessageDTO topicChildren) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
-        clientChatRandom.put(urlParams.get("uid").get(0) + "-" + topicChildren.getData().get("id").toString(),client);
-        logger.info("link open, urlParams {}",urlParams);
-        logger.info("Number of people joining to chat random: {}",clientChatRandom.size());
+        clientChatRandom.put(urlParams.get("uid").get(0) + "-" + topicChildren.getData().get("id").toString(), client);
+        logger.info("link open, urlParams {}", urlParams);
+        logger.info("Number of people joining to chat random: {}", clientChatRandom.size());
 
         var engagement = EngagementChatDTO.builder()
                 .timeAccess(LocalDateTime.now().toString())
@@ -243,12 +264,12 @@ public class SocketEventListener {
 //                Long.parseLong(engagement.getUrlParams().get("uid").get(0)),
 //                engagement.getTimeAccess());
 
-        client.sendEvent("userAccess",engagement);
+        client.sendEvent("userAccess", engagement);
 
         ParticipantRandomResponse p = onCreateChatRandom();
 
-        if(p!=null) {
-            for(PartnerDTO key: p.getPartnerDTO()) {
+        if (p != null) {
+            for (PartnerDTO key : p.getPartnerDTO()) {
                 logger.info("Something on if {}", String.valueOf(key.getId()));
                 SocketIOClient client2 = clientMap.get(String.valueOf(key.getId()));
                 client2.sendEvent("partiAccess", p);
@@ -261,7 +282,7 @@ public class SocketEventListener {
     public void leaveChatRandom(SocketIOClient client, ReceiveMessageDTO topicChildren) {
         Map<String, List<String>> urlParams = client.getHandshakeData().getUrlParams();
         String moveUser = urlParams.get("uid").get(0);
-        clientChatRandom.remove(moveUser + "-" + topicChildren.getData().get("id").toString(),client);
+        clientChatRandom.remove(moveUser + "-" + topicChildren.getData().get("id").toString(), client);
         logger.info("Link closed, urlParams {}", urlParams);
         logger.info("Remaining number of people chat random: {}", clientChatRandom.size());
         client.sendEvent("userLeaved",
@@ -297,7 +318,7 @@ public class SocketEventListener {
                                 .tpcId(tpcId)
                                 .build());
 
-                for (String user: lists) {
+                for (String user : lists) {
                     clientChatRandom.remove(user);
                 }
                 lists.clear();
@@ -362,8 +383,10 @@ public class SocketEventListener {
 //            String value = entry.getValue();
 //            logger.info("Key: " + key + ", Value: " + value);
 //        }
-
         return participantRandomResponse;
-
     }
+
+
+
+
 }

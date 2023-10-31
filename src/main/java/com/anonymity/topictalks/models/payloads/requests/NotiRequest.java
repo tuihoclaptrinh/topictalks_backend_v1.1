@@ -26,4 +26,5 @@ public class NotiRequest {
     private Long conversationId;
     private Long postId;
     private String messageNoti;
+    private Long partnerId;
 }

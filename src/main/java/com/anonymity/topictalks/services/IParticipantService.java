@@ -28,6 +28,7 @@ public interface IParticipantService {
     String getUserIdsByConversation(ConversationPO conversationPO);
 
     List<PartnerDTO> getAllUserByConversationId(long id);
+    List<Long> getListUserIdByConversation(ConversationPO conversationPO);
 
     List<ParticipantResponse> getAllParticipantByUserId(long id);
     ParticipantResponse getParticipantByConversationIdAndUserId(long conversationId,long userId);

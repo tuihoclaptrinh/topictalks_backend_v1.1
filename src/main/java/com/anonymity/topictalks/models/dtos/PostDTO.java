@@ -18,8 +18,10 @@ public class PostDTO {
     private String content;
     private String img_url;
     private long tparent_id;
+    private String topicName;
     private long author_id;
     private Long status;
+    private String statusName;
     private String username;
     private String avatar_url;
     private boolean author_active;

@@ -20,6 +20,6 @@ import java.util.List;
 
 @Repository
 public interface IMessageNotificationRepository extends IBaseRepository<MessageNotificationPO, Long> {
-    @Query(value = "SELECT DISTINCT * FROM message_notification m WHERE m.user_id = :userId OR m.partner_id = :userId ", nativeQuery = true)
+    @Query(value = "SELECT * FROM message_notification m WHERE m.user_id = :userId", nativeQuery = true)
     List<MessageNotificationPO> findAllByUserId(@Param(value = "userId") long userId);
 }

@@ -440,6 +440,16 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
+    public List<Long> getListUserIdByConversation(ConversationPO conversationPO) {
+        List<Long> result = new ArrayList<>();
+        List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
+        for (ParticipantPO par:list) {
+            result.add(par.getUserInfo().getId());
+        }
+        return result;
+    }
+
+    @Override
     @Transactional
     public void removeToGroupChat(long userId, long conversationId) {
         UserPO user = userRepository.findById(userId).orElseThrow(() -> new GlobalException(404, "User not found"));

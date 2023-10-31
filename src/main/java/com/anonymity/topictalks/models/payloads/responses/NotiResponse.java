@@ -33,7 +33,7 @@ public class NotiResponse {
     private Long partnerId;
     private String partnerUsername;
     private String chatName;
-    private String messageNoti;
+    private String message;
     private Long conversationId;
     private Long postId;
     private Boolean isGroupChat;
