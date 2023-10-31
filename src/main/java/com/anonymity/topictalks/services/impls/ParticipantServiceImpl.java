@@ -443,7 +443,9 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<Long> result = new ArrayList<>();
         List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
         for (ParticipantPO par:list) {
-            result.add(par.getUserInfo().getId());
+            if (par.getIsMember()==true){
+                result.add(par.getUserInfo().getId());
+            }
         }
         return result;
     }
@@ -465,7 +467,8 @@ public class ParticipantServiceImpl implements IParticipantService {
                 conversation.getChatName(),
                 conversation.getIsGroupChat(),
                 conversation.getTopicChildren(),
-                conversation.getAdminId());
+                conversation.getAdminId(),
+                conversation.getAvatarGroupImg());
     }
 
 }

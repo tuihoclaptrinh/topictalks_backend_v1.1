@@ -13,5 +13,6 @@ import org.w3c.dom.Text;
 public class TopicChildrenRequest {
     private long topicParentId;
     private String topicChildrenName;
+    private String shortDescription;
     private String image;
 }

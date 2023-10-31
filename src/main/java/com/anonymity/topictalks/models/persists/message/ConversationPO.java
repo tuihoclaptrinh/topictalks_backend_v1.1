@@ -90,6 +90,9 @@ public class ConversationPO extends DateAudit implements Serializable {
     @Column(name = "adminId",nullable = true)
     private long adminId;
 
+    @Column(name = "avt_group_img",nullable = true)
+    private String avatarGroupImg;
+
     @OneToMany(mappedBy = "conversationInfo", cascade = CascadeType.ALL)
     private List<ParticipantPO> participants;
 }

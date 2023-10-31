@@ -82,4 +82,7 @@ public class TopicChildrenPO extends DateAudit implements Serializable {
     @Lob
     @Column(name = "image", columnDefinition = "LONGTEXT", nullable = false)
     private String image;
+
+    @Column(name = "short_descript",nullable = false)
+    private String shortDescript;
 }

@@ -16,4 +16,5 @@ public class ConversationDTO {
     private Boolean isGroupChat;
     private TopicChildrenPO topicChildren;
     private long adminId;
+    private String avtGroupImg;
 }

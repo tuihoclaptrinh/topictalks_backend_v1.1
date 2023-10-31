@@ -31,6 +31,7 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
         }
         topicChildren.setTopicChildrenName(request.getTopicChildrenName());
         topicChildren.setTopicParentId(topicParent);
+        topicChildren.setShortDescript(request.getShortDescription());
         topicChildren.setImage(request.getImage());
         topicChildren.setCreatedAt(LocalDateTime.now());
         topicChildren.setUpdatedAt(LocalDateTime.now());
