@@ -173,34 +173,32 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<ParticipantResponse> responses = new ArrayList<>();
         List<ParticipantPO> list = participantRepository.findAllByUserInfo(userPO);
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getIsMember() == true) {
-                ParticipantResponse participant = new ParticipantResponse();
-                participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo()));
-                List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
-                        list.get(i).getConversationInfo().getId(),
-                        list.get(i).getUserInfo().getId());
-                List<PartnerDTO> listPartner = new ArrayList<>();
-                for (int j = 0; j < partnerIdList.size(); j++) {
-                    UserPO partner = userRepository.findById(partnerIdList.get(j))
-                            .orElseThrow(() -> new IllegalArgumentException("This user haven't exist."));
-                    PartnerDTO partnerDTO = new PartnerDTO();
-                    partnerDTO.setId(partner.getId());
-                    partnerDTO.setBanned(partner.getIsBanned());
-                    partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
-                    partnerDTO.setImage(partner.getImageUrl());
-                    partnerDTO.setUsername(partner.getUsername());
-                    partnerDTO.setActive(partner.isActive());
-                    UserPO partnerInfor = userRepository.findById(partner.getId()).orElse(null);
-                    ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), partnerInfor);
-                    partnerDTO.setMember(participantPO.getIsMember());
-                    listPartner.add(partnerDTO);
+            ParticipantResponse participant = new ParticipantResponse();
+            participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo()));
+            List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
+                    list.get(i).getConversationInfo().getId(),
+                    list.get(i).getUserInfo().getId());
+            List<PartnerDTO> listPartner = new ArrayList<>();
+            for (int j = 0; j < partnerIdList.size(); j++) {
+                UserPO partner = userRepository.findById(partnerIdList.get(j))
+                        .orElseThrow(() -> new IllegalArgumentException("This user haven't exist."));
+                PartnerDTO partnerDTO = new PartnerDTO();
+                partnerDTO.setId(partner.getId());
+                partnerDTO.setBanned(partner.getIsBanned());
+                partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
+                partnerDTO.setImage(partner.getImageUrl());
+                partnerDTO.setUsername(partner.getUsername());
+                partnerDTO.setActive(partner.isActive());
+                UserPO partnerInfor = userRepository.findById(partner.getId()).orElse(null);
+                ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), partnerInfor);
+                partnerDTO.setMember(participantPO.getIsMember());
+                listPartner.add(partnerDTO);
 
-                }
-                ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), userPO);
-                participant.setIsMember(participantPO.getIsMember().toString());
-                participant.setPartnerDTO(listPartner);
-                responses.add(participant);
             }
+            ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), userPO);
+            participant.setIsMember(participantPO.getIsMember().toString());
+            participant.setPartnerDTO(listPartner);
+            responses.add(participant);
         }
         return responses;
     }
@@ -451,8 +449,8 @@ public class ParticipantServiceImpl implements IParticipantService {
     public List<Long> getListUserIdByConversation(ConversationPO conversationPO) {
         List<Long> result = new ArrayList<>();
         List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
-        for (ParticipantPO par : list) {
-            if (par.getIsMember() == true) {
+        for (ParticipantPO par:list) {
+            if (par.getIsMember()==true){
                 result.add(par.getUserInfo().getId());
             }
         }
