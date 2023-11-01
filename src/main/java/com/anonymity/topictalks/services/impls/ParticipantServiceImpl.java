@@ -5,12 +5,10 @@ import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
-import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
-import com.anonymity.topictalks.models.dtos.ConversationDTO;
-import com.anonymity.topictalks.models.dtos.PartnerDTO;
-import com.anonymity.topictalks.models.dtos.UserDTO;
+import com.anonymity.topictalks.models.dtos.*;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
@@ -84,13 +82,8 @@ public class ParticipantServiceImpl implements IParticipantService {
 
     @Override
     public ParticipantRandomResponse createChatRandom(ChatRandomDTO chatRandomDTO) {
-        var conversationRequest = ConversationRequest.builder()
-                .chatName("RANDOM-CHAT-ANONYMOUS")
-                .topicChildrenId(chatRandomDTO.getTpcId())
-                .build();
-        var conv = conversationService.createConversationRandom(conversationRequest, false);
-        ParticipantRandomResponse participantRandomResponse = ParticipantRandomResponse
-                .builder().conversationInfor(conv).build();
+
+        ParticipantRandomResponse participantRandomResponse = new ParticipantRandomResponse();
         PartnerDTO partnerDTO;
         List<PartnerDTO> lists = new ArrayList<>();
         for (String user : chatRandomDTO.getUsers()) {
@@ -108,10 +101,35 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .build();
             lists.add(partnerDTO);
         }
-        boolean isExisted = checkExistConnectedOneToOneBefore(conv.getId(), lists.get(0).getId(), lists.get(1).getId());
-        if (isExisted) {
+        System.out.println("--------------------------------------> check data lists: uid1: "+lists.get(0).getId()+"; uid2: "+lists.get(1).getId());
+        ConversationPO converExisted = checkExistConnectedOneToOneBefore(chatRandomDTO.getTpcId(), lists.get(0).getId(), lists.get(1).getId());
+//        System.out.println("--------------------------------------> check data converExisted: "+converExisted.toString());
+
+        if (converExisted != null) {
+            TopicChildrenDTO topicChildrenDTO = TopicChildrenDTO.builder()
+                    .topicChildrenName(converExisted.getTopicChildren().getTopicChildrenName())
+                    .id(converExisted.getTopicChildren().getId())
+                    .image(converExisted.getTopicChildren().getImage())
+                    .build();
+            ConversationRandomResponse response = ConversationRandomResponse.builder()
+                    .id(converExisted.getId())
+                    .chatName(converExisted.getChatName())
+                    .isGroupChat(converExisted.getIsGroupChat())
+                    .adminId(converExisted.getAdminId())
+                    .topicChildren(topicChildrenDTO)
+                    .build();
+            participantRandomResponse.setConversationRandomResponse(response);
             participantRandomResponse.setPartnerDTO(lists);
+            return participantRandomResponse;
         } else {
+            var conversationRequest = ConversationRequest.builder()
+                    .chatName("RANDOM-CHAT-ANONYMOUS")
+                    .topicChildrenId(chatRandomDTO.getTpcId())
+                    .build();
+            System.out.println("------------------------> Check conversation request: "+conversationRequest);
+            var conv = conversationService.createConversationRandom(conversationRequest, false);
+            participantRandomResponse = ParticipantRandomResponse
+                    .builder().conversationRandomResponse(conv).build();
             var key = new ParticipantKey();
             for (PartnerDTO user : lists) {
                 var participant = ParticipantPO.builder()
@@ -123,8 +141,9 @@ public class ParticipantServiceImpl implements IParticipantService {
                 participantRepository.save(participant);
             }
             participantRandomResponse.setPartnerDTO(lists);
+            return participantRandomResponse;
         }
-        return participantRandomResponse;
+
     }
 
     /**
@@ -472,9 +491,10 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
-    public boolean checkExistConnectedOneToOneBefore(long topicId, long userId, long partnerId) {
+    public ConversationPO checkExistConnectedOneToOneBefore(long topicId, long userId, long partnerId) {
         List<ParticipantPO> isExisted = participantRepository.getParticipantsByTopicChildenIdAndUserIds(topicId, userId, partnerId);
-        return isExisted.size() == 2 ? true : false;
+//        System.out.println("---------------------------> Check data getConversationInfo: "+isExisted.get(0).getConversationInfo().toString());
+        return isExisted.size() == 2 ? isExisted.get(0).getConversationInfo() : null;
     }
 
     private ConversationDTO convertToConversationDTO(ConversationPO conversation) {

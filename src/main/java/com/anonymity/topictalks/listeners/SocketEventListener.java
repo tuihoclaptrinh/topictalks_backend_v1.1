@@ -266,9 +266,13 @@ public class SocketEventListener {
 
         ParticipantRandomResponse p = onCreateChatRandom();
 
+        logger.info("=======================> ParticipantRandomResponse: {}", String.valueOf(p));
+
+        List<PartnerDTO> partnerDTO = p.getPartnerDTO();
+
         if (p != null) {
-            for (PartnerDTO key : p.getPartnerDTO()) {
-                logger.info("Something on if {}", String.valueOf(key.getId()));
+            for (PartnerDTO key : partnerDTO) {
+                logger.info("Something on if userId: {}", String.valueOf(key.getId()));
                 SocketIOClient client2 = clientMap.get(String.valueOf(key.getId()));
                 client2.sendEvent("partiAccess", p);
             }
@@ -291,12 +295,10 @@ public class SocketEventListener {
                         .timeLeaved(LocalDateTime.now().toString())
                         .build()
         );
-
     }
 
     @OnEvent("onCreateChatRandom")
     public ParticipantRandomResponse onCreateChatRandom() {
-
         Collection<String> keys = clientChatRandom.keySet();
         List<String> lists = new ArrayList<>();
         ParticipantRandomResponse participantRandomResponse = null;

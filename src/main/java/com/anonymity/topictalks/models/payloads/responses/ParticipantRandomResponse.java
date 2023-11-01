@@ -2,6 +2,7 @@ package com.anonymity.topictalks.models.payloads.responses;
 
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParticipantRandomResponse implements Serializable {
-    private ConversationRandomResponse conversationInfor;
+    @JsonProperty("conversationRandomResponse")
+    private ConversationRandomResponse conversationRandomResponse;
+    @JsonProperty("partnerDTO")
     private List<PartnerDTO> partnerDTO;
 }
