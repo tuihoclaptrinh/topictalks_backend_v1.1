@@ -107,16 +107,23 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .active(us.isActive())
                     .build();
             lists.add(partnerDTO);
-            var key = new ParticipantKey();
-            var participant = ParticipantPO.builder()
-                    .id(key)
-                    .userInfo(userRepository.findById(uId).orElse(null))
-                    .conversationInfo(conversationRepository.findById(conv.getId()).orElse(null))
-                    .isMember(true)
-                    .build();
-            participantRepository.save(participant);
         }
-        participantRandomResponse.setPartnerDTO(lists);
+        boolean isExisted = checkExistConnectedOneToOneBefore(conv.getId(), lists.get(0).getId(), lists.get(1).getId());
+        if (isExisted) {
+            participantRandomResponse.setPartnerDTO(lists);
+        } else {
+            var key = new ParticipantKey();
+            for (PartnerDTO user : lists) {
+                var participant = ParticipantPO.builder()
+                        .id(key)
+                        .userInfo(userRepository.findById(user.getId()).orElse(null))
+                        .conversationInfo(conversationRepository.findById(conv.getId()).orElse(null))
+                        .isMember(true)
+                        .build();
+                participantRepository.save(participant);
+            }
+            participantRandomResponse.setPartnerDTO(lists);
+        }
         return participantRandomResponse;
     }
 
@@ -462,6 +469,12 @@ public class ParticipantServiceImpl implements IParticipantService {
         } catch (GlobalException e) {
             throw new GlobalException(404, "This participant not found");
         }
+    }
+
+    @Override
+    public boolean checkExistConnectedOneToOneBefore(long topicId, long userId, long partnerId) {
+        List<ParticipantPO> isExisted = participantRepository.getParticipantsByTopicChildenIdAndUserIds(topicId, userId, partnerId);
+        return isExisted.size() == 2 ? true : false;
     }
 
     private ConversationDTO convertToConversationDTO(ConversationPO conversation) {

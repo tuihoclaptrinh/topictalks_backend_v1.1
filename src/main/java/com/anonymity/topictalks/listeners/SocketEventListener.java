@@ -88,7 +88,6 @@ public class SocketEventListener {
 
     @OnEvent("sendMessage")
     public void onSendMessage(SocketIOClient client, ReceiveMessageDTO receiveMessageDTO) {
-//        NotiRequest notiRequest;
         MessagePO messagePO = MessagePO.builder()
                 .senderId(userRepository.findById(receiveMessageDTO.getUserId()).orElse(null))
                 .conversationId(conversationRepository.findById(receiveMessageDTO.getConversationId()).orElse(null))
@@ -115,7 +114,6 @@ public class SocketEventListener {
                 );
                 stack.push(notiMessDTO);
             }
-//            for (String s : split) {
             for (long s : listUserIdInConversation) {
                 if (StringUtils.isEmpty(s)) {
                     continue;

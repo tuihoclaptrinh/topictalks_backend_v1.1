@@ -47,4 +47,6 @@ public interface IParticipantService {
 
     void removeToGroupChat(long userId, long conversationId);
 
+    boolean checkExistConnectedOneToOneBefore(long topicId, long userId, long partnerId);
+
 }
