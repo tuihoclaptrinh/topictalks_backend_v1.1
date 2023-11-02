@@ -39,6 +39,13 @@ public class UserServiceImpl implements IUserService {
         if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
                 LocalDateTime.now()).getSeconds() < (1 * 60)) {
             user.setVerify(true);
+            try {
+                emailUtils.sendActiveAccount(email);
+            } catch (MessagingException e) {
+                throw new RuntimeException("Unable to active account please try again");
+            } catch (TemplateException | IOException e) {
+                throw new RuntimeException(e);
+            }
             userRepository.save(user);
             return "OTP verified you can login";
         }
@@ -49,20 +56,22 @@ public class UserServiceImpl implements IUserService {
     public String regenerateOtp(String email) {
         UserPO user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        String otp = otpUtils.generateOtp();
-        try {
-            emailUtils.sendOtpEmail(email, otp);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Unable to send otp please try again");
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(user.isActive()) {
+            String otp = otpUtils.generateOtp();
+            try {
+                emailUtils.sendOtpEmail(email, otp);
+            } catch (MessagingException e) {
+                throw new RuntimeException("Unable to send otp please try again");
+            } catch (TemplateException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            user.setOtp(otp);
+            user.setOtpGeneratedTime(LocalDateTime.now());
+            userRepository.save(user);
+            return "Email sent... please verify account within 1 minute";
+        } else {
+            return "This account has been verified.";
         }
-        user.setOtp(otp);
-        user.setOtpGeneratedTime(LocalDateTime.now());
-        userRepository.save(user);
-        return "Email sent... please verify account within 1 minute";
     }
 
     /**
