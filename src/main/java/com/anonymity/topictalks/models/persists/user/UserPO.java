@@ -115,6 +115,9 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     )
     private String nickname;
 
+    @Column(name = "is_verify")
+    private boolean isVerify;
+
     @Column(name = "otp", nullable = true)
     private String otp;
 

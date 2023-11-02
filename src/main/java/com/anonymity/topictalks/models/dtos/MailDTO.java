@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,5 +25,5 @@ public class MailDTO {
     private String to;
     private String subject;
     private String content;
-    private Map<String, String> model;
+    private Map<String, String> model = new HashMap<>();
 }
