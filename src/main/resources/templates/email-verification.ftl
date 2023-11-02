@@ -70,31 +70,43 @@
                                                     Hello ${userName},</h1>
                                                 <p class=""
                                                    style="margin: 20px 0; font-size: 16px; mso-line-height-rule: exactly; line-height: 24px;">
-                                                    <span style="font-weight: 400;">Thank you for joining <strong>Customer Engagement App</strong>, an efficient and smart solution to manage your health!</span><br/><br/><span
-                                                            style="font-weight: 400;">To complete the registration process, please confirm your email address to activate your account</span>
+                                                    <span style="font-weight: 400;">Thank you for joining <strong>TopicTalks Application</strong>, an efficient and smart solution to manage your conversation!</span><br/><br/><span
+                                                            style="font-weight: 400;">To complete the registration process, please confirm your email address to activate your account with otp below:</span>
+                                                    <!-- Add the OTP digits here -->
+                                                    <!-- Add the OTP digits here -->
+                                                    <!-- Add the OTP digits here -->
                                                 <table style="border: 0; width: 100%;" cellspacing="0" cellpadding="0">
                                                     <tbody>
                                                     <tr>
-                                                        <td>
-                                                            <table class="button mobile-w-full"
-                                                                   style="border: 0px; border-radius: 7px; margin: 0px auto; width: 525px; background-color: #008bcb; height: 50px;"
-                                                                   cellspacing="0" cellpadding="0" align="center">
-                                                                <tbody>
-                                                                <tr>
-                                                                    <td class="button__td "
-                                                                        style="border-radius: 7px; text-align: center; width: 523px;"><!-- [if mso]>
-                                                                        <a href="" class="button__a" target="_blank"
-                                                                           style="border-radius: 4px; color: #FFFFFF; display: block; font-family: sans-serif; font-size: 18px; font-weight: bold; mso-height-rule: exactly; line-height: 1.1; padding: 14px 18px; text-decoration: none; text-transform: none; border: 1px solid #316FEA;"> </a>
-                                                                        <![endif]--> <!-- [if !mso]><!--> <a
-                                                                                class="button__a"
-                                                                                style="border-radius: 4px; color: #ffffff; display: block; font-family: sans-serif; font-size: 18px; font-weight: bold; mso-height-rule: exactly; line-height: 1.1; padding: 14px 18px; text-decoration: none; text-transform: none; border: 0;"
-                                                                                href="${userEmailTokenVerificationLink}"
-                                                                                target="_blank"
-                                                                                rel="noopener">Confirm
-                                                                            email</a> <!--![endif]--></td>
-                                                                </tr>
-                                                                </tbody>
-                                                            </table>
+                                                        <td style="padding: 0 5px;">
+                                                            <div class="otp-box" style="border: 2px solid #316FEA; border-radius: 4px; text-align: center; width: 50px; height: 50px;">
+                                                                <div style="font-size: 24px; font-weight: bold; line-height: 50px; display: inline-block; vertical-align: middle;">${otpDigit1}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 0 5px;">
+                                                            <div class="otp-box" style="border: 2px solid #316FEA; border-radius: 4px; text-align: center; width: 50px; height: 50px;">
+                                                                <div style="font-size: 24px; font-weight: bold; line-height: 50px; display: inline-block; vertical-align: middle;">${otpDigit2}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 0 5px;">
+                                                            <div class="otp-box" style="border: 2px solid #316FEA; border-radius: 4px; text-align: center; width: 50px; height: 50px;">
+                                                                <div style="font-size: 24px; font-weight: bold; line-height: 50px; display: inline-block; vertical-align: middle;">${otpDigit3}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 0 5px;">
+                                                            <div class="otp-box" style="border: 2px solid #316FEA; border-radius: 4px; text-align: center; width: 50px; height: 50px;">
+                                                                <div style="font-size: 24px; font-weight: bold; line-height: 50px; display: inline-block; vertical-align: middle;">${otpDigit4}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 0 5px;">
+                                                            <div class="otp-box" style="border: 2px solid #316FEA; border-radius: 4px; text-align: center; width: 50px; height: 50px;">
+                                                                <div style="font-size: 24px; font-weight: bold; line-height: 50px; display: inline-block; vertical-align: middle;">${otpDigit5}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 0 5px;">
+                                                            <div class="otp-box" style="border: 2px solid #316FEA; border-radius: 4px; text-align: center; width: 50px; height: 50px;">
+                                                                <div style="font-size: 24px; font-weight: bold; line-height: 50px; display: inline-block; vertical-align: middle;">${otpDigit6}</div>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -111,7 +123,7 @@
                                                         question</a></p>
                                                 <p class="tw-signoff"
                                                    style="margin: 45px 0 5px; font-size: 16px; mso-line-height-rule: exactly; line-height: 24px;">
-                                                    Our best, <br/> The Customer Engagement App team</p>
+                                                    Our best, <br/> The Customer Support Topictalks team</p>
                                             </td>
                                         </tr>
                                         </tbody>

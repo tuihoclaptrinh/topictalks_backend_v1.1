@@ -21,7 +21,6 @@ public interface IUserService {
 
     String regenerateOtp(String email);
 
-    String forgotPassword(String email);
     String setPassword(String email, String newPassword);
 
     boolean updateAvatar(String avatar, long id);

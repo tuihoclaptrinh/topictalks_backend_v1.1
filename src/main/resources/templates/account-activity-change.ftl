@@ -90,7 +90,7 @@
                                                         question</a></p>
                                                 <p class="tw-signoff"
                                                    style="margin: 45px 0 5px; font-size: 16px; mso-line-height-rule: exactly; line-height: 24px;">
-                                                    Our best, <br/> The Customer Engagement App team</p>
+                                                    Our best, <br/> The Customer Support Topictalks team</p>
                                             </td>
                                         </tr>
                                         </tbody>

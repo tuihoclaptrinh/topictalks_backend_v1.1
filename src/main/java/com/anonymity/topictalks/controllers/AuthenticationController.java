@@ -8,11 +8,13 @@ import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse
 import com.anonymity.topictalks.models.payloads.responses.RefreshTokenResponse;
 import com.anonymity.topictalks.services.IAuthenticationService;
 import com.anonymity.topictalks.services.IRefreshTokenService;
+import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +39,7 @@ public class AuthenticationController {
     private final IAuthenticationService authenticationService;
     private final IRefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
+    private final IUserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request) {
@@ -63,6 +66,22 @@ public class AuthenticationController {
     public Authentication getAuthentication(@RequestBody AuthenticationRequest request) {
         return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+    }
+
+    @PutMapping("/forgot-password")
+    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestHeader String newPassword) {
+        return new ResponseEntity<>(userService.setPassword(email, newPassword), HttpStatus.OK);
+    }
+
+    @PostMapping("/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam String email,
+                                                @RequestParam String otp) {
+        return new ResponseEntity<>(userService.verifyAccount(email, otp), HttpStatus.OK);
+    }
+
+    @PostMapping("/regenerate-otp")
+    public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
+        return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
     }
 
 }
