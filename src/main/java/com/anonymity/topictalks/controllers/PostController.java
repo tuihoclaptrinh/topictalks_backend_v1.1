@@ -111,7 +111,7 @@ public class PostController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData("Currently, this user haven't created any posts yet.");
+            dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }

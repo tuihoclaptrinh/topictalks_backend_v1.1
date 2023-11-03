@@ -154,6 +154,7 @@ public class NotificationServiceImpl implements INotificationService {
             response.setPartnerUsername(post.getPostId().getAuthorId().getUsername());
             response.setMessage(post.getMessageNoti());
             response.setPostId(post.getPostId().getId());
+            response.setPostImage(post.getPostId().getImage());
             response.setIsRead(post.getIsRead());
             response.setCreateAt(post.getCreatedAt());
             list.add(response);
@@ -169,6 +170,7 @@ public class NotificationServiceImpl implements INotificationService {
             response.setChatName(message.getConversationId().getChatName());
             response.setConversationId(message.getConversationId().getId());
             response.setIsGroupChat(message.getConversationId().getIsGroupChat());
+            response.setGroupImage(message.getConversationId().getAvatarGroupImg());
             response.setIsRead(message.getIsRead());
             response.setCreateAt(message.getCreatedAt());
             list.add(response);

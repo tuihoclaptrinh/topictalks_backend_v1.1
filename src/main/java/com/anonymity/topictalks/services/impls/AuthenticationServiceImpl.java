@@ -97,6 +97,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         new_user.setEmail(request.getEmail().toLowerCase(Locale.ROOT));
         new_user.setDob(null);
         new_user.setPassword(passwordEncoder.encode(request.getPassword()));
+        new_user.setVerify(false);
         new_user.setOtp(otp);
         new_user.setOtpGeneratedTime(LocalDateTime.now());
         new_user.setBio("");

@@ -87,7 +87,7 @@ public class TopicChildrenController {
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//204
             dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData("This topic children doesn't exist.");
+            dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }

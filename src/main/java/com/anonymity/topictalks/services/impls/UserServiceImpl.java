@@ -38,7 +38,14 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
         if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
                 LocalDateTime.now()).getSeconds() < (1 * 60)) {
-            user.setActive(true);
+            user.setVerify(true);
+            try {
+                emailUtils.sendActiveAccount(email);
+            } catch (MessagingException e) {
+                throw new RuntimeException("Unable to active account please try again");
+            } catch (TemplateException | IOException e) {
+                throw new RuntimeException(e);
+            }
             userRepository.save(user);
             return "OTP verified you can login";
         }
@@ -49,41 +56,22 @@ public class UserServiceImpl implements IUserService {
     public String regenerateOtp(String email) {
         UserPO user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        String otp = otpUtils.generateOtp();
-        try {
-            emailUtils.sendOtpEmail(email, otp);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Unable to send otp please try again");
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(user.isActive()) {
+            String otp = otpUtils.generateOtp();
+            try {
+                emailUtils.sendOtpEmail(email, otp);
+            } catch (MessagingException e) {
+                throw new RuntimeException("Unable to send otp please try again");
+            } catch (TemplateException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            user.setOtp(otp);
+            user.setOtpGeneratedTime(LocalDateTime.now());
+            userRepository.save(user);
+            return "Email sent... please verify account within 1 minute";
+        } else {
+            return "This account has been verified.";
         }
-        user.setOtp(otp);
-        user.setOtpGeneratedTime(LocalDateTime.now());
-        userRepository.save(user);
-        return "Email sent... please verify account within 1 minute";
-    }
-
-    /**
-     * @param email
-     * @return
-     */
-    @Override
-    public String forgotPassword(String email) {
-        UserPO user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: {}" + email));
-
-        try {
-            emailUtils.sendSetPasswordEmail(email);
-        } catch (MessagingException ex) {
-            throw new RuntimeException("Unable to send set password email please try again");
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return "Please check your email to set new password to your account";
     }
 
     /**
@@ -98,6 +86,13 @@ public class UserServiceImpl implements IUserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        try {
+            emailUtils.sendSetPassword(email);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send otp please try again");
+        } catch (TemplateException | IOException e) {
+            throw new RuntimeException(e);
+        }
         return "New password set successfully !";
     }
 

@@ -87,7 +87,7 @@ public class CommentController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData("");
+            dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
@@ -110,7 +110,7 @@ public class CommentController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData("");
+            dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }

@@ -6,7 +6,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,7 +15,6 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author de140172 - author
@@ -47,10 +45,17 @@ public class EmailUtils {
     public void sendOtpEmail(String email, String otp)
             throws IOException, TemplateException, MessagingException {
         MailDTO mail = new MailDTO();
-        mail.setSubject("Email Verification [Team CEP]");
+        mail.setSubject("Email Verification [Team Support Topictalks]");
         mail.setTo(email);
         mail.setFrom(mailFrom);
         mail.getModel().put("userName", email);
+        String[] otpDigits = otp.split("");
+        mail.getModel().put("otpDigit1", otpDigits[0]);
+        mail.getModel().put("otpDigit2", otpDigits[1]);
+        mail.getModel().put("otpDigit3", otpDigits[2]);
+        mail.getModel().put("otpDigit4", otpDigits[3]);
+        mail.getModel().put("otpDigit5", otpDigits[4]);
+        mail.getModel().put("otpDigit6", otpDigits[5]);
         mail.getModel().put("userEmailTokenVerificationLink", "http://localhost:5000/verify-account?email="+email+"&otp="+otp);
 
         templateConfiguration.setClassForTemplateLoading(getClass(), basePackagePath);
@@ -60,12 +65,30 @@ public class EmailUtils {
         send(mail);
     }
 
-    public void sendSetPasswordEmail(String email) throws IOException, TemplateException, MessagingException {
-                MailDTO mail = new MailDTO();
-        mail.setSubject("Account Status Change [Team CEP]");
+    public void sendActiveAccount(String email) throws IOException, TemplateException, MessagingException {
+        MailDTO mail = new MailDTO();
+        mail.setSubject("Account Status Change [Team Support Topictalks]");
         mail.setTo(email);
         mail.setFrom(mailFrom);
         mail.getModel().put("userName", email);
+        mail.getModel().put("action", "Account Activation");
+        mail.getModel().put("actionStatus", "Completed");
+
+        templateConfiguration.setClassForTemplateLoading(getClass(), basePackagePath);
+        Template template = templateConfiguration.getTemplate("account-activity-change.ftl");
+        String mailContent = FreeMarkerTemplateUtils.processTemplateIntoString(template, mail.getModel());
+        mail.setContent(mailContent);
+        send(mail);
+    }
+
+    public void sendSetPassword(String email) throws IOException, TemplateException, MessagingException {
+        MailDTO mail = new MailDTO();
+        mail.setSubject("Account Status Change [Team Support Topictalks]");
+        mail.setTo(email);
+        mail.setFrom(mailFrom);
+        mail.getModel().put("userName", email);
+        mail.getModel().put("action", "Password Changing");
+        mail.getModel().put("actionStatus", "Completed");
 
         templateConfiguration.setClassForTemplateLoading(getClass(), basePackagePath);
         Template template = templateConfiguration.getTemplate("account-activity-change.ftl");

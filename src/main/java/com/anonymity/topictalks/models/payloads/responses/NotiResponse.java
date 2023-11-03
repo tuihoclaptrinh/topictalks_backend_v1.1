@@ -36,8 +36,9 @@ public class NotiResponse {
     private String message;
     private Long conversationId;
     private Long postId;
+    private String postImage;
     private Boolean isGroupChat;
+    private String groupImage;
     private Boolean isRead;
-    @JsonIgnore
     private LocalDateTime createAt;
 }

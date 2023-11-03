@@ -29,27 +29,6 @@ import java.util.List;
 public class UserController {
     private final IUserService userService;
 
-    @PostMapping("/verify-account")
-    public ResponseEntity<String> verifyAccount(@RequestParam String email,
-                                                @RequestParam String otp) {
-        return new ResponseEntity<>(userService.verifyAccount(email, otp), HttpStatus.OK);
-    }
-
-    @PostMapping("/regenerate-otp")
-    public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
-        return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
-    }
-
-    @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
-        return new ResponseEntity<>(userService.forgotPassword(email), HttpStatus.OK);
-    }
-
-    @PutMapping("/set-password")
-    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestHeader String newPassword) {
-        return new ResponseEntity<>(userService.setPassword(email, newPassword), HttpStatus.OK);
-    }
-
     @PostMapping("/unban/{userId}")
     public ResponseEntity<String> unban(@PathVariable("userId") Long id) {
         userService.unBanUser(id);
@@ -87,7 +66,7 @@ public class UserController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData("");
+            dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
@@ -111,7 +90,7 @@ public class UserController {
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
             dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
             dataResponse.setSuccess(false);
-            dataResponse.setData("");
+            dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
