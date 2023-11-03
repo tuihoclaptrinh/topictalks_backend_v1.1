@@ -36,8 +36,8 @@ public interface IParticipantRepository extends IBaseRepository<ParticipantPO, P
     ParticipantPO findByConversationInfoAndAndUserInfo(ConversationPO conversationPO, UserPO userPO);
 
     void deleteByConversationInfoAndUserInfo(ConversationPO conversationPO, UserPO userPO);
-    @Query(value = "SELECT * FROM participant p" +
-            "JOIN conversation c ON p.conversation_id = c.conversation_id" +
+    @Query(value = "SELECT * FROM participant p " +
+            "JOIN conversation c ON p.conversation_id = c.conversation_id " +
             "WHERE c.topic_children_id = :tid AND c.is_group_chat = false AND p.user_id IN (:uid, :pid)", nativeQuery = true)
     List<ParticipantPO> getParticipantsByTopicChildenIdAndUserIds(@Param(value = "tid") long topicId, @Param(value = "uid") long userId,@Param(value = "pid") long partnerId);
 }
