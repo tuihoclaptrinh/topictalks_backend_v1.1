@@ -5,10 +5,7 @@ import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
-import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
-import com.anonymity.topictalks.models.dtos.ConversationDTO;
-import com.anonymity.topictalks.models.dtos.PartnerDTO;
-import com.anonymity.topictalks.models.dtos.UserDTO;
+import com.anonymity.topictalks.models.dtos.*;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
@@ -20,6 +17,7 @@ import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IConversationService;
+import com.anonymity.topictalks.services.IMessageService;
 import com.anonymity.topictalks.services.IParticipantService;
 import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
@@ -51,6 +49,7 @@ public class ParticipantServiceImpl implements IParticipantService {
     private final IUserRepository userRepository;
     private final IConversationRepository conversationRepository;
     private final ITopicChildrenRepository topicChildrenRepository;
+    private final IMessageService messageService;
     private final IUserService userService;
     private Logger logger = LoggerFactory.getLogger(ParticipantServiceImpl.class);
 
@@ -168,7 +167,10 @@ public class ParticipantServiceImpl implements IParticipantService {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).getIsMember() == true) {
                 ParticipantResponse participant = new ParticipantResponse();
-                participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo()));
+                participant.setConversationInfor(
+                        convertToConversationDTO(list.get(i).getConversationInfo(),
+                        messageService.getLastMessageByConversationId(list.get(i).getConversationInfo().getId()))
+                );
                 List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
                         list.get(i).getConversationInfo().getId(),
                         list.get(i).getUserInfo().getId());
@@ -212,7 +214,8 @@ public class ParticipantServiceImpl implements IParticipantService {
         }
 
         ParticipantResponse participantResponse = new ParticipantResponse();
-        participantResponse.setConversationInfor(convertToConversationDTO(participantPO.getConversationInfo()));
+        LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationId);
+        participantResponse.setConversationInfor(convertToConversationDTO(participantPO.getConversationInfo(),lastMessageDTO));
         List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
                 participantPO.getConversationInfo().getId(),
                 participantPO.getUserInfo().getId());
@@ -253,7 +256,8 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
             List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
             for (int i = 0; i < list.size(); i++) {
-                participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo()));
+                LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(list.get(i).getConversationInfo().getId());
+                participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo(),lastMessageDTO));
                 PartnerDTO partnerDTO = new PartnerDTO();
                 partnerDTO.setId(partner.getId());
                 partnerDTO.setBanned(partner.getIsBanned());
@@ -298,7 +302,8 @@ public class ParticipantServiceImpl implements IParticipantService {
         participantPO2.setUpdatedAt(LocalDateTime.now());
         participantRepository.save(participantPO2);
 
-        participant.setConversationInfor(convertToConversationDTO(conversationPO));
+        LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationPO.getId());
+        participant.setConversationInfor(convertToConversationDTO(conversationPO,lastMessageDTO));
         PartnerDTO partnerDTO = new PartnerDTO();
         partnerDTO.setId(partnerId);
         partnerDTO.setUsername(partner.getUsername());
@@ -327,7 +332,8 @@ public class ParticipantServiceImpl implements IParticipantService {
         participantPO.setIsMember(false);
         ParticipantPO participantPO1 = participantRepository.save(participantPO);
         ParticipantResponse participantResponse = new ParticipantResponse();
-        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO));
+        LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationPO.getId());
+        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO,lastMessageDTO));
         List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
         List<PartnerDTO> partnerList = new ArrayList<>();
         for (ParticipantPO participant : list) {
@@ -360,7 +366,8 @@ public class ParticipantServiceImpl implements IParticipantService {
         ParticipantPO po = participantRepository.save(participantPO);
 
         ParticipantResponse participantResponse = new ParticipantResponse();
-        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO));
+        LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationPO.getId());
+        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO,lastMessageDTO));
         PartnerDTO partnerDTO = new PartnerDTO();
         partnerDTO.setUsername(userPO.getUsername());
         partnerDTO.setId(userPO.getId());
@@ -389,7 +396,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             ParticipantPO approveParticipant = participantRepository.save(participantPO);
             ParticipantResponse response = new ParticipantResponse();
             List<PartnerDTO> list = getAllUserByConversationId(conversationId);
-            response.setConversationInfor(convertToConversationDTO(conversationPO));
+            response.setConversationInfor(convertToConversationDTO(conversationPO, messageService.getLastMessageByConversationId(conversationId)));
             response.setPartnerDTO(list);
             response.setIsMember(approveParticipant.getIsMember().toString());
             return response;
@@ -419,7 +426,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<ParticipantResponse> responseList = new ArrayList<>();
         for (ConversationPO conversationPO : list) {
             ParticipantResponse response = new ParticipantResponse();
-            response.setConversationInfor(convertToConversationDTO(conversationPO));
+            response.setConversationInfor(convertToConversationDTO(conversationPO,messageService.getLastMessageByConversationId(conversationPO.getId())));
             List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
             List<PartnerDTO> partnerDtos = new ArrayList<>();
             for (ParticipantPO po : poList) {
@@ -470,10 +477,11 @@ public class ParticipantServiceImpl implements IParticipantService {
 //        return isExisted.size() == 2 ? true : false;
 //    }
 
-    private ConversationDTO convertToConversationDTO(ConversationPO conversation) {
+    private ConversationDTO convertToConversationDTO(ConversationPO conversation, LastMessageDTO lastMessageDTO) {
         return new ConversationDTO(conversation.getId(),
                 conversation.getChatName(),
                 conversation.getIsGroupChat(),
+                lastMessageDTO,
                 conversation.getTopicChildren(),
                 conversation.getAdminId(),
                 conversation.getAvatarGroupImg());

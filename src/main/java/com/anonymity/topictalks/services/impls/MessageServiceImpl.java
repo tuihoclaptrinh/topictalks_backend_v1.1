@@ -5,6 +5,7 @@ import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.message.IMessageRepository;
 import com.anonymity.topictalks.daos.message.IParticipantRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.models.dtos.LastMessageDTO;
 import com.anonymity.topictalks.models.dtos.MessageDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
@@ -79,6 +80,15 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     public MessagePO saveMessage(MessagePO message) {
         return messageRepository.save(message);
+    }
+
+    @Override
+    public LastMessageDTO getLastMessageByConversationId(long converId) {
+        MessagePO messagePO = messageRepository.getLastMessageByConversationId(converId);
+        return messagePO != null ? new LastMessageDTO(messagePO.getSenderId().getId(),
+                messagePO.getSenderId().getUsername(),
+                messagePO.getContent(),
+                messagePO.getCreatedAt()) : null;
     }
 
     @Override
