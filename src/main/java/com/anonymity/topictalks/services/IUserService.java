@@ -19,6 +19,8 @@ public interface IUserService {
 
     String verifyAccount(String email, String otp);
 
+    String forgotEmail(String email);
+
     String regenerateOtp(String email);
 
     String setPassword(String email, String newPassword);
@@ -43,4 +45,6 @@ public interface IUserService {
     boolean checkDuplicateUsername(long id, String username);
 
     void unBanUser(long id);
+
+    String verifyLinkToken(String email, String token);
 }

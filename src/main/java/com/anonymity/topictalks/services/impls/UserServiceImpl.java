@@ -6,6 +6,7 @@ import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.EmailUtils;
+import com.anonymity.topictalks.utils.Md5Utils;
 import com.anonymity.topictalks.utils.OtpUtils;
 import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
@@ -39,6 +40,8 @@ public class UserServiceImpl implements IUserService {
         if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
                 LocalDateTime.now()).getSeconds() < (1 * 60)) {
             user.setVerify(true);
+            user.setOtp("");
+            user.setOtpGeneratedTime(null);
             try {
                 emailUtils.sendActiveAccount(email);
             } catch (MessagingException e) {
@@ -52,11 +55,33 @@ public class UserServiceImpl implements IUserService {
         return "Please regenerate otp and try again";
     }
 
+    /**
+     * @param email
+     * @return
+     */
+    @Override
+    public String forgotEmail(String email) {
+        UserPO user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        String token = Md5Utils.md5(email);
+        user.setTokenForgotPassword(token);
+        user.setTokenGeneratedTime(LocalDateTime.now());
+        try {
+            emailUtils.sendForgotEmail(email, token);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to active account please try again");
+        } catch (TemplateException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        userRepository.save(user);
+        return "Email sent... please access link reset account within 1 minute";
+    }
+
     @Override
     public String regenerateOtp(String email) {
         UserPO user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        if(user.isActive()) {
+        if(!user.isVerify()) {
             String otp = otpUtils.generateOtp();
             try {
                 emailUtils.sendOtpEmail(email, otp);
@@ -195,6 +220,21 @@ public class UserServiceImpl implements IUserService {
             userPO.setIsBanned(false);
             userRepository.save(userPO);
         }
+    }
+
+    /**
+     * @param email
+     * @param token
+     * @return
+     */
+    @Override
+    public String verifyLinkToken(String email, String token) {
+        UserPO userPO = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+        if (userPO.getTokenForgotPassword().equals(token) && Duration.between(userPO.getTokenGeneratedTime(),
+                LocalDateTime.now()).getSeconds() < (1 * 60)) {
+            return "Link verify OK";
+        }
+        return "Link verify out of time";
     }
 
     @Override
