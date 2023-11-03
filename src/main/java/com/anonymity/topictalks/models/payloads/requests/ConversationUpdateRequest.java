@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.models.payloads.requests;
 
+import com.anonymity.topictalks.validations.annotations.NullOrNotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConversationUpdateRequest implements Serializable {
+    @NullOrNotBlank
     private long newTopicId;
+    @NullOrNotBlank
+    private String avatarImg;
     private long userIdUpdate;
 }
