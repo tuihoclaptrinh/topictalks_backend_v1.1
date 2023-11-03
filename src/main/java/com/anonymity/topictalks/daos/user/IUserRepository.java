@@ -2,8 +2,11 @@ package com.anonymity.topictalks.daos.user;
 
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.user.UserPO;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +24,9 @@ import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends IBaseRepository<UserPO, Long> {
+
+    @Procedure("UPDATE_IS_BAN_USER_PROCEDURE")
+    void updateIsBannProcedure(String username);
 
     Optional<UserPO> findByUsername(String username);
 

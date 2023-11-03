@@ -24,7 +24,8 @@ public class TriggerConfiguration {
     public CommandLineRunner runScripts(JdbcTemplate jdbcTemplate) {
         return args -> {
             executeScript(jdbcTemplate, "drop_trigger.sql");
-            executeScript(jdbcTemplate, "create_trigger.sql");
+//            executeScript(jdbcTemplate, "create_trigger.sql");
+            executeScript(jdbcTemplate,"update_is_ban_procedure.sql");
         };
     }
 

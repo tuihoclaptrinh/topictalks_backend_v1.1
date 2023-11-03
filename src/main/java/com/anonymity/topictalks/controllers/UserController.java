@@ -170,12 +170,12 @@ public class UserController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @PutMapping("/ban/{id}")
+    @PutMapping("/ban")
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<?> banUser(@PathVariable("id") long id) {
+    public ResponseEntity<?> banUser(@RequestParam("id") long id,@RequestParam("num") long numDateBan) {
         DataResponse dataResponse = new DataResponse();
-        UserDTO userBanned = userService.banUser(id);
+        UserDTO userBanned = userService.banUser(id,numDateBan);
 
         if (userBanned == null) {//NOT FOUND
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404

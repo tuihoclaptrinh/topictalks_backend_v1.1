@@ -34,6 +34,11 @@ public class UserServiceImpl implements IUserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    public void executeUpdateIsBannProcedure(String username) {
+        userRepository.updateIsBannProcedure(username);
+    }
+
+    @Override
     public String verifyAccount(String email, String otp) {
         UserPO user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
@@ -272,12 +277,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDTO banUser(long id) {
+    public UserDTO banUser(long id, long numDateOfBan) {
         boolean isExisted = userRepository.existsById(id);
         if (isExisted) {
             UserPO userPO = userRepository.findById(id).orElse(null);
             userPO.setBannedDate(LocalDateTime.now());
             userPO.setIsBanned(true);
+            userPO.setNumDateBan(numDateOfBan);
             userPO.setUpdatedAt(LocalDateTime.now());
 
             return convertUserPOToUserDTO(userRepository.save(userPO));

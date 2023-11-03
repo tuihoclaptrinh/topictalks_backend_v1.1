@@ -17,6 +17,8 @@ import java.util.List;
  */
 public interface IUserService {
 
+    void executeUpdateIsBannProcedure(String username);
+
     String verifyAccount(String email, String otp);
 
     String forgotEmail(String email);
@@ -30,6 +32,7 @@ public interface IUserService {
     boolean updateActive(boolean active, long id);
 
     List<UserDTO> findAllUsers();
+
     List<UserDTO> getAllUsersBanned(LocalDateTime bannedDate);
 
     UserDTO getUserById(long id);
@@ -38,7 +41,7 @@ public interface IUserService {
 
     Object updateUser(long id, UserUpdateRequest request);
 
-    UserDTO banUser(long id);
+    UserDTO banUser(long id, long numDateOfBan);
 
     boolean checkDuplicateEmail(long id, String email);
 

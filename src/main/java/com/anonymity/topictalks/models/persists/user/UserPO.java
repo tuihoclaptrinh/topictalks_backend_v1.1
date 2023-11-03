@@ -65,6 +65,13 @@ import java.util.List;
                 "email"
         })
 })
+@NamedStoredProcedureQuery(
+        name = "updateIsBanUserProcedure",
+        procedureName = "UPDATE_IS_BAN_USER_PROCEDURE",
+        parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "username", type = String.class),
+        }
+)
 public class UserPO extends DateAudit implements UserDetails, Serializable {
 
     /**
@@ -233,6 +240,9 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     )
     private Boolean isBanned;
 
+    @Column(name = "num_date_ban", nullable = true)
+    private long numDateBan;
+
     /**
      * The date when the user was banned.
      */
@@ -325,6 +335,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     public boolean isEnabled() {
         return true;
     }
+
 
 
 }
