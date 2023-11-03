@@ -115,8 +115,14 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     )
     private String nickname;
 
-    @Column(name = "is_verify")
+    @Column(name = "is_verify", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isVerify;
+
+    @Column(name = "token_forgot_password", nullable = true)
+    private String tokenForgotPassword;
+
+    @Column(name = "token_generated_time", nullable = true)
+    private LocalDateTime tokenGeneratedTime;
 
     @Column(name = "otp", nullable = true)
     private String otp;

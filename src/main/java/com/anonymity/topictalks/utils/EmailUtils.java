@@ -109,6 +109,21 @@ public class EmailUtils {
         mailSender.send(message);
     }
 
+    public void sendForgotEmail(String email, String token) throws IOException, TemplateException, MessagingException {
+        MailDTO mail = new MailDTO();
+        mail.setSubject("Email Verification [Team Support Topictalks]");
+        mail.setTo(email);
+        mail.setFrom(mailFrom);
+        mail.getModel().put("userName", email);
+        mail.getModel().put("userForgotPasswordLink", "http://localhost:3000/forgot-password?token="+token);
+
+        templateConfiguration.setClassForTemplateLoading(getClass(), basePackagePath);
+        Template template = templateConfiguration.getTemplate("forgot-password-mail.ftl");
+        String mailContent = FreeMarkerTemplateUtils.processTemplateIntoString(template, mail.getModel());
+        mail.setContent(mailContent);
+        send(mail);
+    }
+
 //    public void sendEmailVerification(String emailVerificationUrl, String to)
 //            throws IOException, TemplateException, MessagingException {
 //        MailDTO mail = new MailDTO();
