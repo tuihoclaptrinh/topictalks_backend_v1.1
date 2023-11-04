@@ -76,7 +76,7 @@ public class AuthenticationController {
     }
 
     @PutMapping("/new-password")
-    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestHeader String newPassword, @RequestParam String token) {
+    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestParam String newPassword, @RequestParam String token) {
         return new ResponseEntity<>(userService.setPassword(email, newPassword, token), HttpStatus.OK);
     }
 
