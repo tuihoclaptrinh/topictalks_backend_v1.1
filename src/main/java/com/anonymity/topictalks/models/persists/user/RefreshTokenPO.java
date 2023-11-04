@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -68,6 +70,7 @@ public class RefreshTokenPO extends DateAudit implements Serializable {
      */
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserPO user;
 
     /**
