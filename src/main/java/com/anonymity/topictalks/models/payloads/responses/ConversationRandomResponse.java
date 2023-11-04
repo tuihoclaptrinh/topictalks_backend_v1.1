@@ -2,6 +2,7 @@ package com.anonymity.topictalks.models.payloads.responses;
 
 import com.anonymity.topictalks.models.dtos.TopicChildrenDTO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.anonymity.topictalks.validations.annotations.NullOrNotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,5 +26,6 @@ public class ConversationRandomResponse implements Serializable {
     private String chatName;
     private Boolean isGroupChat;
     private TopicChildrenDTO topicChildren;
+    @NullOrNotBlank
     private Long adminId;
 }

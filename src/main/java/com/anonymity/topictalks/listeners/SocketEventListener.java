@@ -9,6 +9,7 @@ import com.anonymity.topictalks.models.dtos.*;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
@@ -21,13 +22,17 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -48,7 +53,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Throwable.class)
 public class SocketEventListener {
-
     private Logger logger = LoggerFactory.getLogger(SocketEventListener.class);
     public static Map<String, SocketIOClient> clientMap = new ConcurrentHashMap<>();
     public static Map<String, SocketIOClient> clientChatRandom = new ConcurrentHashMap<>();
@@ -269,7 +273,7 @@ public class SocketEventListener {
 
         client.sendEvent("userAccess", engagement);
 
-        ParticipantRandomResponse p = onCreateChatRandom();
+        ParticipantRandomResponse p = onCreateChatRandom(topicChildren.getUserId());
 
         if (p != null) {
             for (PartnerDTO key : p.getPartnerDTO()) {
@@ -300,96 +304,113 @@ public class SocketEventListener {
     }
 
     @OnEvent("onCreateChatRandom")
-    public ParticipantRandomResponse onCreateChatRandom() {
-
+    public ParticipantRandomResponse onCreateChatRandom(long userId) {
         Collection<String> keys = clientChatRandom.keySet();
         List<String> lists = new ArrayList<>();
-        ParticipantRandomResponse participantRandomResponse = null;
-        String prevTpcId = null;
+        ParticipantRandomResponse participantRandomResponse = new ParticipantRandomResponse();
+
         for (String key : keys) {
             String[] params = key.split("-");
             Long uId = Long.parseLong(params[0].trim());
             Long tpcId = Long.parseLong(params[1].trim());
             logger.info("userId: {} - topic Children Id: {}", uId, tpcId);
             lists.add(uId + "-" + tpcId);
-            if (prevTpcId != null && prevTpcId.equals(tpcId.toString())) {
-
-                participantRandomResponse = participantService.createChatRandom(
-                        ChatRandomDTO
-                                .builder()
-                                .users(lists)
-                                .tpcId(tpcId)
-                                .build());
-
-                for (String user : lists) {
-                    clientChatRandom.remove(user);
-                }
-                lists.clear();
-                logger.info("clear data on lists");
-//                SocketIOClient client = clientChatRandom.get(key);
-//                client.sendEvent("partiAccess", participantRandomResponse);
-
-//                logger.info("Inside the same value userId: {} - topic Children Id: {}", uId, tpcId);
-//                lists.forEach(System.out::println);
-
-            }
-            prevTpcId = tpcId.toString();
         }
+        int index = 0;
+        while (index < lists.size()) {
+            List<String> randomMatched = new ArrayList<>();
+            String[] params1 = lists.get(index).split("-");
+            Long uId1 = Long.parseLong(params1[0].trim());
+            Long tpcId1 = Long.parseLong(params1[1].trim());
 
-//        for (String user: lists) {
-//            clientChatRandom.remove(user);
-//        }
-//        lists.clear();
-//        logger.info("clear data on lists");
+            for (int i = index + 1; i < lists.size(); i++) {
+                String[] params2 = lists.get(i).split("-");
+                Long uId2 = Long.parseLong(params2[0].trim());
+                Long tpcId2 = Long.parseLong(params2[1].trim());
 
-        logger.info("Client remaining: {}", clientChatRandom.size());
+                if (index != i && tpcId1 == tpcId2) {
+                    randomMatched.add(lists.get(index));
+                    randomMatched.add(lists.get(i));
 
-//        Collection<SocketIOClient> values = clientChatRandom.values();
-//        Collection<String> keys = clientChatRandom.keySet();
-//
-//        for (SocketIOClient client : values) {
-//            logger.info(client.getHandshakeData().getUrlParams().get("uid").get(0));
-//        }
-//
-//        Map<Long, Integer> tpcIdCountMap = new HashMap<>();
-//
-//        for (String key : keys) {
-//            String[] params = key.split("-");
-//            Long uId = Long.parseLong(params[0].trim());
-//            Long tpcId = Long.parseLong(params[1].trim());
-//            userChatRandom.put(uId, tpcId.toString());
-//            // Check if the tpcId already exists in the map
-//            if (tpcIdCountMap.containsKey(tpcId)) {
-//                // Increment the count for this tpcId
-//                int count = tpcIdCountMap.get(tpcId);
-//                // Check if the count is now >= 2
-//                if (count + 1 >= 2) {
-//                    tpcIdCountMap.put(tpcId, count + 1);
-//                }
-//            }
-//            else {
-//                // If tpcId is not in the map, initialize its count to 1
-//                tpcIdCountMap.put(tpcId, 1);
-//            }
-//            for (Map.Entry<Long, Integer> entry : tpcIdCountMap.entrySet()) {
-//                logger.info("tpcId: {} - Count: {}", entry.getKey(), entry.getValue());
-//                userChatRandom.put(entry.getKey(), entry.getValue().toString());
-//            }
-//            logger.info("User id: {}", uId);
-//            logger.info("Topic Children id: {}", tpcId);
-//        }
-//
-//        logger.info("Size chat random: {}", clientChatRandom.size());
-//
-//        for (Map.Entry<Long, String> entry : userChatRandom.entrySet()) {
-//            Long key = entry.getKey();
-//            String value = entry.getValue();
-//            logger.info("Key: " + key + ", Value: " + value);
-//        }
+                    List<Long> isConversationMatched = conversationRepository.checkMatchingConversations(uId1, uId2, false);
+                    if (!isConversationMatched.isEmpty()) {
+                        List<PartnerDTO> listPartner = new ArrayList<>();
+                        if (userId == uId1) {
+                            UserPO partner = userRepository.findById(uId2)
+                                    .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+                            logger.info("===================================> check output PARTNER: "+partner.toString());
+                            PartnerDTO partnerDTO = new PartnerDTO();
+                            partnerDTO.setId(partner.getId());
+                            partnerDTO.setBanned(partner.getIsBanned());
+                            partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
+                            partnerDTO.setImage(partner.getImageUrl());
+                            partnerDTO.setUsername(partner.getUsername());
+                            partnerDTO.setActive(partner.isActive());
+                            partnerDTO.setMember(true);
+                            listPartner.add(partnerDTO);
+                        } else {
+                            UserPO partner = userRepository.findById(uId1)
+                                    .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
+                            logger.info("===================================> 1. check output PARTNER: "+partner.toString());
+                            PartnerDTO partnerDTO = new PartnerDTO();
+                            partnerDTO.setId(partner.getId());
+                            partnerDTO.setBanned(partner.getIsBanned());
+                            partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
+                            partnerDTO.setImage(partner.getImageUrl());
+                            partnerDTO.setUsername(partner.getUsername());
+                            partnerDTO.setActive(partner.isActive());
+                            partnerDTO.setMember(true);
+                            listPartner.add(partnerDTO);
+                        }
+
+                        participantRandomResponse.setPartnerDTO(listPartner);
+
+                        ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
+                                .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
+                        ConversationRandomResponse conversationRandomResponse = new ConversationRandomResponse();
+                        conversationRandomResponse.setChatName(conversationPO.getChatName());
+                        conversationRandomResponse.setId(conversationPO.getId());
+                        conversationRandomResponse.setIsGroupChat(conversationPO.getIsGroupChat());
+                        conversationRandomResponse.setTopicChildren(new TopicChildrenDTO(
+                                conversationPO.getTopicChildren().getId(),
+                                conversationPO.getTopicChildren().getTopicChildrenName(),
+                                conversationPO.getTopicChildren().getImage()
+                        ));
+                        participantRandomResponse.setConversationInfor(conversationRandomResponse);
+                        Iterator<String> iterator = lists.iterator();
+                        while (iterator.hasNext()) {
+                            String item = iterator.next();
+                            if (randomMatched.contains(item)) {
+                                iterator.remove();
+                            }
+                        }
+                        for (String user : randomMatched) {
+                            clientChatRandom.remove(user);
+                        }
+                        return participantRandomResponse;
+                    } else {
+                        participantRandomResponse = participantService.createChatRandom(
+                                ChatRandomDTO
+                                        .builder()
+                                        .users(randomMatched)
+                                        .tpcId(tpcId2)
+                                        .build());
+                        Iterator<String> iterator = lists.iterator();
+                        while (iterator.hasNext()) {
+                            String item = iterator.next();
+                            if (randomMatched.contains(item)) {
+                                iterator.remove();
+                            }
+                        }
+                        for (String user : randomMatched) {
+                            clientChatRandom.remove(user);
+                        }
+                        return participantRandomResponse;
+                    }
+                }
+            }
+            index++;
+        }
         return participantRandomResponse;
     }
-
-
-
-
 }
