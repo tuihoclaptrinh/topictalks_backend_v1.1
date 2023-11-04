@@ -58,7 +58,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public Object register(RegisterRequest request) {
-        userRepository.deleteRefreshTokenUser();
         userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
         Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
@@ -138,7 +137,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
-        userRepository.deleteRefreshTokenUser();
         userRepository.deleteUnVerifyUser();
         userService.executeUpdateIsBannProcedure(request.getUsername());
 
