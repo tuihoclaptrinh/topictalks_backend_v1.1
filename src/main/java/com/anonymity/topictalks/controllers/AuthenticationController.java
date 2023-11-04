@@ -1,9 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
-import com.anonymity.topictalks.models.payloads.requests.AuthenticationGoogleRequest;
-import com.anonymity.topictalks.models.payloads.requests.AuthenticationRequest;
-import com.anonymity.topictalks.models.payloads.requests.RefreshTokenRequest;
-import com.anonymity.topictalks.models.payloads.requests.RegisterRequest;
+import com.anonymity.topictalks.models.payloads.requests.*;
 import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse;
 import com.anonymity.topictalks.models.payloads.responses.RefreshTokenResponse;
 import com.anonymity.topictalks.services.IAuthenticationService;
@@ -76,8 +73,8 @@ public class AuthenticationController {
     }
 
     @PutMapping("/new-password")
-    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestParam String newPassword, @RequestParam String token) {
-        return new ResponseEntity<>(userService.setPassword(email, newPassword, token), HttpStatus.OK);
+    public ResponseEntity<String> setPassword(@RequestBody ResetPasswordRequest request) {
+        return new ResponseEntity<>(userService.setPassword(request), HttpStatus.OK);
     }
 
     @GetMapping("/verify-account")

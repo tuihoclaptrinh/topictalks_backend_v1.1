@@ -2,6 +2,7 @@ package com.anonymity.topictalks.services;
 
 
 import com.anonymity.topictalks.models.dtos.UserDTO;
+import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 
@@ -25,7 +26,7 @@ public interface IUserService {
 
     String regenerateOtp(String email);
 
-    String setPassword(String email, String newPassword, String token);
+    String setPassword(ResetPasswordRequest request);
 
     boolean updateAvatar(String avatar, long id);
 
