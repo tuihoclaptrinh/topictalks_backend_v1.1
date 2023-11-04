@@ -68,7 +68,7 @@ public class UserServiceImpl implements IUserService {
     public String forgotEmail(String email) {
         UserPO user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        String token = Md5Utils.md5(email);
+        String token = Md5Utils.encrypt(email);
         user.setTokenForgotPassword(token);
         user.setTokenGeneratedTime(LocalDateTime.now());
         try {

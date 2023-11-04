@@ -80,7 +80,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(userService.setPassword(email, newPassword), HttpStatus.OK);
     }
 
-    @PostMapping("/verify-account")
+    @GetMapping("/verify-account")
     public ResponseEntity<String> verifyAccount(@RequestParam String email,
                                                 @RequestParam String otp) {
         return new ResponseEntity<>(userService.verifyAccount(email, otp), HttpStatus.OK);

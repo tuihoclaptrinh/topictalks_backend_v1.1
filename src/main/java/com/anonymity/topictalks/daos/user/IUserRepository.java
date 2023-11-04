@@ -25,6 +25,12 @@ import java.util.Optional;
 @Repository
 public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
+    @Procedure("DELETE_UNVERIFIED_USERS_PROCEDURE")
+    void deleteUnVerifyUser();
+
+    @Procedure("DELETE_REFRESH_TOKEN_PROCEDURE")
+    void deleteRefreshTokenUser();
+  
     @Procedure("UPDATE_IS_BAN_USER_PROCEDURE")
     void updateIsBannProcedure(String username);
 
