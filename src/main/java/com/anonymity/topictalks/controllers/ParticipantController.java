@@ -38,7 +38,7 @@ public class ParticipantController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData(null);
+            dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }
@@ -77,7 +77,7 @@ public class ParticipantController {
     public ResponseEntity<?> getParticipantByPartnerId(@PathVariable("id") long id, @RequestBody ConversationMatcherRequest request) {
         DataResponse dataResponse = new DataResponse();
 
-        ParticipantResponse participant = participantService.getParticipantByUserIdAndPartnerId(request.getUserIdInSession(), id);
+        ParticipantResponse participant = participantService.getParticipantByUserIdAndPartnerId(request.getUserIdInSession(), id,request.getTopicChildrenId());
 
         if (participant == null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204

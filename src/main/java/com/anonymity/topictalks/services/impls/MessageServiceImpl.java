@@ -92,7 +92,7 @@ public class MessageServiceImpl implements IMessageService {
     }
 
     @Override
-    public List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId) {
+    public List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId, Long topicChildrenId) {
         UserPO userInSession = userRepository.findById(userInSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
 
@@ -121,6 +121,7 @@ public class MessageServiceImpl implements IMessageService {
         }
         ConversationRequest request = new ConversationRequest();
         request.setChatName(partner.getUsername());
+        request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
             conversationResponse = conversationService.createConversation(request, false);

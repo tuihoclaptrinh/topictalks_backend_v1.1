@@ -13,4 +13,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ConversationMatcherRequest implements Serializable {
     private long userIdInSession;
+    private Long topicChildrenId;
 }

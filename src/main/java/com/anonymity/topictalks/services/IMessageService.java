@@ -22,6 +22,6 @@ public interface IMessageService {
 
     LastMessageDTO getLastMessageByConversationId(long converId);
 
-    List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId);
+    List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId, Long topicChildrenId);
 
 }

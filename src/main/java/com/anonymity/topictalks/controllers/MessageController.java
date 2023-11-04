@@ -38,6 +38,6 @@ public class MessageController {
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/content/{partnerId}")
     public ResponseEntity<List<ReceiveMessageDTO>> getMessagesInChatOneToOne(@PathVariable Long partnerId, @RequestBody ConversationMatcherRequest request) {
-        return ResponseEntity.ok(messageService.getMessagesInChatOneToOne(request.getUserIdInSession(),partnerId));
+        return ResponseEntity.ok(messageService.getMessagesInChatOneToOne(request.getUserIdInSession(),partnerId,request.getTopicChildrenId()));
     }
 }
