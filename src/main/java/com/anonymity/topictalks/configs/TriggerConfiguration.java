@@ -26,8 +26,10 @@ public class TriggerConfiguration {
             executeScript(jdbcTemplate, "drop_procedure.sql");
             executeScript(jdbcTemplate, "drop_refresh_token_procedure.sql");
             executeScript(jdbcTemplate, "create_trigger.sql");
+          executeScript(jdbcTemplate,"update_is_ban_procedure.sql");
             executeScript(jdbcTemplate, "procedure_refresh_token.sql");
             executeScript(jdbcTemplate, "procedure_verify_account.sql");
+
         };
     }
 

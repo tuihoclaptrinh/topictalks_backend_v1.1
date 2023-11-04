@@ -24,6 +24,7 @@ spring:
     url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root # Database username
     password: p4ssw0rd! # Database password
+
   jpa:
     hibernate:
       ddl-auto: update # If the update data table does not exist, it will be automatically created.

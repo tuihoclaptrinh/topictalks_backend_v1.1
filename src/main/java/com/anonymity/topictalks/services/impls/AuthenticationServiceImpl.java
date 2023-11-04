@@ -9,10 +9,7 @@ import com.anonymity.topictalks.models.payloads.requests.RegisterRequest;
 import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse;
 import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 import com.anonymity.topictalks.models.persists.user.UserPO;
-import com.anonymity.topictalks.services.IAuthenticationService;
-import com.anonymity.topictalks.services.IJwtService;
-import com.anonymity.topictalks.services.IRefreshTokenService;
-import com.anonymity.topictalks.services.NicknameService;
+import com.anonymity.topictalks.services.*;
 import com.anonymity.topictalks.utils.EmailUtils;
 import com.anonymity.topictalks.utils.OtpUtils;
 import com.anonymity.topictalks.utils.enums.ERole;
@@ -57,6 +54,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final OtpUtils otpUtils;
     private final EmailUtils emailUtils;
     private final NicknameService nicknameService;
+    private final IUserService userService;
 
     @Override
     public Object register(RegisterRequest request) {
@@ -89,7 +87,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         var nickName = nicknameService.generateUserNickname();
         var userByNickname = userRepository.findByNickname(nickName);
         var new_user = new UserPO();
-        if(userByNickname.isPresent()) {
+        if (userByNickname.isPresent()) {
             new_user.setNickname(nickName + random.nextInt(100 - 1 + 1) + 1);
         } else {
             new_user.setNickname(nickName);
@@ -109,6 +107,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         new_user.setCountry("");
         new_user.setIsBanned(false);
         new_user.setBannedDate(null);
+        new_user.setNumDateBan(0);
         new_user.setRole(ERole.USER);
         new_user.setCreatedAt(LocalDateTime.now());
         new_user.setUpdatedAt(null);
@@ -137,8 +136,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
         userRepository.deleteRefreshTokenUser();
         userRepository.deleteUnVerifyUser();
+        userService.executeUpdateIsBannProcedure(request.getUsername());
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -180,7 +182,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         var user = userRepository.findByEmail(request.getEmail()).orElse(null);
 
-        if(user == null) {
+        if (user == null) {
             ErrorResponse error = new ErrorResponse();
             Optional<UserPO> user1 = (userRepository.findByEmail(request.getEmail()));
             if (!user1.isEmpty()) {
@@ -209,6 +211,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setCountry("");
             new_user.setIsBanned(false);
             new_user.setBannedDate(null);
+            new_user.setNumDateBan(0);
             new_user.setRole(ERole.USER);
             new_user.setCreatedAt(LocalDateTime.now());
             new_user.setUpdatedAt(null);

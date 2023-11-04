@@ -23,6 +23,8 @@ public interface IConversationService {
 
     DataResponse updateNameGroupChat(long conversationId, String newName, long userIdUpdate);
 
+    DataResponse updateAvtImgGroupChat(long conversationId, String newUrlImage, long userIdUpdate);
+
     void deleteByConversationId(long conversationId, long userId);
 
     void deleteConversationByUser(long conversationId);

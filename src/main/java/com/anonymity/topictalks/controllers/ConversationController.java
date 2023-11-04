@@ -36,6 +36,12 @@ public class ConversationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/update-avt/{conversationId}")
+    public ResponseEntity<?> updateAvatarGroupChat(@PathVariable Long conversationId, @RequestBody ConversationUpdateRequest request) {
+        return ResponseEntity.ok(conversationService.updateAvtImgGroupChat(conversationId,request.getAvatarImg(),request.getUserIdUpdate()));
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/rename")
     public ResponseEntity<?> updateNameGroupChat(@RequestParam("cid") Long conversationId, @RequestBody ConversationRequest request) {
         return ResponseEntity.ok(conversationService.updateNameGroupChat(conversationId, request.getChatName(), request.getAdminId()));

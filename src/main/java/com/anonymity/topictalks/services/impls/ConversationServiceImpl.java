@@ -186,15 +186,43 @@ public class ConversationServiceImpl implements IConversationService {
     }
 
     @Override
+    public DataResponse updateAvtImgGroupChat(long conversationId, String newUrlImage, long userIdUpdate) {
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setSuccess(false);
+        dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        dataResponse.setData(null);
+        ConversationPO conversation = conversationRepository.findById(conversationId).orElse(null);
+        if (conversation != null && conversation.getIsGroupChat() == true) {
+            if (conversation.getAdminId() == userIdUpdate) {
+                conversation.setId(conversationId);
+                conversation.setAvatarGroupImg(newUrlImage);
+                conversation.setUpdatedAt(LocalDateTime.now());
+                try {
+                    ConversationPO po = conversationRepository.save(conversation);
+                    ConversationResponse response = convertToConversationResponse(po);
+                    dataResponse.setSuccess(true);
+                    dataResponse.setStatus(HttpStatus.OK.value());
+                    dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+                    dataResponse.setData(response);
+                } catch (Exception e) {
+                    dataResponse.setData(null);
+                }
+            }
+        }
+        return dataResponse;
+    }
+
+    @Override
     public void deleteByConversationId(long conversationId, long userId) {
         ConversationPO conversationPO = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new GlobalException(404, "Not found this conversation"));
         UserPO userPO = userRepository.findById(userId)
                 .orElseThrow(() -> new GlobalException(404, "Not found this user"));
-        ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(conversationPO,userPO);
-        if (participantPO!=null) {
+        ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(conversationPO, userPO);
+        if (participantPO != null) {
             if ((conversationPO.getIsGroupChat() == true && conversationPO.getAdminId() == userId)
-                    || conversationPO.getIsGroupChat()==false){
+                    || conversationPO.getIsGroupChat() == false) {
                 try {
                     conversationRepository.deleteById(conversationId);
                 } catch (GlobalException e) {
@@ -225,6 +253,11 @@ public class ConversationServiceImpl implements IConversationService {
         response.setIsGroupChat(conversationPO.getIsGroupChat());
         response.setAdminId(conversationPO.getAdminId());
         response.setChatName(conversationPO.getChatName());
+        if (conversationPO.getIsGroupChat() == true) {
+            response.setAvtGroupImg(conversationPO.getAvatarGroupImg());
+        } else {
+            response.setAvtGroupImg(null);
+        }
         response.setTopicChildrenId(conversationPO.getTopicChildren().getId());
         response.setTopicChildrenName(conversationPO.getTopicChildren().getTopicChildrenName());
         return response;

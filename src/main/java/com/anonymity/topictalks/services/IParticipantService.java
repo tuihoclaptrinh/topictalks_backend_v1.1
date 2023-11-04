@@ -35,7 +35,7 @@ public interface IParticipantService {
 
     ParticipantResponse getParticipantByConversationIdAndUserId(long conversationId, long userId);
 
-    ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId);
+    ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId, long topicChildrenId);
 
     ParticipantResponse joinGroupChat(long userId, long conversationId);
 

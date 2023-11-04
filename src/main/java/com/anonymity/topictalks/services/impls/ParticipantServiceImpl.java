@@ -242,7 +242,7 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
-    public ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId) {
+    public ParticipantResponse getParticipantByUserIdAndPartnerId(long userId, long partnerId, long topicChildrenId) {
         UserPO user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
         UserPO partner = userRepository.findById(partnerId)
@@ -276,6 +276,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         ConversationRequest request = new ConversationRequest();
         request.setAdminId(0L);
         request.setChatName(partner.getUsername());
+        request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
             conversationResponse = conversationService.createConversation(request, false);
