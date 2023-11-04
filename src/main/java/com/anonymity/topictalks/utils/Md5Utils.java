@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Date;
 
 /**
  * @author de140172 - author
@@ -58,6 +59,5 @@ public class Md5Utils {
         }
         return null;
     }
-
 
 }

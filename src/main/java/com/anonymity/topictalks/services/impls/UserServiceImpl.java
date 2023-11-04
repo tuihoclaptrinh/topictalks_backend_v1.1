@@ -2,6 +2,7 @@ package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.dtos.UserDTO;
+import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IUserService;
@@ -105,24 +106,22 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
-     * @param email
-     * @param newPassword
+     * @param request
      * @return
      */
     @Override
-    public String setPassword(String email, String newPassword, String token) {
-        UserPO user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: {}" + email));
+    public String setPassword(ResetPasswordRequest request) {
+        UserPO user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: {}" + request.getEmail()));
 
-        if(user.getTokenForgotPassword().equalsIgnoreCase(token)) {
-            if (user.getTokenForgotPassword().equals(token) && Duration.between(user.getTokenGeneratedTime(),
-                    LocalDateTime.now()).getSeconds() < (5 * 60)) {
-                user.setPassword(passwordEncoder.encode(newPassword));
+        if(user.getTokenForgotPassword().equals(request.getToken())) {
+            if (Duration.between(user.getTokenGeneratedTime(), LocalDateTime.now()).getSeconds() < (5 * 60)) {
+                user.setPassword(passwordEncoder.encode(request.getNewPassword()));
                 user.setTokenForgotPassword(null);
                 user.setTokenGeneratedTime(null);
                 userRepository.save(user);
                 try {
-                    emailUtils.sendSetPassword(email);
+                    emailUtils.sendSetPassword(request.getEmail());
                 } catch (MessagingException e) {
                     throw new RuntimeException("Unable to send link reset please try again");
                 } catch (TemplateException | IOException e) {
@@ -132,7 +131,9 @@ public class UserServiceImpl implements IUserService {
             }
             return "Link reset is expired!";
         }
-        return "Token is out of date!";
+        return "Wrong token!";
+
+
     }
 
     @Override
