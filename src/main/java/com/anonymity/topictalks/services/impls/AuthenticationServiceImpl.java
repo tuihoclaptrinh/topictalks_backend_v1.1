@@ -103,6 +103,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         new_user.setBio("");
         new_user.setImageUrl("");
         new_user.setGender("");
+        new_user.setNumDateBan(0);
         new_user.setPhoneNumber("");
         new_user.setCountry("");
         new_user.setIsBanned(false);

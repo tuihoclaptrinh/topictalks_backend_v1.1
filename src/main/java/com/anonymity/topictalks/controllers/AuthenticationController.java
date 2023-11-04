@@ -70,14 +70,14 @@ public class AuthenticationController {
         return new ResponseEntity<>(userService.forgotEmail(email), HttpStatus.OK);
     }
 
-    @GetMapping("/verify-link-token")
-    public ResponseEntity<String> verifyLinkToken(@RequestParam String email, @RequestParam String token) {
-        return new ResponseEntity<>(userService.verifyLinkToken(email, token), HttpStatus.OK);
+    @GetMapping("/re-verify-link-token")
+    public ResponseEntity<String> verifyLinkToken(@RequestParam String email) {
+        return new ResponseEntity<>(userService.forgotEmail(email), HttpStatus.OK);
     }
 
     @PutMapping("/new-password")
-    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestHeader String newPassword) {
-        return new ResponseEntity<>(userService.setPassword(email, newPassword), HttpStatus.OK);
+    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestHeader String newPassword, @RequestParam String token) {
+        return new ResponseEntity<>(userService.setPassword(email, newPassword, token), HttpStatus.OK);
     }
 
     @GetMapping("/verify-account")
