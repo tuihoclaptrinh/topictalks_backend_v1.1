@@ -2,6 +2,8 @@ package com.anonymity.topictalks.utils;
 
 import org.springframework.stereotype.Component;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,6 +19,8 @@ import java.util.Base64;
 
 @Component
 public class Md5Utils {
+
+    private static final String secretKey = "ThisIsASecretKey";
 
     public static String md5(String input) {
         try {
@@ -42,5 +46,18 @@ public class Md5Utils {
             throw new RuntimeException(e);
         }
     }
+
+    public static String encrypt(String strToEncrypt) {
+        try {
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes()));
+        } catch (Exception e) {
+            System.out.println("Error while encrypting: " + e.toString());
+        }
+        return null;
+    }
+
 
 }

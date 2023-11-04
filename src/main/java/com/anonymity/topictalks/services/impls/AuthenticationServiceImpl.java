@@ -60,6 +60,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public Object register(RegisterRequest request) {
+        userRepository.deleteRefreshTokenUser();
+        userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
         Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
         if (!user.isEmpty()) {
@@ -135,6 +137,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        userRepository.deleteRefreshTokenUser();
+        userRepository.deleteUnVerifyUser();
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -153,17 +157,21 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         var refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
-        return AuthenticationResponse.builder()
-                .accessToken(jwt)
-                .roles(roles)
-                .username(user.getUsername())
-                .url_img(user.getImageUrl())
-                .id(user.getId())
-                .isBanned(user.getIsBanned())
-                .bannedDate(user.getBannedDate())
-                .refreshToken(refreshToken.getToken())
-                .tokenType(ETokenType.BEARER.name())
-                .build();
+        if(user.isVerify()) {
+            return AuthenticationResponse.builder()
+                    .accessToken(jwt)
+                    .roles(roles)
+                    .username(user.getUsername())
+                    .url_img(user.getImageUrl())
+                    .id(user.getId())
+                    .isBanned(user.getIsBanned())
+                    .bannedDate(user.getBannedDate())
+                    .refreshToken(refreshToken.getToken())
+                    .tokenType(ETokenType.BEARER.name())
+                    .build();
+        } else {
+            return AuthenticationResponse.builder().build();
+        }
 
     }
 

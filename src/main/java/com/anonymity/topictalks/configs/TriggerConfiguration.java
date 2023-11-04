@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -24,7 +23,11 @@ public class TriggerConfiguration {
     public CommandLineRunner runScripts(JdbcTemplate jdbcTemplate) {
         return args -> {
             executeScript(jdbcTemplate, "drop_trigger.sql");
+            executeScript(jdbcTemplate, "drop_procedure.sql");
+            executeScript(jdbcTemplate, "drop_refresh_token_procedure.sql");
             executeScript(jdbcTemplate, "create_trigger.sql");
+            executeScript(jdbcTemplate, "procedure_refresh_token.sql");
+            executeScript(jdbcTemplate, "procedure_verify_account.sql");
         };
     }
 
