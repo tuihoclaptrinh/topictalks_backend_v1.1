@@ -11,6 +11,7 @@ import com.anonymity.topictalks.utils.Md5Utils;
 import com.anonymity.topictalks.utils.OtpUtils;
 import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements IUserService {
 
     @Autowired
@@ -45,8 +47,9 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
         if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
                 LocalDateTime.now()).getSeconds() < (1 * 60)) {
+
             user.setVerify(true);
-            user.setOtp("");
+            user.setOtp(null);
             user.setOtpGeneratedTime(null);
             try {
                 emailUtils.sendActiveAccount(email);
@@ -57,8 +60,13 @@ public class UserServiceImpl implements IUserService {
             }
             userRepository.save(user);
             return "OTP verified you can login";
+        } else {
+            log.info("OTP: {}", otp);
+            log.info("Duration: {}", Duration.between(user.getOtpGeneratedTime(),
+                    LocalDateTime.now()).getSeconds()<60);
+            return "Please regenerate otp and try again";
         }
-        return "Please regenerate otp and try again";
+
     }
 
     /**
