@@ -74,8 +74,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                     .message(error.getMessage())
                     .build();
         }
-        String otp = otpUtils.generateOtp();
+        String otp;
         try {
+            otp = otpUtils.generateOtp();
             emailUtils.sendOtpEmail(request.getEmail(), otp);
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send otp please try again");
@@ -137,7 +138,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
-        userRepository.deleteUnVerifyUser();
         userService.executeUpdateIsBannProcedure(request.getUsername());
 
         try {
