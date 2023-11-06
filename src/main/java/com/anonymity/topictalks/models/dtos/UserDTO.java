@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.models.dtos;
 
 import com.anonymity.topictalks.utils.enums.ERole;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,8 @@ public class UserDTO implements Serializable {
     private String imageUrl;
     private Boolean isBanned;
     private LocalDateTime bannedDate;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private LocalDateTime dueDateUnBan;
     private ERole role;
     private boolean active;
     private LocalDateTime updatedAt;

@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -274,16 +277,16 @@ public class UserServiceImpl implements IUserService {
             } else {
                 userPO.setEmail(email);
             }
-//            String pattern = "yyyy-MM-dd";
-//            String fixedTime = "00:00:00";
-//            try {
-//                LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
+            String pattern = "yyyy-MM-dd";
+            String fixedTime = "00:00:00";
+            try {
+                LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
 //                LocalDateTime instant = dateTime.toInstant(ZoneOffset.UTC);
-            userPO.setDob(request.getDob());
-//            } catch (DateTimeParseException e) {
-//                System.out.println("Error parsing the date string: " + e.getMessage());
-//                throw new GlobalException(e.getErrorIndex(), e.getMessage());
-//            }
+            userPO.setDob(dateTime);
+            } catch (DateTimeParseException e) {
+                System.out.println("Error parsing the date string: " + e.getMessage());
+                throw new GlobalException(e.getErrorIndex(), e.getMessage());
+            }
             userPO.setCountry(request.getCountry());
             userPO.setPhoneNumber(request.getPhoneNumber());
             userPO.setBio(request.getBio());
@@ -327,7 +330,9 @@ public class UserServiceImpl implements IUserService {
         userDTO.setUpdatedAt(userPO.getUpdatedAt());
         userDTO.setIsBanned(userPO.getIsBanned());
         userDTO.setBannedDate(userPO.getBannedDate());
-
+        if (userPO.getIsBanned()==true){
+            userDTO.setDueDateUnBan(userPO.getBannedDate().plusDays(userPO.getNumDateBan()));
+        }
         return userDTO;
     }
 }

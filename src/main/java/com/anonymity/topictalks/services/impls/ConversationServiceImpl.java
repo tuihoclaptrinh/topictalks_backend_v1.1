@@ -247,13 +247,26 @@ public class ConversationServiceImpl implements IConversationService {
 
     }
 
+    @Override
+    public List<ConversationResponse> getAllConversationByUserIdAndIsGroup(long userId, boolean isGroupChat) {
+        List<ConversationResponse> responseList = new ArrayList<>();
+        List<ConversationPO> converList = conversationRepository.findAllByUserIdAndIsGroupChat(userId,isGroupChat);
+        if (converList.size()>0){
+            for (ConversationPO list:converList) {
+                responseList.add(convertToConversationResponse(list));
+            }
+            return responseList;
+        }
+        return null;
+    }
+
     private ConversationResponse convertToConversationResponse(ConversationPO conversationPO) {
         ConversationResponse response = new ConversationResponse();
         response.setConversationId(conversationPO.getId());
         response.setIsGroupChat(conversationPO.getIsGroupChat());
-        response.setAdminId(conversationPO.getAdminId());
         response.setChatName(conversationPO.getChatName());
         if (conversationPO.getIsGroupChat() == true) {
+            response.setAdminId(conversationPO.getAdminId());
             response.setAvtGroupImg(conversationPO.getAvatarGroupImg());
         } else {
             response.setAvtGroupImg(null);

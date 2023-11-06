@@ -30,4 +30,10 @@ public interface IConversationRepository extends IBaseRepository<ConversationPO,
     List<Long> checkMatchingConversations(@Param(value = "userId1") long userId1, @Param(value = "userId2") long userId2, @Param(value = "isGroupChat") boolean isGroupChat);
 
     List<ConversationPO> findAllByTopicChildrenAndIsGroupChat(TopicChildrenPO topicChildrenPO, boolean isGroupChat);
+
+    @Query(value = "SELECT c.conversation_id, c.created_at, c.updated_at, c.chat_name, c.is_group_chat, c.topic_children_id, c.admin_id, c.avt_group_img " +
+            "FROM conversation c " +
+            "JOIN participant p ON c.conversation_id = p.conversation_id " +
+            "WHERE p.user_id = :userId AND c.is_group_chat = :isGroupChat", nativeQuery = true)
+    List<ConversationPO> findAllByUserIdAndIsGroupChat(@Param(value = "userId") Long userId, @Param(value = "isGroupChat") boolean isGroupChat);
 }
