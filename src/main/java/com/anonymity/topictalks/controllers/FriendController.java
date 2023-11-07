@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,11 +83,11 @@ public class FriendController {
 
         List<FriendInforResponse> list = friendService.getAllFriendByUserId(userId);
 
-        if (list == null) {//NO CONTENT
+        if (list.isEmpty()) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//204
             dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData(null);
+            dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }

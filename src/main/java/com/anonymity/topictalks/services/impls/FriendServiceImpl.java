@@ -147,7 +147,7 @@ public class FriendServiceImpl implements IFriendService {
         List<FriendInforResponse> responsesList = new ArrayList<>();
 //        List<FriendListPO> list = friendListRepository.findAllByUserId(userId);
         List<FriendListPO> list = friendListRepository.findAllByUserIdAndFriendId(userId,userId);
-        if (list.size() == 0) return null;
+//        if (list.size() == 0) return list;
         for (FriendListPO friendListPO : list) {
             FriendInforResponse response = convertToFriendInfor(friendListPO);
             responsesList.add(response);
