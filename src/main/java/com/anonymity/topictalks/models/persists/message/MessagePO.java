@@ -71,6 +71,7 @@ public class MessagePO extends DateAudit implements Serializable {
     /**
      * The content of the message.
      */
+    @Column(name = "content", length = 1000)
     private String content;
 
     /**
