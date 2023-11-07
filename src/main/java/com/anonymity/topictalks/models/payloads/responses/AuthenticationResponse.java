@@ -1,5 +1,6 @@
 package com.anonymity.topictalks.models.payloads.responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,8 @@ public class AuthenticationResponse {
     private List<String> roles;
     private Boolean isBanned;
     private LocalDateTime bannedDate;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private LocalDateTime dueDateUnBan;
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("refresh_token")

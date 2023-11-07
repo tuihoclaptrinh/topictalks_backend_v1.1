@@ -158,7 +158,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         var refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
-        if(user.isVerify()) {
+        if (user.isVerify()) {
+            LocalDateTime dueDate = null;
+            if (user.getIsBanned() == true) {
+                dueDate = user.getBannedDate().plusDays(user.getNumDateBan());
+            }
             return AuthenticationResponse.builder()
                     .accessToken(jwt)
                     .roles(roles)
@@ -166,6 +170,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                     .url_img(user.getImageUrl())
                     .id(user.getId())
                     .isBanned(user.getIsBanned())
+                    .dueDateUnBan(dueDate)
                     .bannedDate(user.getBannedDate())
                     .refreshToken(refreshToken.getToken())
                     .tokenType(ETokenType.BEARER.name())
