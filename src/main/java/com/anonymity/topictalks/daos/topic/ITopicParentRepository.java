@@ -23,10 +23,11 @@ public interface ITopicParentRepository extends IBaseRepository<TopicParentPO, L
 
     Optional<TopicParentPO> findById(Long id);
 
+    @Query(value = "SELECT * FROM topic_parent t WHERE t.is_expired= :isExpired", nativeQuery = true)
+    List<TopicParentPO> findAllByIsExpired(@Param(value = "isExpired") boolean isExpired);
+
     @Query(value = "SELECT * FROM topic_parent t WHERE t.topic_parent_name= :topicParentName", nativeQuery = true)
     List<TopicParentPO> findByTopicParentName(@Param(value = "topicParentName") String topicParentName);
-
-
 
 
 }

@@ -30,7 +30,15 @@ public class TopicParentServiceImpl implements ITopicParentService {
     @Override
     public List<TopicParentPO> getAll() {
         return topicParentRepository.findAll();
+
     }
+
+    @Override
+    public List<TopicParentPO> getAllByIsExpired(boolean isExpired) {
+        return topicParentRepository.findAllByIsExpired(isExpired);
+    }
+
+
 
     @Override
     public TopicParentPO updateTopicName(long id, String newName) {
@@ -38,6 +46,18 @@ public class TopicParentServiceImpl implements ITopicParentService {
         if (topicParentPO != null) {
             topicParentPO.setId(id);
             topicParentPO.setTopicParentName(newName);
+            topicParentPO.setUpdatedAt(LocalDateTime.now());
+            return topicParentRepository.save(topicParentPO);
+        }
+        return null;
+    }
+
+    @Override
+    public TopicParentPO updateIsExpiredById(long id, boolean isExpired) {
+        TopicParentPO topicParentPO = topicParentRepository.findById(id).orElse(null);
+        if (topicParentPO != null) {
+            topicParentPO.setId(id);
+            topicParentPO.setExpired(isExpired);
             topicParentPO.setUpdatedAt(LocalDateTime.now());
             return topicParentRepository.save(topicParentPO);
         }

@@ -11,7 +11,11 @@ public interface ITopicParentService {
 
     List<TopicParentPO> getAll();
 
+    List<TopicParentPO> getAllByIsExpired(boolean isExpired);
+
     TopicParentPO updateTopicName(long id, String newName);
+
+    TopicParentPO updateIsExpiredById(long id, boolean isExpired);
 
     boolean checkDuplicateTopicName(String newName);
 

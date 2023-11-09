@@ -67,4 +67,8 @@ public class TopicParentPO extends DateAudit implements Serializable {
     @Column(name = "topic_parent_name", nullable = false)
     private String topicParentName;
 
+    @NotNull
+    @Column(name = "is_expired", nullable = false)
+    private boolean isExpired;
+
 }

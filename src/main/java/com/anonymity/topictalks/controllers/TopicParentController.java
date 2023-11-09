@@ -52,12 +52,37 @@ public class TopicParentController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAllTopicParents() {
         DataResponse dataResponse = new DataResponse();
 
         List<TopicParentPO> list = topicParentService.getAll();
+
+        if (list.isEmpty()) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData(null);
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(list);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/all-tparent")
+    public ResponseEntity<?> getAllTopicParentsByIsExpired(@RequestParam(value = "isDisable") boolean isDisable) {
+        DataResponse dataResponse = new DataResponse();
+
+        List<TopicParentPO> list = topicParentService.getAllByIsExpired(isDisable);
 
         if (list.isEmpty()) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
@@ -91,6 +116,30 @@ public class TopicParentController {
         }
 
         TopicParentPO isUpdated = topicParentService.updateTopicName(id, request.getNewName());
+
+        if (isUpdated == null) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Failure to update.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(isUpdated);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/update-expired")
+    public ResponseEntity<?> updateIsExpiredById(@RequestParam("id") long id, @RequestParam("is_expired") boolean isExpired) {
+        DataResponse dataResponse = new DataResponse();
+        TopicParentPO isUpdated = topicParentService.updateIsExpiredById(id, isExpired);
 
         if (isUpdated == null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
