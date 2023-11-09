@@ -11,6 +11,8 @@ public interface ITopicChildrenService {
 
     List<TopicChildrenPO> getTopicChildrenByTopicParentId(long parentTopicId);
 
+    List<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired);
+
     TopicChildrenPO getTopicChildrenById(long TopicChildrenId);
 
     TopicChildrenPO updateTopicName(long id, String newName);

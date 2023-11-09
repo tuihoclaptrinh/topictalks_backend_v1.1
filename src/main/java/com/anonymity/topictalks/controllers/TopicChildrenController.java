@@ -52,21 +52,24 @@ public class TopicChildrenController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("")
+    public ResponseEntity<?> getAllTopicChildrenByTopicParentIdAndIsExpired(@RequestParam(value = "tpid") Long id, @RequestParam(value = "is_expired") boolean isExpired) {
+        DataResponse dataResponse = new DataResponse();
+        List<TopicChildrenPO> list = topicChildrenService.getTopicChildrenByTopicParentIdAndIsExpired(id,isExpired);
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(list);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/topic-parent={id}")
     public ResponseEntity<?> getAllTopicChildrenByTopicParentId(@PathVariable Long id) {
         DataResponse dataResponse = new DataResponse();
-
         List<TopicChildrenPO> list = topicChildrenService.getTopicChildrenByTopicParentId(id);
-
-//        if (list.isEmpty()) {//NO CONTENT
-//            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-//            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
-//            dataResponse.setSuccess(false);
-//            dataResponse.setData("Not exist any children topic of this parent topic.");
-//
-//            return ResponseEntity.ok(dataResponse);
-//        }
-
         dataResponse.setStatus(HttpStatus.OK.value());//200
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);

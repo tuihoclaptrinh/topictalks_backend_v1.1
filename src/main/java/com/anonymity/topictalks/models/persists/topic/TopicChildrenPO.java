@@ -85,4 +85,7 @@ public class TopicChildrenPO extends DateAudit implements Serializable {
 
     @Column(name = "short_descript",nullable = false)
     private String shortDescript;
+
+    @Column(name = "is_expired",nullable = false)
+    private boolean isExpired;
 }

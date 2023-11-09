@@ -44,6 +44,11 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
+    public List<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired) {
+        return topicChildrenRepository.findByTopicParentIdAndIsExpired(parentTopicId,isExpired);
+    }
+
+    @Override
     public TopicChildrenPO getTopicChildrenById(long TopicChildrenId) {
         return topicChildrenRepository.findById(TopicChildrenId);
     }
