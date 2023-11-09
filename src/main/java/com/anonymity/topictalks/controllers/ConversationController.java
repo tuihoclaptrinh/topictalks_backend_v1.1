@@ -30,12 +30,6 @@ public class ConversationController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/group-chat/{userId}")
-    public ResponseEntity<Object> getAllGroupChatByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(conversationService.getAllConversationByUserIdAndIsGroup(userId,true));
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/{conversationId}")
     public ResponseEntity<?> updateTopicGroupChat(@PathVariable Long conversationId, @RequestBody ConversationUpdateRequest request) {
         return ResponseEntity.ok(conversationService.updateTopicGroupChat(conversationId, request.getNewTopicId(), request.getUserIdUpdate()));

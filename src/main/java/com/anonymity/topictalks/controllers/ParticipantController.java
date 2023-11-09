@@ -243,4 +243,29 @@ public class ParticipantController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/group-chat")
+    public ResponseEntity<?> getAllGroupChatByUserIdAndIsGroup(@RequestParam(value = "uid") long id) {
+        DataResponse dataResponse = new DataResponse();
+
+        List<ParticipantResponse> participant = participantService.getAllConversationByUserIdAndIsGroup(id,true);
+
+        if (participant == null) {//NO CONTENT
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(participant);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+
 }

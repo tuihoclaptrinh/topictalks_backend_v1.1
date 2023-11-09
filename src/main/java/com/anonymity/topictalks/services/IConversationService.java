@@ -30,9 +30,4 @@ public interface IConversationService {
     void deleteByConversationId(long conversationId, long userId);
 
     void deleteConversationByUser(long conversationId);
-
-    List<ConversationResponse> getAllConversationByUserIdAndIsGroup(long userId, boolean isGroupChat);
-
-
-
 }

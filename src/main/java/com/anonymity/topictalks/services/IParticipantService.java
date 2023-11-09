@@ -5,6 +5,7 @@ import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.payloads.requests.ProcessMemberGroupChatRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
@@ -46,6 +47,8 @@ public interface IParticipantService {
     boolean checkAdminOfGroupChat(long userId, long conversationId);
 
     List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
+
+    List<ParticipantResponse> getAllConversationByUserIdAndIsGroup(long userId, boolean isGroupChat);
 
     void removeToGroupChat(long userId, long conversationId);
 
