@@ -55,7 +55,7 @@ public class TopicChildrenController {
     @GetMapping("")
     public ResponseEntity<?> getAllTopicChildrenByTopicParentIdAndIsExpired(@RequestParam(value = "tpid") Long id, @RequestParam(value = "is_expired") boolean isExpired) {
         DataResponse dataResponse = new DataResponse();
-        List<TopicChildrenPO> list = topicChildrenService.getTopicChildrenByTopicParentIdAndIsExpired(id,isExpired);
+        List<TopicChildrenPO> list = topicChildrenService.getTopicChildrenByTopicParentIdAndIsExpired(id, isExpired);
         dataResponse.setStatus(HttpStatus.OK.value());//200
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
@@ -105,8 +105,8 @@ public class TopicChildrenController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping("/rename")
-    public ResponseEntity<?> updateTopicName(@RequestParam("pid") long topicParentId, @RequestParam("cid") long topicChildrenId, @RequestBody TopicUpdateRequest request) {
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestParam("pid") long topicParentId, @RequestParam("cid") long topicChildrenId, @RequestBody TopicUpdateRequest request) {
         DataResponse dataResponse = new DataResponse();
         if (topicChildrenService.checkDuplicateTopicName(request.getNewName(), topicParentId) == true) {
             dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//204
@@ -116,11 +116,11 @@ public class TopicChildrenController {
 
             return ResponseEntity.ok(dataResponse);
         }
-        TopicChildrenPO isUpdated = topicChildrenService.updateTopicName(topicChildrenId, request.getNewName());
+        TopicChildrenPO isUpdated = topicChildrenService.update(topicChildrenId, request.getNewName(), request.getShortDescript());
 
-        if (isUpdated == null) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (isUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("Failure to update.");
 
@@ -134,4 +134,29 @@ public class TopicChildrenController {
 
         return ResponseEntity.ok(dataResponse);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/update-expired")
+    public ResponseEntity<?> updateIsExpiredById(@RequestParam("id") long id, @RequestParam("is_expired") boolean isExpired) {
+        DataResponse dataResponse = new DataResponse();
+        TopicChildrenPO isUpdated = topicChildrenService.updateIsExpiredById(id, isExpired);
+
+        if (isUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Failure to update.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(isUpdated);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
 }

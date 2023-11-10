@@ -45,7 +45,7 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
 
     @Override
     public List<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired) {
-        return topicChildrenRepository.findByTopicParentIdAndIsExpired(parentTopicId,isExpired);
+        return topicChildrenRepository.findByTopicParentIdAndIsExpired(parentTopicId, isExpired);
     }
 
     @Override
@@ -54,11 +54,28 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
-    public TopicChildrenPO updateTopicName(long id, String newName) {
+    public TopicChildrenPO update(long id, String newName, String newDescription) {
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
         if (topicChildrenPO != null) {
             topicChildrenPO.setId(id);
-            topicChildrenPO.setTopicChildrenName(newName);
+            if (newName!=null){
+                topicChildrenPO.setTopicChildrenName(newName);
+            }
+            if (newDescription!=null){
+                topicChildrenPO.setShortDescript(newDescription);
+            }
+            topicChildrenPO.setUpdatedAt(LocalDateTime.now());
+            return topicChildrenRepository.save(topicChildrenPO);
+        }
+        return null;
+    }
+
+    @Override
+    public TopicChildrenPO updateIsExpiredById(long id, boolean isExpired) {
+        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
+        if (topicChildrenPO != null) {
+            topicChildrenPO.setId(id);
+            topicChildrenPO.setExpired(isExpired);
             topicChildrenPO.setUpdatedAt(LocalDateTime.now());
             return topicChildrenRepository.save(topicChildrenPO);
         }

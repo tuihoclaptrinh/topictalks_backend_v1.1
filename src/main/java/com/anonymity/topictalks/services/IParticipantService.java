@@ -32,6 +32,8 @@ public interface IParticipantService {
 
     List<Long> getListUserIdByConversation(ConversationPO conversationPO);
 
+    List<ParticipantResponse> getAllParticipants();
+
     List<ParticipantResponse> getAllParticipantByUserId(long id);
 
     ParticipantResponse getParticipantByConversationIdAndUserId(long conversationId, long userId);

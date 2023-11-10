@@ -459,24 +459,19 @@ public class ParticipantServiceImpl implements IParticipantService {
                 response.setConversationInfor(convertToConversationDTO(list, messageService.getLastMessageByConversationId(list.getId())));
                 List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(list);
                 List<PartnerDTO> partnerDtos = new ArrayList<>();
-                ParticipantPO myParticipant = new ParticipantPO();
                 for (ParticipantPO po : poList) {
-                    if (userId != po.getUserInfo().getId()) {
-                        PartnerDTO partnerDTO = new PartnerDTO();
-                        partnerDTO.setUsername(po.getUserInfo().getUsername());
-                        partnerDTO.setImage(po.getUserInfo().getImageUrl());
-                        partnerDTO.setId(po.getUserInfo().getId());
-                        partnerDTO.setMember(po.getIsMember());
-                        partnerDTO.setBanned(po.getUserInfo().getIsBanned());
-                        partnerDTO.setActive(po.getUserInfo().isActive());
-                        partnerDTO.setBannedAt(po.getUserInfo().getBannedDate());
-                        partnerDtos.add(partnerDTO);
-                    } else {
-                        myParticipant = po;
-                    }
+                    PartnerDTO partnerDTO = new PartnerDTO();
+                    partnerDTO.setUsername(po.getUserInfo().getUsername());
+                    partnerDTO.setImage(po.getUserInfo().getImageUrl());
+                    partnerDTO.setId(po.getUserInfo().getId());
+                    partnerDTO.setMember(po.getIsMember());
+                    partnerDTO.setBanned(po.getUserInfo().getIsBanned());
+                    partnerDTO.setActive(po.getUserInfo().isActive());
+                    partnerDTO.setBannedAt(po.getUserInfo().getBannedDate());
+                    partnerDtos.add(partnerDTO);
                 }
                 response.setPartnerDTO(partnerDtos);
-                response.setIsMember(String.valueOf(myParticipant.getIsMember()));
+                response.setIsMember(null);
                 responseList.add(response);
             }
 
@@ -495,6 +490,44 @@ public class ParticipantServiceImpl implements IParticipantService {
             }
         }
         return result;
+    }
+
+    @Override
+    public List<ParticipantResponse> getAllParticipants() {
+        List<ParticipantResponse> responses = new ArrayList<>();
+        List<ParticipantPO> list = participantRepository.findAll();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getIsMember() == true) {
+                ParticipantResponse participant = new ParticipantResponse();
+                participant.setConversationInfor(
+                        convertToConversationDTO(list.get(i).getConversationInfo(),
+                                messageService.getLastMessageByConversationId(list.get(i).getConversationInfo().getId()))
+                );
+                List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
+                        list.get(i).getConversationInfo().getId(),
+                        list.get(i).getUserInfo().getId());
+                List<PartnerDTO> listPartner = new ArrayList<>();
+                for (int j = 0; j < partnerIdList.size(); j++) {
+                    UserPO partner = userRepository.findById(partnerIdList.get(j))
+                            .orElseThrow(() -> new IllegalArgumentException("This user haven't exist."));
+                    PartnerDTO partnerDTO = new PartnerDTO();
+                    partnerDTO.setId(partner.getId());
+                    partnerDTO.setBanned(partner.getIsBanned());
+                    partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
+                    partnerDTO.setImage(partner.getImageUrl());
+                    partnerDTO.setUsername(partner.getUsername());
+                    partnerDTO.setActive(partner.isActive());
+                    UserPO partnerInfor = userRepository.findById(partner.getId()).orElse(null);
+                    ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), partnerInfor);
+                    partnerDTO.setMember(participantPO.getIsMember());
+                    listPartner.add(partnerDTO);
+
+                }
+                participant.setPartnerDTO(listPartner);
+                responses.add(participant);
+            }
+        }
+        return responses;
     }
 
     @Override

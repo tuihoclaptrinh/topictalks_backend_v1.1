@@ -267,5 +267,28 @@ public class ParticipantController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("")
+    public ResponseEntity<?> getAllParticipants() {
+        DataResponse dataResponse = new DataResponse();
+
+        List<ParticipantResponse> participant = participantService.getAllParticipants();
+
+        if (participant == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(participant);
+
+        return ResponseEntity.ok(dataResponse);
+    }
 
 }

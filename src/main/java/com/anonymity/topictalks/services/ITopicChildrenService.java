@@ -15,7 +15,9 @@ public interface ITopicChildrenService {
 
     TopicChildrenPO getTopicChildrenById(long TopicChildrenId);
 
-    TopicChildrenPO updateTopicName(long id, String newName);
+    TopicChildrenPO update(long id, String newName,String newDescription);
+
+    TopicChildrenPO updateIsExpiredById(long id, boolean isExpired);
 
     boolean checkDuplicateTopicName(String newName, long topicParentId) ;
 
