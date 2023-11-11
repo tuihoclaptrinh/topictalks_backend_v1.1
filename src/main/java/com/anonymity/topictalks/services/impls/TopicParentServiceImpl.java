@@ -70,7 +70,7 @@ public class TopicParentServiceImpl implements ITopicParentService {
     }
 
     @Override
-    public List<TopicParentPO> searchByTopicParentName(String topicParentName) {
-        return topicParentRepository.findByTopicParentNameContainingIgnoreCase(topicParentName);
+    public List<TopicParentPO> searchByTopicParentName(String topicParentName,boolean isExpired) {
+        return topicParentRepository.findByTopicParentNameContainingIgnoreCase(topicParentName,isExpired);
     }
 }

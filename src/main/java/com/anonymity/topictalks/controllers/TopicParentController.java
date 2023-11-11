@@ -160,7 +160,7 @@ public class TopicParentController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/search")
-    public List<TopicParentPO> searchByTopicParentName(@RequestParam("tp_name") String topicParentName) {
-        return topicParentService.searchByTopicParentName(topicParentName);
+    public List<TopicParentPO> searchByTopicParentName(@RequestParam("tp_name") String topicParentName, @RequestParam("is_expired") boolean isExpired) {
+        return topicParentService.searchByTopicParentName(topicParentName,isExpired);
     }
 }
