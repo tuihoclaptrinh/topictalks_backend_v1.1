@@ -68,4 +68,9 @@ public class TopicParentServiceImpl implements ITopicParentService {
     public boolean checkDuplicateTopicName(String newName) {
         return topicParentRepository.findByTopicParentName(newName).size() > 0 ? true : false;
     }
+
+    @Override
+    public List<TopicParentPO> searchByTopicParentName(String topicParentName) {
+        return topicParentRepository.findByTopicParentNameContainingIgnoreCase(topicParentName);
+    }
 }

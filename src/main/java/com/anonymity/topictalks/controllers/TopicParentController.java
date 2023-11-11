@@ -157,4 +157,10 @@ public class TopicParentController {
 
         return ResponseEntity.ok(dataResponse);
     }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/search")
+    public List<TopicParentPO> searchByTopicParentName(@RequestParam("tp_name") String topicParentName) {
+        return topicParentService.searchByTopicParentName(topicParentName);
+    }
 }

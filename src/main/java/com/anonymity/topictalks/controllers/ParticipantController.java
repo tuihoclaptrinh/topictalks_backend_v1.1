@@ -269,10 +269,10 @@ public class ParticipantController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("")
-    public ResponseEntity<?> getAllParticipants() {
+    public ResponseEntity<?> getAllParticipants(@RequestParam("is_groupchat")boolean isGroupChat) {
         DataResponse dataResponse = new DataResponse();
 
-        List<ParticipantResponse> participant = participantService.getAllParticipants();
+        List<ParticipantResponse> participant = participantService.getAllParticipantByIsGroupChat(isGroupChat);
 
         if (participant == null) {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());

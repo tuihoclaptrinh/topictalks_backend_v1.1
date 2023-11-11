@@ -28,6 +28,11 @@ public interface IParticipantRepository extends IBaseRepository<ParticipantPO, P
 
     List<ParticipantPO> findAllByUserInfo(UserPO userPO);
 
+    @Query(value = "SELECT p.is_member, p.conversation_id, p.created_at, p.updated_at, p.user_id FROM participant p " +
+            "JOIN conversation c ON p.conversation_id = c.conversation_id " +
+            "WHERE c.is_group_chat= :isGroupChat", nativeQuery = true)
+    List<ParticipantPO> findAllByIsGroupChat(@Param(value = "isGroupChat") boolean isGroupChat);
+
     boolean existsByConversationInfoAndUserInfoAndIsMember(ConversationPO conversationPO, UserPO userPO, boolean isMember);
 
     @Query(value = "SELECT a.user_id FROM participant a, conversation b WHERE b.conversation_id= :conversation_id AND a.conversation_id= :conversation_id AND a.user_id != :user_id", nativeQuery = true)

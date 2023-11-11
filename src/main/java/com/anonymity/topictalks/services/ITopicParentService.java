@@ -19,5 +19,7 @@ public interface ITopicParentService {
 
     boolean checkDuplicateTopicName(String newName);
 
+    List<TopicParentPO> searchByTopicParentName(String topicParentName);
+
 }
 

@@ -32,7 +32,7 @@ public interface IParticipantService {
 
     List<Long> getListUserIdByConversation(ConversationPO conversationPO);
 
-    List<ParticipantResponse> getAllParticipants();
+    List<ParticipantResponse> getAllParticipantByIsGroupChat(boolean isGroupChat);
 
     List<ParticipantResponse> getAllParticipantByUserId(long id);
 

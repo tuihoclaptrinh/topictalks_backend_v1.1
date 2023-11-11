@@ -29,5 +29,5 @@ public interface ITopicParentRepository extends IBaseRepository<TopicParentPO, L
     @Query(value = "SELECT * FROM topic_parent t WHERE t.topic_parent_name= :topicParentName", nativeQuery = true)
     List<TopicParentPO> findByTopicParentName(@Param(value = "topicParentName") String topicParentName);
 
-
+    List<TopicParentPO> findByTopicParentNameContainingIgnoreCase(String topicParentName);
 }
