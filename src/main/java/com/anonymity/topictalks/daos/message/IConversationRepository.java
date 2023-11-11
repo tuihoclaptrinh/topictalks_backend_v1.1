@@ -31,6 +31,8 @@ public interface IConversationRepository extends IBaseRepository<ConversationPO,
 
     List<ConversationPO> findAllByTopicChildrenAndIsGroupChat(TopicChildrenPO topicChildrenPO, boolean isGroupChat);
 
+    List<ConversationPO> findAllByIsGroupChat(boolean isGroupChat);
+
     @Query(value = "SELECT c.conversation_id, c.created_at, c.updated_at, c.chat_name, c.is_group_chat, c.topic_children_id, c.admin_id, c.avt_group_img " +
             "FROM conversation c " +
             "JOIN participant p ON c.conversation_id = p.conversation_id " +
