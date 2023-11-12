@@ -2,6 +2,7 @@ package com.anonymity.topictalks.services.impls;
 
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
+import com.anonymity.topictalks.models.dtos.GenderDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
@@ -14,6 +15,7 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -266,6 +268,25 @@ public class UserServiceImpl implements IUserService {
     @Override
     public List<Integer> getAgeOfAllUsers() {
         return userRepository.getAllAgeOfUser();
+    }
+
+    @Override
+    public GenderDTO getAllGenderOfUser() {
+        GenderDTO result = new GenderDTO();
+        List<String> genderList = userRepository.getAllGenderOfUser();
+        for (int i = 0; i <genderList.size() ; i++) {
+            String[] parts = genderList.get(i).split(":");
+            System.out.println("==============> Test gender: "+parts[0]+" = "+ parts[1]);
+            if (i==0){
+                result.setFemale(Integer.valueOf(parts[1]));
+            } else if (i==1){
+                result.setMale(Integer.valueOf(parts[1]));
+            } else {
+                result.setOthers(Integer.valueOf(parts[1]));
+            }
+
+        }
+        return result;
     }
 
     @Override

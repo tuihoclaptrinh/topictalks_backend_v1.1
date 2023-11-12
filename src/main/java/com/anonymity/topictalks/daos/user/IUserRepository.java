@@ -40,6 +40,11 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
     @Query(value = "SELECT u.age FROM user u", nativeQuery = true)
     List<Integer> getAllAgeOfUser();
 
+    @Query(value = "SELECT CONCAT(u.gender, ':', COUNT(*)) AS result " +
+            "FROM user u " +
+            "GROUP BY u.gender ORDER BY u.gender",nativeQuery = true)
+    List<String> getAllGenderOfUser();
+
     Optional<UserPO> getUserByUsernameOrEmail(String username, String mail);
 
     List<UserPO> findAllByBannedDate(LocalDateTime bannedDate);

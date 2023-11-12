@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.services;
 
 
+import com.anonymity.topictalks.models.dtos.GenderDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
@@ -53,4 +54,6 @@ public interface IUserService {
     String verifyLinkToken(String email, String token);
 
     List<Integer> getAgeOfAllUsers();
+
+    GenderDTO getAllGenderOfUser();
 }
