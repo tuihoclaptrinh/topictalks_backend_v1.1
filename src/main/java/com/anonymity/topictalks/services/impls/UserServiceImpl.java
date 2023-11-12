@@ -264,6 +264,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<Integer> getAgeOfAllUsers() {
+        return userRepository.getAllAgeOfUser();
+    }
+
+    @Override
     public Object updateUser(long id, UserUpdateRequest request) {
         boolean isExisted = userRepository.existsById(id);
 

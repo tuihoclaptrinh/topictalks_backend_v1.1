@@ -37,6 +37,9 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
     Optional<UserPO> findById(Long id);
 
+    @Query(value = "SELECT u.age FROM user u", nativeQuery = true)
+    List<Integer> getAllAgeOfUser();
+
     Optional<UserPO> getUserByUsernameOrEmail(String username, String mail);
 
     List<UserPO> findAllByBannedDate(LocalDateTime bannedDate);
