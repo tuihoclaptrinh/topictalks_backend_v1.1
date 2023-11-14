@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.services;
 
 
+import com.anonymity.topictalks.models.dtos.ChartTopicInforDTO;
 import com.anonymity.topictalks.models.payloads.requests.TopicParentRequest;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 
@@ -20,6 +21,8 @@ public interface ITopicParentService {
     boolean checkDuplicateTopicName(String newName);
 
     List<TopicParentPO> searchByTopicParentName(String topicParentName, boolean isExpired);
+
+    List<ChartTopicInforDTO> retrieveDataForTopicParent();
 
 }
 

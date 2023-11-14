@@ -41,6 +41,13 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
             "JOIN status s ON p.status_id = s.id AND s.id in (1,2) AND p.author_id= :friendId AND p.is_approved=true;", nativeQuery = true)
     List<PostPO> findByFriendId(@Param(value = "friendId") long friendId);
 
+    @Query(value = "SELECT CONCAT(tp.topic_parent_id, ':',tp.topic_parent_name,':', COUNT(*)) as topic_parent_count " +
+            "FROM post p " +
+            "JOIN topic_parent tp ON p.topic_parent_id = tp.topic_parent_id " +
+            "GROUP BY tp.topic_parent_id, tp.topic_parent_name " +
+            "ORDER BY tp.topic_parent_id ASC", nativeQuery = true)
+    List<String> getListTopicAndCount();
+
 
 
 }

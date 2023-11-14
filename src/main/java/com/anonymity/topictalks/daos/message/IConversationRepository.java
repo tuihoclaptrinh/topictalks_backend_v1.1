@@ -38,4 +38,15 @@ public interface IConversationRepository extends IBaseRepository<ConversationPO,
             "JOIN participant p ON c.conversation_id = p.conversation_id " +
             "WHERE p.user_id = :userId AND c.is_group_chat = :isGroupChat", nativeQuery = true)
     List<ConversationPO> findAllByUserIdAndIsGroupChat(@Param(value = "userId") Long userId, @Param(value = "isGroupChat") boolean isGroupChat);
+
+    @Query(value = "SELECT CONCAT(tp.topic_parent_id, ':',tp.topic_parent_name,':', COUNT(tc.topic_children_id)) as topic_parent_count " +
+            "FROM conversation c " +
+            "JOIN topic_children tc ON c.topic_children_id = tc.topic_children_id " +
+            "JOIN topic_parent tp ON tc.topic_parent_id = tp.topic_parent_id " +
+            "WHERE c.is_group_chat = true " +
+            "GROUP BY tp.topic_parent_id, tp.topic_parent_name " +
+            "ORDER BY tp.topic_parent_id ASC", nativeQuery = true)
+    List<String> getAllTopicAndCount();
+
+
 }

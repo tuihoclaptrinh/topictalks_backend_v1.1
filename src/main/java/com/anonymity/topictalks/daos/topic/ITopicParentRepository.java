@@ -31,4 +31,10 @@ public interface ITopicParentRepository extends IBaseRepository<TopicParentPO, L
 
     @Query(value = "SELECT * FROM topic_parent t WHERE LOWER(t.topic_parent_name) LIKE CONCAT('%', :topicParentName, '%') AND t.is_expired = :isExpired", nativeQuery = true)
     List<TopicParentPO> findByTopicParentNameContainingIgnoreCase(@Param(value = "topicParentName") String topicParentName, @Param(value = "isExpired") boolean isExpired);
+
+    @Query(value = "SELECT CONCAT(t.topic_parent_id, ':',t.topic_parent_name) AS topic_parent " +
+            "FROM topic_parent t", nativeQuery = true)
+    List<String> getListTopicParentId();
+
+
 }

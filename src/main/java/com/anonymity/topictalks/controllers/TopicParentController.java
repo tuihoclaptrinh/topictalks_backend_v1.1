@@ -63,7 +63,7 @@ public class TopicParentController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData(null);
+            dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }
@@ -88,7 +88,7 @@ public class TopicParentController {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
             dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
-            dataResponse.setData(null);
+            dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }
@@ -162,5 +162,12 @@ public class TopicParentController {
     @GetMapping("/search")
     public List<TopicParentPO> searchByTopicParentName(@RequestParam("tp_name") String topicParentName, @RequestParam("is_expired") boolean isExpired) {
         return topicParentService.searchByTopicParentName(topicParentName,isExpired);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/retrieve")
+    public List<?> retrieveDataForTopicParent() {
+        return topicParentService.retrieveDataForTopicParent();
     }
 }
