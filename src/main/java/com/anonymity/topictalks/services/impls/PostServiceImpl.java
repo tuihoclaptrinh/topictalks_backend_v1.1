@@ -62,14 +62,14 @@ public class PostServiceImpl implements IPostService {
     private final ILikeRepository likeRepository;
 
     @Override
-    public Streamable<PostDTO> getAllPosts(long userId,int page, int size) {
+    public Streamable<PostDTO> getAllPosts(long userId, int page, int size) {
         UserPO userPO = userRepository.findById(userId).orElse(null);
         String roleUser = userPO.getRole().name();
 
         Streamable<PostPO> postList;
         if (roleUser.equalsIgnoreCase("USER")) {
             PageRequest pageable = PageRequest.of(page, size);
-            postList = postRepository.findAllByIsApprovedOrderByCreatedAtDesc(true,pageable);
+            postList = postRepository.findAllByIsApprovedOrderByCreatedAtDesc(true, pageable);
         } else {
             PageRequest pageable = PageRequest.of(page, size);
             postList = postRepository.findAll(pageable);
@@ -196,7 +196,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public Page<PostDTO> getAllPostsByIsApproved(boolean isApproved,int page, int size) {
+    public Page<PostDTO> getAllPostsByIsApproved(boolean isApproved, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Streamable<PostPO> postStream = postRepository.findAllByIsApprovedOrderByCreatedAtDesc(isApproved, pageable);
 
@@ -208,34 +208,26 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public List<PostDTO> getAllPostsByParentTopicId(long id) {
-        List<PostPO> postList = postRepository.findByTopicParentId(id);
-        if (postList.isEmpty()) return null;
-        List<PostDTO> postDtoList = new ArrayList<>();
-        for (PostPO list : postList) {
-            if(list.getIsApproved()) {
-                PostDTO postDto = convertToPostDto(list);
-                postDtoList.add(postDto);
-            }
-
-        }
-        return postDtoList;
+    public Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return postRepository.findByTopicParentId(id, pageable)
+                .map(this::convertToPostDto);
     }
 
     @Override
     public List<PostDTO> getAllPostsByUserId(long userId, long userInSessionId) {
-        FriendListPO friendListPO = friendListRepository.findByUserIdAndFriendId(userId,userInSessionId);
-        if (friendListPO!= null){
+        FriendListPO friendListPO = friendListRepository.findByUserIdAndFriendId(userId, userInSessionId);
+        if (friendListPO != null) {
             List<PostPO> list = postRepository.findByFriendId(userId);
             List<PostDTO> listDto = new ArrayList<>();
-            for (PostPO po:list) {
+            for (PostPO po : list) {
                 listDto.add(convertToPostDto(po));
             }
             return listDto;
         }
-        List<PostPO> list = postRepository.findByAuthorIdAndIsApprovedAndStatusId(userId,true);
+        List<PostPO> list = postRepository.findByAuthorIdAndIsApprovedAndStatusId(userId, true);
         List<PostDTO> listDto = new ArrayList<>();
-        for (PostPO po:list) {
+        for (PostPO po : list) {
             listDto.add(convertToPostDto(po));
         }
         return listDto;
