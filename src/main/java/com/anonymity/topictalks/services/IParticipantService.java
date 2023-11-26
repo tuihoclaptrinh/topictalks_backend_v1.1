@@ -11,6 +11,7 @@ import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.corundumstudio.socketio.SocketIOClient;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public interface IParticipantService {
 
     List<Long> getListUserIdByConversation(ConversationPO conversationPO);
 
-    List<ParticipantResponse> getAllParticipantByIsGroupChat(boolean isGroupChat);
+    Page<ParticipantResponse> getAllParticipantByIsGroupChat(boolean isGroupChat, int page, int size);
 
     List<ParticipantResponse> getAllParticipantByUserId(long id);
 

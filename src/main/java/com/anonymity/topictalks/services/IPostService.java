@@ -3,6 +3,8 @@ package com.anonymity.topictalks.services;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
 import com.anonymity.topictalks.models.persists.post.PostPO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.util.Streamable;
 
 import java.util.List;
 
@@ -15,15 +17,15 @@ public interface IPostService {
 
     boolean removePostById(long id);
 
-    List<PostDTO> getAllPosts(long userId);
+    Streamable<PostDTO> getAllPosts(long userId, int page, int size);
 
     List<PostDTO> getAllPostByAuthorIdAndRole(Long authorId);
 
     List<PostDTO> getAllPostByAuthorId(Long authorId);
 
-    List<PostDTO> getAllPostsByIsApproved(boolean isApproved);
+    Page<PostDTO> getAllPostsByIsApproved(boolean isApproved, int page, int size);
 
-    List<PostDTO> getAllPostsByParentTopicId(long id);
+    Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size);
 
     List<PostDTO> getAllPostsByUserId(long userID, long userInSessionId);
 
