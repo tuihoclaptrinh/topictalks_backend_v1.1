@@ -69,7 +69,7 @@ public class PostServiceImpl implements IPostService {
         Streamable<PostPO> postList;
         if (roleUser.equalsIgnoreCase("USER")) {
             PageRequest pageable = PageRequest.of(page, size);
-            postList = postRepository.findAllByIsApproved(true,pageable);
+            postList = postRepository.findAllByIsApprovedOrderByCreatedAtDesc(true,pageable);
         } else {
             PageRequest pageable = PageRequest.of(page, size);
             postList = postRepository.findAll(pageable);
@@ -198,7 +198,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     public Page<PostDTO> getAllPostsByIsApproved(boolean isApproved,int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Streamable<PostPO> postStream = postRepository.findAllByIsApproved(isApproved, pageable);
+        Streamable<PostPO> postStream = postRepository.findAllByIsApprovedOrderByCreatedAtDesc(isApproved, pageable);
 
         List<PostDTO> postList = postStream.map(this::convertToPostDto)
                 .filter(postDto -> !isApproved || (postDto.getStatus() != 3 && isApproved))

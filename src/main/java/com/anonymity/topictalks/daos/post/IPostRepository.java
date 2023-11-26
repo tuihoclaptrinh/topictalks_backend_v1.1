@@ -36,7 +36,7 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
 
     int countByIsApproved(boolean isApproved);
 
-    Page<PostPO> findAllByIsApproved(boolean isApproved, Pageable pageable);
+    Page<PostPO> findAllByIsApprovedOrderByCreatedAtDesc(boolean isApproved, Pageable pageable);
 
     @Query(value = "SELECT * FROM post p WHERE p.topic_parent_id = :topic_parent_id", nativeQuery = true)
     List<PostPO> findByTopicParentId(@Param(value = "topic_parent_id") long topic_parent_id);
