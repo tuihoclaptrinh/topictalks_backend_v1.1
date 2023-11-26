@@ -38,12 +38,4 @@ public class MessageController {
         return ResponseEntity.ok(messageService.getMessages(room,page,size));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/content/{partnerId}")
-    public ResponseEntity<Page<ReceiveMessageDTO>> getMessagesInChatOneToOne(@PathVariable Long partnerId,
-                                                                             @RequestBody ConversationMatcherRequest request,
-                                                                             @RequestParam(defaultValue = "0") int page,
-                                                                             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(messageService.getMessagesInChatOneToOne(request.getUserIdInSession(),partnerId,request.getTopicChildrenId(),page, size));
-    }
 }
