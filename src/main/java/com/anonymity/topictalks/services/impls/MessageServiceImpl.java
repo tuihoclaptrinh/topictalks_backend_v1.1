@@ -60,7 +60,7 @@ public class MessageServiceImpl implements IMessageService {
                 .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
 
         PageRequest pageable = PageRequest.of(page, size);
-        Page<MessagePO> messagePage = messageRepository.findAllByConversationIdOrderByCreatedAtDesc(conversationPO, pageable);
+        Page<MessagePO> messagePage = messageRepository.findAllByConversationId(conversationPO, pageable);
 
         return messagePage.map(messagePO -> {
             ReceiveMessageDTO receiveMessageDTO = new ReceiveMessageDTO();
@@ -109,7 +109,7 @@ public class MessageServiceImpl implements IMessageService {
         if (!isConversationMatched.isEmpty()) {
             ConversationPO conversationPO = conversationRepository.findById(isConversationMatched.get(0))
                     .orElseThrow(() -> new IllegalArgumentException("This conversation doesn't exist"));
-            Page<MessagePO> messagePage = messageRepository.findAllByConversationIdOrderByCreatedAtDesc(conversationPO, pageable);
+            Page<MessagePO> messagePage = messageRepository.findAllByConversationId(conversationPO, pageable);
 
             return messagePage.map(messagePO -> {
                 ReceiveMessageDTO receiveMessageDTO = new ReceiveMessageDTO();

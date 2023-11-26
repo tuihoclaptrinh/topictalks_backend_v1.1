@@ -22,7 +22,7 @@ import java.util.List;
 @Repository
 public interface IMessageRepository extends IBaseRepository<MessagePO, Long> {
 
-    Page<MessagePO> findAllByConversationIdOrderByCreatedAtDesc(ConversationPO conversation, Pageable pageable);
+    Page<MessagePO> findAllByConversationId(ConversationPO conversation, Pageable pageable);
 
     @Query(value = "SELECT * FROM message m WHERE m.conversation_id = :id ORDER BY created_at DESC LIMIT 1;", nativeQuery = true)
     MessagePO getLastMessageByConversationId(@Param(value = "id") long conversationId);
