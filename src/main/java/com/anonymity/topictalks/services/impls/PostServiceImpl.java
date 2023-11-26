@@ -23,6 +23,12 @@ import com.anonymity.topictalks.services.IPostService;
 import com.anonymity.topictalks.utils.enums.ERole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,22 +62,20 @@ public class PostServiceImpl implements IPostService {
     private final ILikeRepository likeRepository;
 
     @Override
-    public List<PostDTO> getAllPosts(long userId) {
+    public Streamable<PostDTO> getAllPosts(long userId,int page, int size) {
         UserPO userPO = userRepository.findById(userId).orElse(null);
         String roleUser = userPO.getRole().name();
-        List<PostDTO> dtoList = new ArrayList<>();
-        List<PostPO> postList;
+
+        Streamable<PostPO> postList;
         if (roleUser.equalsIgnoreCase("USER")) {
-            postList = postRepository.findAllByIsApproved(true);
+            PageRequest pageable = PageRequest.of(page, size);
+            postList = postRepository.findAllByIsApproved(true,pageable);
         } else {
-            postList = postRepository.findAll();
+            PageRequest pageable = PageRequest.of(page, size);
+            postList = postRepository.findAll(pageable);
         }
         if (postList.isEmpty()) return null;
-        for (PostPO list : postList) {
-            PostDTO postDto = convertToPostDto(list);
-            dtoList.add(postDto);
-        }
-        return dtoList;
+        return postList.map(this::convertToPostDto);
     }
 
     @Override
@@ -192,20 +196,15 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public List<PostDTO> getAllPostsByIsApproved(boolean isApproved) {
-        List<PostPO> postList = postRepository.findAllByIsApproved(isApproved);
-        if (postList.isEmpty()) return null;
-        List<PostDTO> postDtoList = new ArrayList<>();
-        for (PostPO list : postList) {
-            PostDTO postDto = convertToPostDto(list);
-            if(!isApproved) {
-                postDtoList.add(postDto);
-            } else if(postDto.getStatus() != 3 && isApproved) {
-                postDtoList.add(postDto);
-            }
+    public Page<PostDTO> getAllPostsByIsApproved(boolean isApproved,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Streamable<PostPO> postStream = postRepository.findAllByIsApproved(isApproved, pageable);
 
-        }
-        return postDtoList;
+        List<PostDTO> postList = postStream.map(this::convertToPostDto)
+                .filter(postDto -> !isApproved || (postDto.getStatus() != 3 && isApproved))
+                .toList();
+
+        return PageableExecutionUtils.getPage(postList, pageable, () -> postRepository.countByIsApproved(isApproved));
     }
 
     @Override

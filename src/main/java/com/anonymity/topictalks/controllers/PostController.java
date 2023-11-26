@@ -8,6 +8,8 @@ import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.services.IPostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -101,11 +103,13 @@ public class PostController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("{id}/all")
-    public ResponseEntity<?> getAllPosts(@PathVariable long id) {
+    @GetMapping("/all/{id}")
+    public ResponseEntity<?> getAllPosts(@PathVariable("id") long id,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
 
-        List<PostDTO> postList = postService.getAllPosts(id);
+        Streamable<PostDTO> postList = postService.getAllPosts(id,page, size);
 
         if (postList == null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
@@ -215,12 +219,13 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/is-approved={isApproved}")
-    public ResponseEntity<?> getAllPostsByIsAproved(@PathVariable boolean isApproved) {
+    public ResponseEntity<?> getAllPostsByIsAproved(@PathVariable boolean isApproved,@RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
         dataResponse.setStatus(HttpStatus.OK.value());//200
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
-        dataResponse.setData(postService.getAllPostsByIsApproved(isApproved));
+        dataResponse.setData(postService.getAllPostsByIsApproved(isApproved,page,size));
 
         return ResponseEntity.ok(dataResponse);
     }
