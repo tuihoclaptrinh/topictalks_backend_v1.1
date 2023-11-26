@@ -38,8 +38,8 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
 
     Page<PostPO> findAllByIsApprovedOrderByCreatedAtDesc(boolean isApproved, Pageable pageable);
 
-    @Query(value = "SELECT * FROM post p WHERE p.topic_parent_id = :topic_parent_id ORDER BY p.created_at DESC", nativeQuery = true)
-    Page<PostPO> findByTopicParentId(@Param(value = "topic_parent_id") long topic_parent_id, Pageable pageable);
+    @Query(value = "SELECT * FROM post p WHERE p.topic_parent_id = :topic_parent_id AND p.is_approved= :is_approved ORDER BY p.created_at DESC", nativeQuery = true)
+    Page<PostPO> findByTopicParentId(@Param(value = "topic_parent_id") long topicParentId,@Param(value = "is_approved") boolean isApproved, Pageable pageable);
 
     @Query(value = "SELECT * FROM post p WHERE p.post_id = :post_id AND p.is_approved = :is_approved", nativeQuery = true)
     PostPO findByIdAndIsApproved(@Param(value = "post_id") long postId, @Param(value = "is_approved") boolean isApproved);

@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -493,11 +495,11 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
-    public List<ParticipantResponse> getAllParticipantByIsGroupChat(boolean isGroupChat) {
-        List<ConversationPO> list = conversationRepository.findAllByIsGroupChat(isGroupChat);
-        if (list.isEmpty()) return null;
-        List<ParticipantResponse> responseList = new ArrayList<>();
-        for (ConversationPO conversationPO : list) {
+    public Page<ParticipantResponse> getAllParticipantByIsGroupChat(boolean isGroupChat, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<ConversationPO> conversationPage = conversationRepository.findAllByIsGroupChat(isGroupChat, pageable);
+
+        return conversationPage.map(conversationPO -> {
             ParticipantResponse response = new ParticipantResponse();
             response.setConversationInfor(convertToConversationDTO(conversationPO, messageService.getLastMessageByConversationId(conversationPO.getId())));
             List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
@@ -515,9 +517,8 @@ public class ParticipantServiceImpl implements IParticipantService {
             }
             response.setPartnerDTO(partnerDtos);
             response.setIsMember(null);
-            responseList.add(response);
-        }
-        return responseList;
+            return response;
+        });
     }
 
     @Override

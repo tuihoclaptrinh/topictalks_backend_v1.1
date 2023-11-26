@@ -3,6 +3,8 @@ package com.anonymity.topictalks.daos.message;
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,7 +33,12 @@ public interface IConversationRepository extends IBaseRepository<ConversationPO,
 
     List<ConversationPO> findAllByTopicChildrenAndIsGroupChat(TopicChildrenPO topicChildrenPO, boolean isGroupChat);
 
-    List<ConversationPO> findAllByIsGroupChat(boolean isGroupChat);
+    @Query(value = "SELECT c.conversation_id, c.created_at, c.updated_at, c.admin_id, c.chat_name, c.is_group_chat, c.topic_children_id, c.avt_group_img FROM conversation c " +
+            "LEFT JOIN participant p ON c.conversation_id = p.conversation_id " +
+            "where c.is_group_chat= :is_group_chat " +
+            "GROUP BY c.conversation_id " +
+            "ORDER BY COUNT(p.user_id) DESC", nativeQuery = true)
+    Page<ConversationPO> findAllByIsGroupChat(@Param(value = "is_group_chat") boolean isGroupChat, Pageable pageable);
 
     @Query(value = "SELECT c.conversation_id, c.created_at, c.updated_at, c.chat_name, c.is_group_chat, c.topic_children_id, c.admin_id, c.avt_group_img " +
             "FROM conversation c " +

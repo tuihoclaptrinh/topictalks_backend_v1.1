@@ -210,7 +210,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     public Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
-        return postRepository.findByTopicParentId(id, pageable)
+        return postRepository.findByTopicParentId(id,true, pageable)
                 .map(this::convertToPostDto);
     }
 
