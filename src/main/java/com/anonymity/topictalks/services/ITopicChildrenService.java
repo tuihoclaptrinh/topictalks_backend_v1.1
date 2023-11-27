@@ -3,6 +3,7 @@ package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface ITopicChildrenService {
 
     List<TopicChildrenPO> getTopicChildrenByTopicParentId(long parentTopicId);
 
-    List<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired);
+    Page<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired, int page, int size);
 
     TopicChildrenPO getTopicChildrenById(long TopicChildrenId);
 
