@@ -208,6 +208,16 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    public List<PostDTO> getTop4PostsByIsApproved(boolean isApproved) {
+        List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved);
+        List<PostDTO> listDto = new ArrayList<>();
+        for (PostPO po : list) {
+            listDto.add(convertToPostDto(po));
+        }
+        return listDto;
+    }
+
+    @Override
     public Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         return postRepository.findByTopicParentId(id,true, pageable)
