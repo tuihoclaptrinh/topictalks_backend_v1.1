@@ -1,6 +1,9 @@
 package com.anonymity.topictalks.models.dtos;
 
 import com.anonymity.topictalks.models.payloads.responses.LikeResponse;
+import com.anonymity.topictalks.models.persists.post.CommentPO;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +29,9 @@ public class PostDTO {
     private String avatar_url;
     private boolean author_active;
     private long totalComment;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("lastComment")
+    private CommentDTO lastComment;
     private LikeResponse like;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;

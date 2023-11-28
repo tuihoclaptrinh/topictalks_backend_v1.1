@@ -212,7 +212,10 @@ public class PostServiceImpl implements IPostService {
         List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved);
         List<PostDTO> listDto = new ArrayList<>();
         for (PostPO po : list) {
-            listDto.add(convertToPostDto(po));
+            PostDTO postDTO = new PostDTO();
+            postDTO = convertToPostDto(po);
+            postDTO.setLastComment(commentService.getLastCommentsByPostId(po.getId()));
+            listDto.add(postDTO);
         }
         return listDto;
     }
@@ -287,6 +290,7 @@ public class PostServiceImpl implements IPostService {
                 userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().isActive(),
                 commentService.getCommentsByPostId(postPO.getId()).size(),
+                null,
                 likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
                 postPO.getUpdatedAt(),

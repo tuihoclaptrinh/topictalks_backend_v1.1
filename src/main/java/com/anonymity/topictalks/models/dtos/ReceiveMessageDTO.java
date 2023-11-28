@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReceiveMessageDTO implements Serializable {
-
     private Long userId;
     private String targetName;
     private String username;
