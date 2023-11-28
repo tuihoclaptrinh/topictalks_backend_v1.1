@@ -32,4 +32,9 @@ public interface ITopicChildrenRepository extends IBaseRepository<TopicChildrenP
     Page<TopicChildrenPO> findByTopicParentIdAndIsExpired(@Param(value = "topicParentId") long topicParentId, @Param(value = "isExpired") boolean isExpired, Pageable pageable);
 
     TopicChildrenPO findById(long id);
+
+    @Query(value = "SELECT * FROM topic_children t " +
+            "WHERE LOWER(t.topic_children_name) LIKE CONCAT('%', :topicChildrenName, '%') AND t.is_expired = :isExpired", nativeQuery = true)
+    Page<TopicChildrenPO> findByTopicChildrenNameContainingIgnoreCase(@Param(value = "topicChildrenName") String topicParentName, @Param(value = "isExpired") boolean isExpired, Pageable pageable);
+
 }

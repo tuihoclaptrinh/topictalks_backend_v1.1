@@ -4,6 +4,7 @@ import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
 import com.anonymity.topictalks.models.payloads.requests.TopicUpdateRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class TopicChildrenController {
         dataResponse.setStatus(HttpStatus.OK.value());
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(topicChildrenService.getTopicChildrenByTopicParentIdAndIsExpired(id, isExpired,page,size));
+        dataResponse.setData(topicChildrenService.getTopicChildrenByTopicParentIdAndIsExpired(id, isExpired, page, size));
 
         return ResponseEntity.ok(dataResponse);
     }
@@ -162,4 +163,19 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByTopicParentName(@RequestParam("tp_name") String topicChildrenName,
+                                                     @RequestParam("is_expired") boolean isExpired,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size) {
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(topicChildrenService.searchByTopicChildrenName(topicChildrenName, isExpired, page, size));
+
+        return ResponseEntity.ok(dataResponse);
+    }
 }

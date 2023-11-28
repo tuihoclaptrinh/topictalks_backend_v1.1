@@ -62,10 +62,10 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
         if (topicChildrenPO != null) {
             topicChildrenPO.setId(id);
-            if (newName!=null){
+            if (newName != null) {
                 topicChildrenPO.setTopicChildrenName(newName);
             }
-            if (newDescription!=null){
+            if (newDescription != null) {
                 topicChildrenPO.setShortDescript(newDescription);
             }
             topicChildrenPO.setUpdatedAt(LocalDateTime.now());
@@ -89,5 +89,11 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     @Override
     public boolean checkDuplicateTopicName(String newName, long topicParentId) {
         return topicChildrenRepository.findByTopicChildrenNameAndTopicParentId(newName, topicParentId).size() > 0 ? true : false;
+    }
+
+    @Override
+    public Page<TopicChildrenPO> searchByTopicChildrenName(String topicChildrenName, boolean isExpired, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return topicChildrenRepository.findByTopicChildrenNameContainingIgnoreCase(topicChildrenName, isExpired, pageable);
     }
 }
