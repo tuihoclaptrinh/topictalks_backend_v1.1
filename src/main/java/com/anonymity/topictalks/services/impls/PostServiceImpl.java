@@ -209,7 +209,7 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public List<PostDTO> getTop4PostsByIsApproved(boolean isApproved) {
-        List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved);
+        List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved,1);
         List<PostDTO> listDto = new ArrayList<>();
         for (PostPO po : list) {
             PostDTO postDTO = new PostDTO();

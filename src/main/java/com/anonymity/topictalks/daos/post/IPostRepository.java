@@ -42,11 +42,11 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
             "FROM post p " +
             "LEFT JOIN `like` l ON p.post_id = l.post_id " +
             "LEFT JOIN comment c ON p.post_id = c.post_id " +
-            "WHERE p.is_approved= :isApproved " +
+            "WHERE p.is_approved= :isApproved AND p.status_id= :statusId " +
             "GROUP BY p.post_id, p.title " +
             "ORDER BY COUNT(DISTINCT l.user_id) DESC, COUNT(DISTINCT c.comment_id) DESC " +
             "LIMIT 4",nativeQuery = true)
-    List<PostPO> findTop4ByIsApproved(@Param(value = "isApproved") boolean isApproved);
+    List<PostPO> findTop4ByIsApproved(@Param(value = "isApproved") boolean isApproved, @Param(value = "statusId") int statusId);
 
     @Query(value = "SELECT * FROM post p WHERE p.topic_parent_id = :topic_parent_id AND p.is_approved= :is_approved ORDER BY p.created_at DESC", nativeQuery = true)
     Page<PostPO> findByTopicParentId(@Param(value = "topic_parent_id") long topicParentId,@Param(value = "is_approved") boolean isApproved, Pageable pageable);
