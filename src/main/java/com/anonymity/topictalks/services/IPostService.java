@@ -25,6 +25,8 @@ public interface IPostService {
 
     Page<PostDTO> getAllPostsByIsApproved(boolean isApproved, int page, int size);
 
+    List<PostDTO> getTop4PostsByIsApproved(boolean isApproved);
+
     Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size);
 
     List<PostDTO> getAllPostsByUserId(long userID, long userInSessionId);

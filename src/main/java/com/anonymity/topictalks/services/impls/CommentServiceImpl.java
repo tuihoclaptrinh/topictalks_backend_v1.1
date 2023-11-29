@@ -49,6 +49,11 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     @Override
+    public CommentDTO getLastCommentsByPostId(long postId) {
+        return convertCommentPOToCommentDTO(commentRepository.getLastCommentByPostId(postId));
+    }
+
+    @Override
     public CommentPO getCommentById(long id) {
         return commentRepository.findById(id).orElse(null);
     }

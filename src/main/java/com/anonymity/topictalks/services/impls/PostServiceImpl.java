@@ -208,6 +208,19 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    public List<PostDTO> getTop4PostsByIsApproved(boolean isApproved) {
+        List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved,1);
+        List<PostDTO> listDto = new ArrayList<>();
+        for (PostPO po : list) {
+            PostDTO postDTO = new PostDTO();
+            postDTO = convertToPostDto(po);
+            postDTO.setLastComment(commentService.getLastCommentsByPostId(po.getId()));
+            listDto.add(postDTO);
+        }
+        return listDto;
+    }
+
+    @Override
     public Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         return postRepository.findByTopicParentId(id,true, pageable)
@@ -277,6 +290,7 @@ public class PostServiceImpl implements IPostService {
                 userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().isActive(),
                 commentService.getCommentsByPostId(postPO.getId()).size(),
+                null,
                 likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
                 postPO.getUpdatedAt(),

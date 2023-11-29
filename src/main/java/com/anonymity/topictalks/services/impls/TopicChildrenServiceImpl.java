@@ -7,6 +7,9 @@ import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,8 +47,9 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
-    public List<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired) {
-        return topicChildrenRepository.findByTopicParentIdAndIsExpired(parentTopicId, isExpired);
+    public Page<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return topicChildrenRepository.findByTopicParentIdAndIsExpired(parentTopicId, isExpired, pageable);
     }
 
     @Override
@@ -58,10 +62,10 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
         if (topicChildrenPO != null) {
             topicChildrenPO.setId(id);
-            if (newName!=null){
+            if (newName != null) {
                 topicChildrenPO.setTopicChildrenName(newName);
             }
-            if (newDescription!=null){
+            if (newDescription != null) {
                 topicChildrenPO.setShortDescript(newDescription);
             }
             topicChildrenPO.setUpdatedAt(LocalDateTime.now());
@@ -85,5 +89,11 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     @Override
     public boolean checkDuplicateTopicName(String newName, long topicParentId) {
         return topicChildrenRepository.findByTopicChildrenNameAndTopicParentId(newName, topicParentId).size() > 0 ? true : false;
+    }
+
+    @Override
+    public Page<TopicChildrenPO> searchByTopicChildrenName(String topicChildrenName, boolean isExpired, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return topicChildrenRepository.findByTopicChildrenNameContainingIgnoreCase(topicChildrenName, isExpired, pageable);
     }
 }

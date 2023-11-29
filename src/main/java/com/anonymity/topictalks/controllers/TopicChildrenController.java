@@ -4,9 +4,11 @@ import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
 import com.anonymity.topictalks.models.payloads.requests.TopicUpdateRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,9 +29,9 @@ public class TopicChildrenController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TopicChildrenRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -45,7 +47,7 @@ public class TopicChildrenController {
             return ResponseEntity.ok(dataResponse);
         }
         dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
         dataResponse.setData(newTopicChildren);
         return ResponseEntity.ok(dataResponse);
     }
@@ -53,13 +55,15 @@ public class TopicChildrenController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("")
-    public ResponseEntity<?> getAllTopicChildrenByTopicParentIdAndIsExpired(@RequestParam(value = "tpid") Long id, @RequestParam(value = "is_expired") boolean isExpired) {
+    public ResponseEntity<?> getAllTopicChildrenByTopicParentIdAndIsExpired(@RequestParam(value = "tpid") Long id,
+                                                                            @RequestParam(value = "is_expired") boolean isExpired,
+                                                                            @RequestParam(defaultValue = "0") int page,
+                                                                            @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
-        List<TopicChildrenPO> list = topicChildrenService.getTopicChildrenByTopicParentIdAndIsExpired(id, isExpired);
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(list);
+        dataResponse.setData(topicChildrenService.getTopicChildrenByTopicParentIdAndIsExpired(id, isExpired, page, size));
 
         return ResponseEntity.ok(dataResponse);
     }
@@ -70,8 +74,8 @@ public class TopicChildrenController {
     public ResponseEntity<?> getAllTopicChildrenByTopicParentId(@PathVariable Long id) {
         DataResponse dataResponse = new DataResponse();
         List<TopicChildrenPO> list = topicChildrenService.getTopicChildrenByTopicParentId(id);
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(list);
 
@@ -86,17 +90,17 @@ public class TopicChildrenController {
 
         TopicChildrenPO topicChildrenPO = topicChildrenService.getTopicChildrenById(id);
 
-        if (topicChildrenPO == null) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//204
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NO CONTENT
+        if (topicChildrenPO == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(topicChildrenPO);
 
@@ -109,8 +113,8 @@ public class TopicChildrenController {
     public ResponseEntity<?> update(@RequestParam("pid") long topicParentId, @RequestParam("cid") long topicChildrenId, @RequestBody TopicUpdateRequest request) {
         DataResponse dataResponse = new DataResponse();
         if (topicChildrenService.checkDuplicateTopicName(request.getNewName(), topicParentId) == true) {
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//204
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//NO CONTENT
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("This topic name has already exist.");
 
@@ -127,8 +131,8 @@ public class TopicChildrenController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(isUpdated);
 
@@ -159,4 +163,19 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByTopicParentName(@RequestParam("tp_name") String topicChildrenName,
+                                                     @RequestParam("is_expired") boolean isExpired,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size) {
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(topicChildrenService.searchByTopicChildrenName(topicChildrenName, isExpired, page, size));
+
+        return ResponseEntity.ok(dataResponse);
+    }
 }

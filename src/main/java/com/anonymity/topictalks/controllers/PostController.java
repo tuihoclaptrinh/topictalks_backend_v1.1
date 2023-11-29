@@ -227,4 +227,17 @@ public class PostController {
 
         return ResponseEntity.ok(dataResponse);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/popular-posts")
+    public ResponseEntity<?> getTop4PostsByIsAproved(@RequestParam(value = "isApproved") boolean isApproved) {
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(postService.getTop4PostsByIsApproved(isApproved));
+
+        return ResponseEntity.ok(dataResponse);
+    }
 }
