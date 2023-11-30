@@ -19,9 +19,9 @@ public interface IPostService {
 
     Streamable<PostDTO> getAllPosts(long userId, int page, int size);
 
-    List<PostDTO> getAllPostByAuthorIdAndRole(Long authorId);
+    Page<PostDTO> getAllPostByAuthorIdAndRole(Long authorId, int page, int size);
 
-    List<PostDTO> getAllPostByAuthorId(Long authorId);
+    Page<PostDTO> getAllPostByAuthorId(Long authorId, boolean isApproved, int page, int size);
 
     Page<PostDTO> getAllPostsByIsApproved(boolean isApproved, int page, int size);
 

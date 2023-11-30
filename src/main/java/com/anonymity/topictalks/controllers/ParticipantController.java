@@ -151,24 +151,14 @@ public class ParticipantController {
     }
 
     @GetMapping("/group-chat/{id}")
-    public ResponseEntity<?> getAllGroupChatsByTopicChildrenId(@PathVariable("id") long id) {
+    public ResponseEntity<?> getAllGroupChatsByTopicChildrenId(@PathVariable("id") long id,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
-
-        List<ParticipantResponse> participant = participantService.getAllGroupChatByTopicChildrenId(id);
-
-        if (participant == null) {
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
-            dataResponse.setSuccess(false);
-            dataResponse.setData("");
-
-            return ResponseEntity.ok(dataResponse);
-        }
-
         dataResponse.setStatus(HttpStatus.OK.value());
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(participant);
+        dataResponse.setData(participantService.getAllGroupChatByTopicChildrenId(id, page, size));
 
         return ResponseEntity.ok(dataResponse);
     }
@@ -275,7 +265,7 @@ public class ParticipantController {
                                                 @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
 
-        Page<ParticipantResponse> participant = participantService.getAllParticipantByIsGroupChat(isGroupChat,page,size);
+        Page<ParticipantResponse> participant = participantService.getAllParticipantByIsGroupChat(isGroupChat, page, size);
 
         if (participant == null) {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());

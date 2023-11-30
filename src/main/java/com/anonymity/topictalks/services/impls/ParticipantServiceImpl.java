@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -423,12 +424,15 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
-    public List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id) {
+    public Page<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
-        List<ConversationPO> list = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO, true);
-        if (list.isEmpty()) return null;
-        List<ParticipantResponse> responseList = new ArrayList<>();
-        for (ConversationPO conversationPO : list) {
+
+        Page<ConversationPO> conversationPage = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO, true, pageable);
+
+        if (conversationPage.isEmpty()) return null;
+
+        return conversationPage.map(conversationPO -> {
             ParticipantResponse response = new ParticipantResponse();
             response.setConversationInfor(convertToConversationDTO(conversationPO, messageService.getLastMessageByConversationId(conversationPO.getId())));
             List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
@@ -446,9 +450,8 @@ public class ParticipantServiceImpl implements IParticipantService {
             }
             response.setPartnerDTO(partnerDtos);
             response.setIsMember(null);
-            responseList.add(response);
-        }
-        return responseList;
+            return response;
+        });
     }
 
     @Override

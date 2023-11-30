@@ -165,34 +165,33 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public List<PostDTO> getAllPostByAuthorIdAndRole(Long authorId) {
-        List<PostPO> postList = new ArrayList<>();
+    public Page<PostDTO> getAllPostByAuthorIdAndRole(Long authorId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<PostPO> postList;
+
         if (userRepository.findById(authorId).get().getRole().toString().equals(ERole.USER.toString())) {
-            postList = postRepository.findByAuthorIdAndIsApproved(authorId, true);
+            postList = postRepository.findByAuthorIdAndIsApproved(authorId, true, pageable).getContent();
         } else {
-            postList = postRepository.findByAuthorId(authorId);
+            postList = postRepository.findByAuthorId(authorId, pageable).getContent();
         }
 
         if (postList.isEmpty()) return null;
+
         List<PostDTO> postDtoList = new ArrayList<>();
         for (PostPO list : postList) {
             PostDTO postDto = convertToPostDto(list);
             postDtoList.add(postDto);
         }
-        return postDtoList;
 
+        return new PageImpl<>(postDtoList, pageable, postRepository.countByAuthorId(authorId));
     }
 
     @Override
-    public List<PostDTO> getAllPostByAuthorId(Long authorId) {
-        List<PostPO> postList = postList = postRepository.findByAuthorId(authorId);
-        if (postList.isEmpty()) return null;
-        List<PostDTO> postDtoList = new ArrayList<>();
-        for (PostPO list : postList) {
-            PostDTO postDto = convertToPostDto(list);
-            postDtoList.add(postDto);
-        }
-        return postDtoList;
+    public Page<PostDTO> getAllPostByAuthorId(Long authorId, boolean isApproved, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostPO> postPage = postRepository.findByAuthorIdAndIsApproved(authorId, isApproved, pageable);
+        if (postPage.isEmpty()) return null;
+        return postPage.map(this::convertToPostDto);
     }
 
     @Override
@@ -209,7 +208,7 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public List<PostDTO> getTop4PostsByIsApproved(boolean isApproved) {
-        List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved,1);
+        List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved, 1);
         List<PostDTO> listDto = new ArrayList<>();
         for (PostPO po : list) {
             PostDTO postDTO = new PostDTO();
@@ -223,7 +222,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     public Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
-        return postRepository.findByTopicParentId(id,true, pageable)
+        return postRepository.findByTopicParentId(id, true, pageable)
                 .map(this::convertToPostDto);
     }
 

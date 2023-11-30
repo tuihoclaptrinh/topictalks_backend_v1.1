@@ -141,12 +141,15 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/aid={authorId}")
-    public ResponseEntity<?> getAllPostsByAuthorId(@PathVariable Long authorId) {
+    public ResponseEntity<?> getAllPostsByAuthorId(@PathVariable Long authorId,
+                                                   @RequestParam(value = "isApproved") boolean isApproved,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
         dataResponse.setStatus(HttpStatus.OK.value());
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(postService.getAllPostByAuthorId(authorId));
+        dataResponse.setData(postService.getAllPostByAuthorId(authorId,isApproved,page,size));
 
         return ResponseEntity.ok(dataResponse);
     }

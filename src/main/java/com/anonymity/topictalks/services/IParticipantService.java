@@ -49,7 +49,7 @@ public interface IParticipantService {
 
     boolean checkAdminOfGroupChat(long userId, long conversationId);
 
-    List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
+    Page<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id, int page, int size);
 
     List<ParticipantResponse> getAllConversationByUserIdAndIsGroup(long userId, boolean isGroupChat);
 

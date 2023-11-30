@@ -24,15 +24,24 @@ import java.util.List;
 public interface IPostRepository extends IBaseRepository<PostPO, Long> {
     Page<PostPO> findAll(Pageable pageable);
 
-    @Query(value = "SELECT * FROM post p WHERE p.author_id = :authorId", nativeQuery = true)
-    List<PostPO> findByAuthorId(@Param(value = "authorId") long authorId);
+    @Query(value = "SELECT * FROM post p " +
+            "WHERE p.author_id = :authorId " +
+            "ORDER BY p.post_id DESC", nativeQuery = true)
+    Page<PostPO> findByAuthorId(@Param(value = "authorId") long authorId, Pageable pageable);
 
-    @Query(value = "SELECT * FROM post p WHERE p.author_id = :authorId AND p.is_approved = :isApproved", nativeQuery = true)
-    List<PostPO> findByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved);
+    @Query(value = "SELECT COUNT(p.post_id) FROM post p " +
+            "WHERE p.author_id = :authorId", nativeQuery = true)
+    int countByAuthorId(@Param(value = "authorId") long authorId);
 
-    @Query(value = "SELECT * FROM post p WHERE p.author_id = :authorId AND p.is_approved = :isApproved AND p.status_id=1", nativeQuery = true)
+
+    @Query(value = "SELECT * FROM post p " +
+            "WHERE p.author_id = :authorId AND p.is_approved = :isApproved " +
+            "ORDER BY p.post_id DESC", nativeQuery = true)
+    Page<PostPO> findByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved, Pageable pageable);
+
+    @Query(value = "SELECT * FROM post p " +
+            "WHERE p.author_id = :authorId AND p.is_approved = :isApproved AND p.status_id=1", nativeQuery = true)
     List<PostPO> findByAuthorIdAndIsApprovedAndStatusId(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved);
-
 
     int countByIsApproved(boolean isApproved);
 
@@ -45,11 +54,11 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
             "WHERE p.is_approved= :isApproved AND p.status_id= :statusId " +
             "GROUP BY p.post_id, p.title " +
             "ORDER BY COUNT(DISTINCT l.user_id) DESC, COUNT(DISTINCT c.comment_id) DESC " +
-            "LIMIT 4",nativeQuery = true)
+            "LIMIT 4", nativeQuery = true)
     List<PostPO> findTop4ByIsApproved(@Param(value = "isApproved") boolean isApproved, @Param(value = "statusId") int statusId);
 
     @Query(value = "SELECT * FROM post p WHERE p.topic_parent_id = :topic_parent_id AND p.is_approved= :is_approved ORDER BY p.created_at DESC", nativeQuery = true)
-    Page<PostPO> findByTopicParentId(@Param(value = "topic_parent_id") long topicParentId,@Param(value = "is_approved") boolean isApproved, Pageable pageable);
+    Page<PostPO> findByTopicParentId(@Param(value = "topic_parent_id") long topicParentId, @Param(value = "is_approved") boolean isApproved, Pageable pageable);
 
     @Query(value = "SELECT * FROM post p WHERE p.post_id = :post_id AND p.is_approved = :is_approved", nativeQuery = true)
     PostPO findByIdAndIsApproved(@Param(value = "post_id") long postId, @Param(value = "is_approved") boolean isApproved);
