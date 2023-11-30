@@ -215,8 +215,8 @@ public class UserServiceImpl implements IUserService {
         UserPO userPO = userRepository.findById(id).orElse(null);
         if (userPO == null) return null;
         UserDTO userDTO = convertUserPOToUserDTO(userPO);
-        userDTO.setTotalNumOfPosts(postRepository.countByAuthorIdAndIsApproved(id,true));
-        userDTO.setTotalNumOfFriends(friendListRepository.countFriendByUserId(id,true));
+        userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id,true)));
+        userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id,true)));
         return userDTO;
     }
 

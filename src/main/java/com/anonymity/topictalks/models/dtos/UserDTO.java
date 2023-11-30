@@ -31,9 +31,9 @@ public class UserDTO implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime dueDateUnBan;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private long totalNumOfPosts;
+    private String totalNumOfPosts;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private long totalNumOfFriends;
+    private String totalNumOfFriends;
     private ERole role;
     private boolean active;
     private LocalDateTime updatedAt;
