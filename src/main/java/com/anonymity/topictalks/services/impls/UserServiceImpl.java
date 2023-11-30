@@ -1,5 +1,7 @@
 package com.anonymity.topictalks.services.impls;
 
+import com.anonymity.topictalks.daos.post.IPostRepository;
+import com.anonymity.topictalks.daos.user.IFriendListRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.GenderDTO;
@@ -35,9 +37,17 @@ public class UserServiceImpl implements IUserService {
     private IUserRepository userRepository;
 
     @Autowired
+    private IPostRepository postRepository;
+
+    @Autowired
+    private IFriendListRepository friendListRepository;
+
+    @Autowired
     private EmailUtils emailUtils;
+
     @Autowired
     private OtpUtils otpUtils;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -203,7 +213,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDTO getUserById(long id) {
         UserPO userPO = userRepository.findById(id).orElse(null);
-        return userPO != null ? convertUserPOToUserDTO(userPO) : null;
+        if (userPO == null) return null;
+        UserDTO userDTO = convertUserPOToUserDTO(userPO);
+        userDTO.setTotalNumOfPosts(postRepository.countByAuthorIdAndIsApproved(id,true));
+        userDTO.setTotalNumOfFriends(friendListRepository.countFriendByUserId(id,true));
+        return userDTO;
     }
 
     @Override

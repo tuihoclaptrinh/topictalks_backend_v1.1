@@ -28,5 +28,8 @@ public interface IFriendListRepository extends IBaseRepository<FriendListPO, Lon
     @Query(value = "SELECT * FROM `topic-talks-app`.friend_list f WHERE (f.user_id= :userId AND f.friend_id = :friendId) OR (f.user_id= :friendId AND f.friend_id = :userId) ", nativeQuery = true)
     FriendListPO findByUserIdAndFriendId(@Param(value = "userId") long userId, @Param(value = "friendId") long friendId);
 
+    @Query(value = "SELECT COUNT(*) FROM friend_list f " +
+            "WHERE (f.friend_id= :userId OR f.user_id= :userId) AND f.is_accept= :isAccept", nativeQuery = true)
+    long countFriendByUserId(@Param(value = "userId") long userId, @Param(value = "isAccept") boolean isAccept);
 
 }

@@ -39,6 +39,10 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
             "ORDER BY p.post_id DESC", nativeQuery = true)
     Page<PostPO> findByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved, Pageable pageable);
 
+    @Query(value = "SELECT COUNT(p.post_id) FROM post p " +
+            "WHERE p.author_id = :authorId AND p.is_approved = :isApproved ", nativeQuery = true)
+    long countByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId,@Param(value = "isApproved") boolean isApproved);
+
     @Query(value = "SELECT * FROM post p " +
             "WHERE p.author_id = :authorId AND p.is_approved = :isApproved AND p.status_id=1", nativeQuery = true)
     List<PostPO> findByAuthorIdAndIsApprovedAndStatusId(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved);
