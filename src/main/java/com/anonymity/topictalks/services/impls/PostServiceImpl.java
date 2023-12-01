@@ -190,7 +190,6 @@ public class PostServiceImpl implements IPostService {
     public Page<PostDTO> getAllPostByAuthorId(Long authorId, boolean isApproved, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<PostPO> postPage = postRepository.findByAuthorIdAndIsApproved(authorId, isApproved, pageable);
-        if (postPage.isEmpty()) return null;
         return postPage.map(this::convertToPostDto);
     }
 
