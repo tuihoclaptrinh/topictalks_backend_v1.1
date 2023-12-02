@@ -32,6 +32,9 @@ public class TopicParentServiceImpl implements ITopicParentService {
         List<TopicParentPO> list = topicParentRepository.findByTopicParentName(request.getTopicParentName());
         if (!list.isEmpty()) return null;
         topicParent.setTopicParentName(request.getTopicParentName());
+        topicParent.setImage(request.getUrlImage());
+        topicParent.setShortDescript(request.getShortDescription());
+        topicParent.setExpired(false);
         topicParent.setCreatedAt(LocalDateTime.now());
         topicParent.setUpdatedAt(LocalDateTime.now());
         return topicParentRepository.save(topicParent);

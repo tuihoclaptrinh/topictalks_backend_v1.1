@@ -40,7 +40,7 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
     Page<PostPO> findByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId, @Param(value = "isApproved") boolean isApproved, Pageable pageable);
 
     @Query(value = "SELECT COUNT(p.post_id) FROM post p " +
-            "WHERE p.author_id = :authorId AND p.is_approved = :isApproved ", nativeQuery = true)
+            "WHERE p.author_id = :authorId AND p.is_approved = :isApproved AND p.status_id != 3", nativeQuery = true)
     long countByAuthorIdAndIsApproved(@Param(value = "authorId") long authorId,@Param(value = "isApproved") boolean isApproved);
 
     @Query(value = "SELECT * FROM post p " +
@@ -67,8 +67,8 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
     @Query(value = "SELECT * FROM post p WHERE p.post_id = :post_id AND p.is_approved = :is_approved", nativeQuery = true)
     PostPO findByIdAndIsApproved(@Param(value = "post_id") long postId, @Param(value = "is_approved") boolean isApproved);
 
-    @Query(value = "SELECT * FROM post p" +
-            "JOIN status s ON p.status_id = s.id AND s.id in (1,2) AND p.author_id= :friendId AND p.is_approved=true;", nativeQuery = true)
+    @Query(value = "SELECT * FROM post p " +
+            "JOIN status s ON p.status_id = s.id AND s.id in (1,2) AND p.author_id= :friendId AND p.is_approved=true", nativeQuery = true)
     List<PostPO> findByFriendId(@Param(value = "friendId") long friendId);
 
     @Query(value = "SELECT CONCAT(tp.topic_parent_id, ':',tp.topic_parent_name,':', COUNT(*)) as topic_parent_count " +

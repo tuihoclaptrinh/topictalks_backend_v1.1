@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TopicParentRequest {
     private String topicParentName;
+    private String shortDescription;
+    private String urlImage;
 }
