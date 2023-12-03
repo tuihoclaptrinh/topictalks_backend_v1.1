@@ -10,6 +10,7 @@ import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.RejectPostRequest;
 import com.anonymity.topictalks.models.persists.post.CommentPO;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
@@ -91,6 +92,7 @@ public class PostServiceImpl implements IPostService {
         post.setImage(request.getImage() != null ? request.getImage() : "");
         post.setTopicParentId(topicParent);
         post.setIsApproved(false);
+        post.setIsRejected(false);
         /**
          * If status_id =1 ---> statusName: Public
          * If status_id =2 ---> statusName: Friend
@@ -125,6 +127,8 @@ public class PostServiceImpl implements IPostService {
             post.setUpdatedAt(LocalDateTime.now());
             StatusPO statusPO = statusRepository.findById(Long.valueOf(request.getStatus_id())).orElse(null);
             post.setStatus(statusPO);
+            post.setIsRejected(false);
+            post.setReasonRejected(null);
 
             PostDTO postDto = convertToPostDto(post);
             return postDto;
@@ -251,6 +255,20 @@ public class PostServiceImpl implements IPostService {
             PostPO postPO = postRepository.findById(id).orElse(null);
             postPO.setId(id);
             postPO.setIsApproved(true);
+            return postRepository.save(postPO);
+        }
+        return null;
+    }
+
+    @Override
+    public PostPO rejectPost(RejectPostRequest request) {
+        boolean isExisted = postRepository.existsById(request.getPostId());
+        if (isExisted) {
+            PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
+            postPO.setId(request.getPostId());
+            postPO.setIsApproved(false);
+            postPO.setIsRejected(true);
+            postPO.setReasonRejected(request.getReasonReject());
             return postRepository.save(postPO);
         }
         return null;

@@ -2,6 +2,7 @@ package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.RejectPostRequest;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Streamable;
@@ -32,6 +33,8 @@ public interface IPostService {
     List<PostDTO> getAllPostsByUserId(long userID, long userInSessionId);
 
     PostPO aprrovePost(Long id);
+
+    PostPO rejectPost(RejectPostRequest request);
 
     Object getPostByPostId(Long postId);
 

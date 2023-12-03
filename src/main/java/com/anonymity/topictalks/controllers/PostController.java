@@ -3,6 +3,7 @@ package com.anonymity.topictalks.controllers;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.RejectPostRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.services.IPostService;
@@ -214,6 +215,37 @@ public class PostController {
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData("Approved successfully");
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/reject/{pid}")
+    public ResponseEntity<?> rejectPost(@RequestBody RejectPostRequest request, BindingResult bindingResult) {
+        DataResponse dataResponse = new DataResponse();
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+        PostPO postUpdated = postService.rejectPost(request);
+
+        if (postUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData("Reject successfully");
         return ResponseEntity.ok(dataResponse);
     }
 
