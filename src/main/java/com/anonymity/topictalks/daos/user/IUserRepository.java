@@ -30,6 +30,8 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
   
     @Procedure("UPDATE_IS_BAN_USER_PROCEDURE")
     void updateIsBannProcedure(String username);
+    @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
+    int getCountUsers();
 
     Optional<UserPO> findByUsername(String username);
 
@@ -42,5 +44,8 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
     List<UserPO> findAllByBannedDate(LocalDateTime bannedDate);
 
     Optional<UserPO> findByNickname(String nickname);
+
+    @Query(value = "SELECT user_id FROM user", nativeQuery = true)
+    List<Integer> getUserIds();
 
 }

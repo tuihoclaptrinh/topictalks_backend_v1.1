@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    name: topic-talk # Name of the data source
+    type: com.zaxxer.hikari.HikariDataSource # Type of data source
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver # JDBC driver class name
+      # Automatically commit connections returned from the pool
+      auto-commit: true
+      # Minimum number of idle connections maintained in the pool
+      minimum-idle: 5
+      # Database connection timeout, default is 30 seconds, which is 30000
+      idle-timeout: 60000
+    url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root # Database username
+    password: p4ssw0rd! # Database password
+
+  jpa:
+    show-sql: true # Show SQL statements
+    properties:
+      hibernate:
+        format_sql: true # Format SQL statements

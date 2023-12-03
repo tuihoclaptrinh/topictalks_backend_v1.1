@@ -58,7 +58,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public Object register(RegisterRequest request) {
-        userRepository.deleteUnVerifyUser();
+//        userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
         Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
         if (!user.isEmpty()) {
@@ -215,8 +215,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setCreatedAt(LocalDateTime.now());
             new_user.setUpdatedAt(null);
 
-            new_user = userRepository.save(new_user);
-            new_user.setUsername("Anominity" + new_user.getId());
             new_user = userRepository.save(new_user);
 
             var jwt = jwtService.generateToken(new_user);
