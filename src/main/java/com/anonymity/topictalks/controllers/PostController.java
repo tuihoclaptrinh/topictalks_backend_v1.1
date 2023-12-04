@@ -252,13 +252,13 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/is-approved={isApproved}")
-    public ResponseEntity<?> getAllPostsByIsAproved(@PathVariable boolean isApproved, @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<?> getAllPostsByIsApprovedAndIsRejected(@PathVariable boolean isApproved,@RequestParam(defaultValue = "false") boolean isRejected, @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
         dataResponse.setStatus(HttpStatus.OK.value());
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(postService.getAllPostsByIsApproved(isApproved, page, size));
+        dataResponse.setData(postService.getAllPostsByIsApprovedAndIsRejected(isApproved,isRejected, page, size));
 
         return ResponseEntity.ok(dataResponse);
     }

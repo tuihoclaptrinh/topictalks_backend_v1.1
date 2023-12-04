@@ -24,7 +24,7 @@ public interface IPostService {
 
     Page<PostDTO> getAllPostByAuthorId(Long authorId, boolean isApproved, int page, int size);
 
-    Page<PostDTO> getAllPostsByIsApproved(boolean isApproved, int page, int size);
+    Page<PostDTO> getAllPostsByIsApprovedAndIsRejected(boolean isApproved,boolean isRejected, int page, int size);
 
     List<PostDTO> getTop4PostsByIsApproved(boolean isApproved);
 
