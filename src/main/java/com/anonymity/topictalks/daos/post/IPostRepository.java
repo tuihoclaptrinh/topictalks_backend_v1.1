@@ -49,9 +49,9 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
 
     int countByIsApproved(boolean isApproved);
 
-    Page<PostPO> findAllByIsApprovedOrderByCreatedAtDesc(boolean isApproved, Pageable pageable);
+    Page<PostPO> findAllByIsApprovedAndIsRejectedOrderByCreatedAtDesc(boolean isApproved,boolean isRejected, Pageable pageable);
 
-    @Query(value = "SELECT p.post_id, p.created_at, p.updated_at, p.content, p.image, p.is_approved, p.title, p.author_id, p.topic_parent_id, p.status_id " +
+    @Query(value = "SELECT p.post_id, p.created_at, p.updated_at, p.content, p.image, p.is_approved, p.is_rejected,p.reason_rejected, p.title, p.author_id, p.topic_parent_id, p.status_id " +
             "FROM post p " +
             "LEFT JOIN `like` l ON p.post_id = l.post_id " +
             "LEFT JOIN comment c ON p.post_id = c.post_id " +

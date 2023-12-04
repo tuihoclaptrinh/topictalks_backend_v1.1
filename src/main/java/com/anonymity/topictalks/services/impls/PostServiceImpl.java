@@ -10,6 +10,7 @@ import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.RejectPostRequest;
 import com.anonymity.topictalks.models.persists.post.CommentPO;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
@@ -69,7 +70,7 @@ public class PostServiceImpl implements IPostService {
         Streamable<PostPO> postList;
         if (roleUser.equalsIgnoreCase("USER")) {
             PageRequest pageable = PageRequest.of(page, size);
-            postList = postRepository.findAllByIsApprovedOrderByCreatedAtDesc(true, pageable);
+            postList = postRepository.findAllByIsApprovedAndIsRejectedOrderByCreatedAtDesc(true,false, pageable);
         } else {
             PageRequest pageable = PageRequest.of(page, size);
             postList = postRepository.findAll(pageable);
@@ -91,6 +92,7 @@ public class PostServiceImpl implements IPostService {
         post.setImage(request.getImage() != null ? request.getImage() : "");
         post.setTopicParentId(topicParent);
         post.setIsApproved(false);
+        post.setIsRejected(false);
         /**
          * If status_id =1 ---> statusName: Public
          * If status_id =2 ---> statusName: Friend
@@ -125,6 +127,8 @@ public class PostServiceImpl implements IPostService {
             post.setUpdatedAt(LocalDateTime.now());
             StatusPO statusPO = statusRepository.findById(Long.valueOf(request.getStatus_id())).orElse(null);
             post.setStatus(statusPO);
+            post.setIsRejected(false);
+            post.setReasonRejected(null);
 
             PostDTO postDto = convertToPostDto(post);
             return postDto;
@@ -194,9 +198,9 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public Page<PostDTO> getAllPostsByIsApproved(boolean isApproved, int page, int size) {
+    public Page<PostDTO> getAllPostsByIsApprovedAndIsRejected(boolean isApproved, boolean isRejected, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Streamable<PostPO> postStream = postRepository.findAllByIsApprovedOrderByCreatedAtDesc(isApproved, pageable);
+        Streamable<PostPO> postStream = postRepository.findAllByIsApprovedAndIsRejectedOrderByCreatedAtDesc(isApproved, isRejected, pageable);
 
         List<PostDTO> postList = postStream.map(this::convertToPostDto)
                 .filter(postDto -> !isApproved || (postDto.getStatus() != 3 && isApproved))
@@ -257,6 +261,20 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    public PostPO rejectPost(RejectPostRequest request) {
+        boolean isExisted = postRepository.existsById(request.getPostId());
+        if (isExisted) {
+            PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
+            postPO.setId(request.getPostId());
+            postPO.setIsApproved(false);
+            postPO.setIsRejected(true);
+            postPO.setReasonRejected(request.getReasonReject());
+            return postRepository.save(postPO);
+        }
+        return null;
+    }
+
+    @Override
     public Object getPostByPostId(Long postId) {
         boolean isExisted = postRepository.existsById(postId);
         if (isExisted) {
@@ -292,7 +310,9 @@ public class PostServiceImpl implements IPostService {
                 likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
                 postPO.getUpdatedAt(),
-                postPO.getIsApproved()
+                postPO.getIsApproved(),
+                postPO.getIsRejected(),
+                postPO.getIsRejected() == true ? postPO.getReasonRejected() : null
         );
         return postDto;
     }

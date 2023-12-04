@@ -36,4 +36,8 @@ public class PostDTO {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private boolean isApproved;
+    private boolean isRejected;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("reasonRejected")
+    private String reasonRejected;
 }
