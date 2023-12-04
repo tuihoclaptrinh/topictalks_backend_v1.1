@@ -220,7 +220,7 @@ public class PostController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping("/reject/{pid}")
+    @PutMapping("/reject")
     public ResponseEntity<?> rejectPost(@RequestBody RejectPostRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
         if (bindingResult.hasErrors()) {
