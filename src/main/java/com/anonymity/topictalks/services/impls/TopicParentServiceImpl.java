@@ -41,6 +41,19 @@ public class TopicParentServiceImpl implements ITopicParentService {
     }
 
     @Override
+    public TopicParentPO update(Long id, TopicParentRequest request) {
+        TopicParentPO topicParentPO = topicParentRepository.findById(id).orElse(null);
+        if (topicParentPO != null) {
+            topicParentPO.setTopicParentName(request.getTopicParentName());
+            topicParentPO.setImage(request.getUrlImage());
+            topicParentPO.setShortDescript(request.getShortDescription());
+            topicParentPO.setUpdatedAt(LocalDateTime.now());
+            return topicParentRepository.save(topicParentPO);
+        }
+        return null;
+    }
+
+    @Override
     public List<TopicParentPO> getAll() {
         return topicParentRepository.findAll();
 

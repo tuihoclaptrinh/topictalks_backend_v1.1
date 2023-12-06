@@ -10,6 +10,8 @@ import java.util.List;
 public interface ITopicParentService {
     TopicParentPO create(TopicParentRequest request);
 
+    TopicParentPO update(Long id, TopicParentRequest request);
+
     List<TopicParentPO> getAll();
 
     List<TopicParentPO> getAllByIsExpired(boolean isExpired);

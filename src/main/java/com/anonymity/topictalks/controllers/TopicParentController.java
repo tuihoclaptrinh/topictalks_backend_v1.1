@@ -170,4 +170,37 @@ public class TopicParentController {
     public List<?> retrieveDataForTopicParent() {
         return topicParentService.retrieveDataForTopicParent();
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/update")
+    public ResponseEntity<?> updateTopicParent(@RequestParam("id") long id, @RequestBody TopicParentRequest request) {
+        DataResponse dataResponse = new DataResponse();
+        if (topicParentService.checkDuplicateTopicName(request.getTopicParentName()) == true) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("This topic name has already existed.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        TopicParentPO isUpdated = topicParentService.update(id,request);
+
+        if (isUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("Failure to update.");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(isUpdated);
+
+        return ResponseEntity.ok(dataResponse);
+    }
 }

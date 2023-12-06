@@ -332,7 +332,10 @@ public class UserServiceImpl implements IUserService {
             userPO.setBio(request.getBio());
             userPO.setGender(request.getGender());
             userPO.setUpdatedAt(LocalDateTime.now());
-            return convertUserPOToUserDTO(userRepository.save(userPO));
+            UserDTO userDTO = convertUserPOToUserDTO(userRepository.save(userPO));
+            userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id,true)));
+            userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id,true)));
+            return userDTO;
         }
         return null;
     }
