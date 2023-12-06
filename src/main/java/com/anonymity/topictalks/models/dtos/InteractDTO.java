@@ -20,6 +20,7 @@ public class InteractDTO {
     private String subject;
     private String content;
     private UserQaDTO senderInfor;
+    private boolean isAnswered;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("answerContent")
     private String answerContent;

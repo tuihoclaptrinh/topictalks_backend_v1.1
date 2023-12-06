@@ -49,4 +49,7 @@ public class InteractPO  extends DateAudit implements Serializable {
     @Column(name = "adminId",nullable = true)
     private long adminReplyId;
 
+    @Column(name = "is_answered",nullable = false, columnDefinition = "boolean default false")
+    private boolean isAnswered;
+
 }
