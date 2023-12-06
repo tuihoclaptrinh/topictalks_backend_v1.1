@@ -54,7 +54,7 @@ public class IInteractServiceImpl implements IInteractService {
     public List<InteractDTO> getAllQA() {
         List<InteractPO> list = interactRepository.findAll();
         if (list.isEmpty()) {
-            throw new GlobalException(404, "Empty");
+            return null;
         } else {
             List<InteractDTO> result = new ArrayList<>();
             for (InteractPO qa : list) {
@@ -75,7 +75,7 @@ public class IInteractServiceImpl implements IInteractService {
                     interactDTOList.add(convertToInteractDTO(po));
                 }
                 return interactDTOList;
-            } else throw new GlobalException(404, "Not found this QA");
+            } else return null;
         } else throw new GlobalException(404, "Not found this user");
     }
 
