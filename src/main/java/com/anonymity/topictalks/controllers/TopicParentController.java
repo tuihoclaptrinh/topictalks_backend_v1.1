@@ -1,7 +1,6 @@
 package com.anonymity.topictalks.controllers;
 
-import com.anonymity.topictalks.models.payloads.requests.TopicParentRequest;
-import com.anonymity.topictalks.models.payloads.requests.TopicUpdateRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicParentService;
@@ -25,7 +24,7 @@ public class TopicParentController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody TopicParentRequest request, BindingResult bindingResult) {
+    public ResponseEntity<?> create(@RequestBody TopicRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
         if (bindingResult.hasErrors()) {//BAD REQUEST
             dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
@@ -104,9 +103,9 @@ public class TopicParentController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/rename")
-    public ResponseEntity<?> updateTopicName(@RequestParam("id") long id, @RequestBody TopicUpdateRequest request) {
+    public ResponseEntity<?> updateTopicName(@RequestParam("id") long id, @RequestBody TopicRequest request) {
         DataResponse dataResponse = new DataResponse();
-        if (topicParentService.checkDuplicateTopicName(request.getNewName()) == true) {
+        if (topicParentService.checkDuplicateTopicName(request.getTopicName(),id) == true) {
             dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//204
             dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//NO CONTENT
             dataResponse.setSuccess(false);
@@ -115,7 +114,7 @@ public class TopicParentController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        TopicParentPO isUpdated = topicParentService.updateTopicName(id, request.getNewName());
+        TopicParentPO isUpdated = topicParentService.updateTopicName(id, request.getTopicName());
 
         if (isUpdated == null) {//NO CONTENT
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
@@ -174,9 +173,9 @@ public class TopicParentController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/update")
-    public ResponseEntity<?> updateTopicParent(@RequestParam("id") long id, @RequestBody TopicParentRequest request) {
+    public ResponseEntity<?> updateTopicParent(@RequestParam("id") long id, @RequestBody TopicRequest request) {
         DataResponse dataResponse = new DataResponse();
-        if (topicParentService.checkDuplicateTopicName(request.getTopicParentName()) == true) {
+        if (topicParentService.checkDuplicateTopicName(request.getTopicName(),id) == true) {
             dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);

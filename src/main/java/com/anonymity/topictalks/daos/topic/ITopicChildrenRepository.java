@@ -23,7 +23,14 @@ import java.util.List;
 @Repository
 public interface ITopicChildrenRepository extends IBaseRepository<TopicChildrenPO, Long> {
     @Query(value = "SELECT * FROM topic_children t WHERE t.topic_children_name= :topicChildrenName AND t.topic_parent_id= :topicParentId", nativeQuery = true)
-    List<TopicChildrenPO> findByTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName, @Param(value = "topicParentId") long topicParentId);
+    List<TopicChildrenPO> findByTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName,
+                                                                  @Param(value = "topicParentId") long topicParentId);
+
+    @Query(value = "SELECT * FROM topic_children t " +
+            "WHERE t.topic_children_name= :topicChildrenName AND t.topic_parent_id= :topicParentId AND t.topic_children_id != :topicChildrenId", nativeQuery = true)
+    List<TopicChildrenPO> findByIdAndTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName,
+                                                                       @Param(value = "topicParentId") long topicParentId,
+                                                                       @Param(value = "topicChildrenId") long topicChildrenId);
 
     @Query(value = "SELECT * FROM topic_children t WHERE t.topic_parent_id= :topicParentId", nativeQuery = true)
     List<TopicChildrenPO> findByTopicParentId(@Param(value = "topicParentId") long topicParentId);

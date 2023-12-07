@@ -1,10 +1,7 @@
 package com.anonymity.topictalks.controllers;
 
-import com.anonymity.topictalks.models.payloads.requests.PostRequest;
-import com.anonymity.topictalks.models.payloads.requests.TopicParentRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserTopicRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
-import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.IUserTopicService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,14 +1,12 @@
 package com.anonymity.topictalks.controllers;
 
 import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
-import com.anonymity.topictalks.models.payloads.requests.TopicUpdateRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
-import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -110,9 +108,9 @@ public class TopicChildrenController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestParam("pid") long topicParentId, @RequestParam("cid") long topicChildrenId, @RequestBody TopicUpdateRequest request) {
+    public ResponseEntity<?> update(@RequestParam("pid") long topicParentId, @RequestParam("cid") long topicChildrenId, @RequestBody TopicRequest request) {
         DataResponse dataResponse = new DataResponse();
-        if (topicChildrenService.checkDuplicateTopicName(request.getNewName(), topicParentId) == true) {
+        if (topicChildrenService.checkDuplicateTopicName(request.getTopicName(), topicParentId, topicChildrenId) == true) {
             dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
@@ -120,7 +118,7 @@ public class TopicChildrenController {
 
             return ResponseEntity.ok(dataResponse);
         }
-        TopicChildrenPO isUpdated = topicChildrenService.update(topicChildrenId, request.getNewName(), request.getShortDescript());
+        TopicChildrenPO isUpdated = topicChildrenService.update(topicChildrenId, request);
 
         if (isUpdated == null) {
             dataResponse.setStatus(HttpStatus.NO_CONTENT.value());

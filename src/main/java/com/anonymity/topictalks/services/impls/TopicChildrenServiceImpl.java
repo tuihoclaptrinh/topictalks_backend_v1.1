@@ -3,6 +3,7 @@ package com.anonymity.topictalks.services.impls;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
 import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
@@ -58,16 +59,12 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
-    public TopicChildrenPO update(long id, String newName, String newDescription) {
+    public TopicChildrenPO update(long id, TopicRequest request) {
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
         if (topicChildrenPO != null) {
-            topicChildrenPO.setId(id);
-            if (newName != null) {
-                topicChildrenPO.setTopicChildrenName(newName);
-            }
-            if (newDescription != null) {
-                topicChildrenPO.setShortDescript(newDescription);
-            }
+            topicChildrenPO.setTopicChildrenName(request.getTopicName());
+            topicChildrenPO.setImage(request.getUrlImage());
+            topicChildrenPO.setShortDescript(request.getShortDescript());
             topicChildrenPO.setUpdatedAt(LocalDateTime.now());
             return topicChildrenRepository.save(topicChildrenPO);
         }
@@ -87,8 +84,8 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
-    public boolean checkDuplicateTopicName(String newName, long topicParentId) {
-        return topicChildrenRepository.findByTopicChildrenNameAndTopicParentId(newName, topicParentId).size() > 0 ? true : false;
+    public boolean checkDuplicateTopicName(String newName, long topicChildrenId,long topicParentId) {
+        return topicChildrenRepository.findByIdAndTopicChildrenNameAndTopicParentId(newName, topicParentId,topicChildrenId).size() > 0 ? true : false;
     }
 
     @Override

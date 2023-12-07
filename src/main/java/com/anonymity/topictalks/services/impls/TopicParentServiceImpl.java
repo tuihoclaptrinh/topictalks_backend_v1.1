@@ -4,7 +4,7 @@ import com.anonymity.topictalks.daos.message.IConversationRepository;
 import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
 import com.anonymity.topictalks.models.dtos.ChartTopicInforDTO;
-import com.anonymity.topictalks.models.payloads.requests.TopicParentRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicParentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,13 @@ public class TopicParentServiceImpl implements ITopicParentService {
     private IPostRepository postRepository;
 
     @Override
-    public TopicParentPO create(TopicParentRequest request) {
+    public TopicParentPO create(TopicRequest request) {
         TopicParentPO topicParent = new TopicParentPO();
-        List<TopicParentPO> list = topicParentRepository.findByTopicParentName(request.getTopicParentName());
+        List<TopicParentPO> list = topicParentRepository.findByTopicParentName(request.getTopicName());
         if (!list.isEmpty()) return null;
-        topicParent.setTopicParentName(request.getTopicParentName());
+        topicParent.setTopicParentName(request.getTopicName());
         topicParent.setImage(request.getUrlImage());
-        topicParent.setShortDescript(request.getShortDescription());
+        topicParent.setShortDescript(request.getShortDescript());
         topicParent.setExpired(false);
         topicParent.setCreatedAt(LocalDateTime.now());
         topicParent.setUpdatedAt(LocalDateTime.now());
@@ -41,12 +41,12 @@ public class TopicParentServiceImpl implements ITopicParentService {
     }
 
     @Override
-    public TopicParentPO update(Long id, TopicParentRequest request) {
+    public TopicParentPO update(Long id, TopicRequest request) {
         TopicParentPO topicParentPO = topicParentRepository.findById(id).orElse(null);
         if (topicParentPO != null) {
-            topicParentPO.setTopicParentName(request.getTopicParentName());
+            topicParentPO.setTopicParentName(request.getTopicName());
             topicParentPO.setImage(request.getUrlImage());
-            topicParentPO.setShortDescript(request.getShortDescription());
+            topicParentPO.setShortDescript(request.getShortDescript());
             topicParentPO.setUpdatedAt(LocalDateTime.now());
             return topicParentRepository.save(topicParentPO);
         }
@@ -90,8 +90,8 @@ public class TopicParentServiceImpl implements ITopicParentService {
     }
 
     @Override
-    public boolean checkDuplicateTopicName(String newName) {
-        return topicParentRepository.findByTopicParentName(newName).size() > 0 ? true : false;
+    public boolean checkDuplicateTopicName(String newName, long id) {
+        return topicParentRepository.findByTopicParentNameAndAndId(newName,id).size() > 0 ? true : false;
     }
 
     @Override
