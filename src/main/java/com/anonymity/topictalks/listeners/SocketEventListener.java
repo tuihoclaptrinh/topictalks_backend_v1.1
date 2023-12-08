@@ -9,6 +9,7 @@ import com.anonymity.topictalks.models.dtos.*;
 import com.anonymity.topictalks.models.payloads.requests.ConversationRequest;
 import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
@@ -303,93 +304,57 @@ public class SocketEventListener {
     public ParticipantRandomResponse onCreateChatRandom() {
 
         Collection<String> keys = clientChatRandom.keySet();
-        List<String> lists = new ArrayList<>();
+        List<String> userIdTopicPairs = new ArrayList<>();
         ParticipantRandomResponse participantRandomResponse = null;
         String prevTpcId = null;
+
         for (String key : keys) {
             String[] params = key.split("-");
-            Long uId = Long.parseLong(params[0].trim());
+            Long userId = Long.parseLong(params[0].trim());
             Long tpcId = Long.parseLong(params[1].trim());
-            logger.info("userId: {} - topic Children Id: {}", uId, tpcId);
-            lists.add(uId + "-" + tpcId);
+            logger.info("userId: {} - topic Children Id: {}", userId, tpcId);
+            userIdTopicPairs.add(userId + "-" + tpcId);
+
             if (prevTpcId != null && prevTpcId.equals(tpcId.toString())) {
+                String[] userIds = keys.stream().findFirst().get().split("-");
+                Long userId1 = Long.parseLong(userIds[0]);
+                Long userId2 = Long.parseLong(key.split("-")[0]);
 
-                participantRandomResponse = participantService.createChatRandom(
-                        ChatRandomDTO
-                                .builder()
-                                .users(lists)
-                                .tpcId(tpcId)
-                                .build());
+                if (conversationService.checkMatchingConversations(userId1, userId2)) {
+                    List<Long> conversationId = conversationRepository.checkMatchingConversations(userId1, userId2,false);
+                    ParticipantResponse response = participantService.getParticipantByConversationIdAndUserId(conversationId.get(0),userId1);
+                    ConversationRandomResponse conversationRandomResponse = new ConversationRandomResponse();
+                    TopicChildrenDTO topicChildrenDTO = new TopicChildrenDTO();
+                    topicChildrenDTO.setTopicChildrenName(response.getConversationInfor().getTopicChildren().getTopicChildrenName());
+                    topicChildrenDTO.setId(response.getConversationInfor().getTopicChildren().getId());
+                    topicChildrenDTO.setImage(response.getConversationInfor().getTopicChildren().getImage());
 
-                for (String user : lists) {
+                    conversationRandomResponse.setTopicChildren(topicChildrenDTO);
+                    conversationRandomResponse.setChatName(response.getConversationInfor().getChatName());
+                    conversationRandomResponse.setIsGroupChat(response.getConversationInfor().getIsGroupChat());
+                    conversationRandomResponse.setAdminId(response.getConversationInfor().getAdminId());
+                    conversationRandomResponse.setId(response.getConversationInfor().getId());
+                    participantRandomResponse = new ParticipantRandomResponse(conversationRandomResponse, response.getPartnerDTO());
+                } else {
+                    participantRandomResponse = participantService.createChatRandom(
+                            ChatRandomDTO.builder()
+                                    .users(userIdTopicPairs)
+                                    .tpcId(tpcId)
+                                    .build());
+                }
+
+                for (String user : userIdTopicPairs) {
                     clientChatRandom.remove(user);
                 }
-                lists.clear();
-                logger.info("clear data on lists");
-//                SocketIOClient client = clientChatRandom.get(key);
-//                client.sendEvent("partiAccess", participantRandomResponse);
-
-//                logger.info("Inside the same value userId: {} - topic Children Id: {}", uId, tpcId);
-//                lists.forEach(System.out::println);
-
+                userIdTopicPairs.clear();
+                logger.info("Cleared data in userIdTopicPairs");
             }
             prevTpcId = tpcId.toString();
         }
 
-//        for (String user: lists) {
-//            clientChatRandom.remove(user);
-//        }
-//        lists.clear();
-//        logger.info("clear data on lists");
-
         logger.info("Client remaining: {}", clientChatRandom.size());
-
-//        Collection<SocketIOClient> values = clientChatRandom.values();
-//        Collection<String> keys = clientChatRandom.keySet();
-//
-//        for (SocketIOClient client : values) {
-//            logger.info(client.getHandshakeData().getUrlParams().get("uid").get(0));
-//        }
-//
-//        Map<Long, Integer> tpcIdCountMap = new HashMap<>();
-//
-//        for (String key : keys) {
-//            String[] params = key.split("-");
-//            Long uId = Long.parseLong(params[0].trim());
-//            Long tpcId = Long.parseLong(params[1].trim());
-//            userChatRandom.put(uId, tpcId.toString());
-//            // Check if the tpcId already exists in the map
-//            if (tpcIdCountMap.containsKey(tpcId)) {
-//                // Increment the count for this tpcId
-//                int count = tpcIdCountMap.get(tpcId);
-//                // Check if the count is now >= 2
-//                if (count + 1 >= 2) {
-//                    tpcIdCountMap.put(tpcId, count + 1);
-//                }
-//            }
-//            else {
-//                // If tpcId is not in the map, initialize its count to 1
-//                tpcIdCountMap.put(tpcId, 1);
-//            }
-//            for (Map.Entry<Long, Integer> entry : tpcIdCountMap.entrySet()) {
-//                logger.info("tpcId: {} - Count: {}", entry.getKey(), entry.getValue());
-//                userChatRandom.put(entry.getKey(), entry.getValue().toString());
-//            }
-//            logger.info("User id: {}", uId);
-//            logger.info("Topic Children id: {}", tpcId);
-//        }
-//
-//        logger.info("Size chat random: {}", clientChatRandom.size());
-//
-//        for (Map.Entry<Long, String> entry : userChatRandom.entrySet()) {
-//            Long key = entry.getKey();
-//            String value = entry.getValue();
-//            logger.info("Key: " + key + ", Value: " + value);
-//        }
         return participantRandomResponse;
     }
-
-
 
 
 }
