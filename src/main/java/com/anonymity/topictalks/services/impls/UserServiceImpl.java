@@ -78,7 +78,7 @@ public class UserServiceImpl implements IUserService {
         } else {
             log.info("OTP: {}", otp);
             log.info("Duration: {}", Duration.between(user.getOtpGeneratedTime(),
-                    LocalDateTime.now()).getSeconds()<60);
+                    LocalDateTime.now()).getSeconds() < 60);
             return "Please regenerate otp and try again";
         }
 
@@ -110,7 +110,7 @@ public class UserServiceImpl implements IUserService {
     public String regenerateOtp(String email) {
         UserPO user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        if(!user.isVerify()) {
+        if (!user.isVerify()) {
             String otp = otpUtils.generateOtp();
             try {
                 emailUtils.sendOtpEmail(email, otp);
@@ -137,7 +137,7 @@ public class UserServiceImpl implements IUserService {
         UserPO user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found with email: {}" + request.getEmail()));
 
-        if(user.getTokenForgotPassword().equals(request.getToken())) {
+        if (user.getTokenForgotPassword().equals(request.getToken())) {
             if (Duration.between(user.getTokenGeneratedTime(), LocalDateTime.now()).getSeconds() < (5 * 60)) {
                 user.setPassword(passwordEncoder.encode(request.getNewPassword()));
                 user.setTokenForgotPassword(null);
@@ -171,6 +171,7 @@ public class UserServiceImpl implements IUserService {
             return false;
         }
     }
+
     @Override
     public boolean updateActive(boolean active, long id) {
         UserPO userPO = userRepository.findById(id)
@@ -215,8 +216,8 @@ public class UserServiceImpl implements IUserService {
         UserPO userPO = userRepository.findById(id).orElse(null);
         if (userPO == null) return null;
         UserDTO userDTO = convertUserPOToUserDTO(userPO);
-        userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id,true)));
-        userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id,true)));
+        userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id, true)));
+        userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id, true)));
         return userDTO;
     }
 
@@ -257,7 +258,7 @@ public class UserServiceImpl implements IUserService {
     public void unBanUser(long id) {
         boolean isExisted = userRepository.existsById(id);
 
-        if(isExisted) {
+        if (isExisted) {
             UserPO userPO = userRepository.findById(id).orElse(null);
             userPO.setIsBanned(false);
             userRepository.save(userPO);
@@ -288,12 +289,12 @@ public class UserServiceImpl implements IUserService {
     public GenderDTO getAllGenderOfUser() {
         GenderDTO result = new GenderDTO();
         List<String> genderList = userRepository.getAllGenderOfUser();
-        for (int i = 0; i <genderList.size() ; i++) {
+        for (int i = 0; i < genderList.size(); i++) {
             String[] parts = genderList.get(i).split(":");
-            System.out.println("==============> Test gender: "+parts[0]+" = "+ parts[1]);
-            if (i==0){
+            System.out.println("==============> Test gender: " + parts[0] + " = " + parts[1]);
+            if (i == 0) {
                 result.setFemale(Integer.valueOf(parts[1]));
-            } else if (i==1){
+            } else if (i == 1) {
                 result.setMale(Integer.valueOf(parts[1]));
             } else {
                 result.setOthers(Integer.valueOf(parts[1]));
@@ -320,9 +321,10 @@ public class UserServiceImpl implements IUserService {
             String pattern = "yyyy-MM-dd";
             String fixedTime = "00:00:00";
             try {
-                LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
-//                LocalDateTime instant = dateTime.toInstant(ZoneOffset.UTC);
-            userPO.setDob(dateTime);
+                if (request.getDob() != null) {
+                    LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
+                    userPO.setDob(dateTime);
+                }
             } catch (DateTimeParseException e) {
                 System.out.println("Error parsing the date string: " + e.getMessage());
                 throw new GlobalException(e.getErrorIndex(), e.getMessage());
@@ -333,8 +335,8 @@ public class UserServiceImpl implements IUserService {
             userPO.setGender(request.getGender());
             userPO.setUpdatedAt(LocalDateTime.now());
             UserDTO userDTO = convertUserPOToUserDTO(userRepository.save(userPO));
-            userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id,true)));
-            userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id,true)));
+            userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id, true)));
+            userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id, true)));
             return userDTO;
         }
         return null;
@@ -373,7 +375,7 @@ public class UserServiceImpl implements IUserService {
         userDTO.setUpdatedAt(userPO.getUpdatedAt());
         userDTO.setIsBanned(userPO.getIsBanned());
         userDTO.setBannedDate(userPO.getBannedDate());
-        if (userPO.getIsBanned()==true){
+        if (userPO.getIsBanned() == true) {
             userDTO.setDueDateUnBan(userPO.getBannedDate().plusDays(userPO.getNumDateBan()));
         }
         return userDTO;
