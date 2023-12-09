@@ -117,7 +117,7 @@ public class ConversationServiceImpl implements IConversationService {
         if (conversation != null && conversation.getIsGroupChat() == true) {
             if (conversation.getAdminId() == userIdUpdate) {
                 conversation.setId(conversationId);
-                TopicChildrenPO newTopicChildrenPO = topicChildrenRepository.findById(newTopicId);
+                TopicChildrenPO newTopicChildrenPO = topicChildrenRepository.findById(newTopicId).orElseThrow();
                 conversation.setTopicChildren(newTopicChildrenPO);
                 conversation.setUpdatedAt(LocalDateTime.now());
                 try {

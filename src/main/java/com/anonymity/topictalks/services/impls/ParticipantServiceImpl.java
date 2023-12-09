@@ -426,7 +426,7 @@ public class ParticipantServiceImpl implements IParticipantService {
     @Override
     public Page<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
+        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id).orElseThrow();
 
         Page<ConversationPO> conversationPage = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO, true, pageable);
 
