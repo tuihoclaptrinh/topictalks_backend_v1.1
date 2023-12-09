@@ -54,7 +54,7 @@ public class IInteractServiceImpl implements IInteractService {
     public List<InteractDTO> getAllQA() {
         List<InteractPO> list = interactRepository.findAll();
         if (list.isEmpty()) {
-            throw new GlobalException(404, "Empty");
+            return null;
         } else {
             List<InteractDTO> result = new ArrayList<>();
             for (InteractPO qa : list) {
@@ -75,7 +75,7 @@ public class IInteractServiceImpl implements IInteractService {
                     interactDTOList.add(convertToInteractDTO(po));
                 }
                 return interactDTOList;
-            } else throw new GlobalException(404, "Not found this QA");
+            } else return null;
         } else throw new GlobalException(404, "Not found this user");
     }
 
@@ -85,6 +85,7 @@ public class IInteractServiceImpl implements IInteractService {
         if (interact != null) {
             interact.setAdminReplyId(request.getAdminReplyId());
             interact.setReplyContent(request.getContent());
+            interact.setAnswered(true);
             interact.setUpdatedAt(LocalDateTime.now());
             return convertToInteractDTO(interactRepository.save(interact));
         }
@@ -104,6 +105,7 @@ public class IInteractServiceImpl implements IInteractService {
                 interactPO.getSubject(),
                 interactPO.getContent(),
                 userQaDTO,
+                interactPO.isAnswered(),
                 interactPO.getReplyContent(),
                 interactPO.getAdminReplyId(),
                 interactPO.getCreatedAt(),

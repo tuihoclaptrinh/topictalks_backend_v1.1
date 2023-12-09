@@ -5,11 +5,13 @@ import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;
 import com.anonymity.topictalks.models.payloads.requests.ProcessMemberGroupChatRequest;
+import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantRandomResponse;
 import com.anonymity.topictalks.models.payloads.responses.ParticipantResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.corundumstudio.socketio.SocketIOClient;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -31,6 +33,8 @@ public interface IParticipantService {
 
     List<Long> getListUserIdByConversation(ConversationPO conversationPO);
 
+    Page<ParticipantResponse> getAllParticipantByIsGroupChat(boolean isGroupChat, int page, int size);
+
     List<ParticipantResponse> getAllParticipantByUserId(long id);
 
     ParticipantResponse getParticipantByConversationIdAndUserId(long conversationId, long userId);
@@ -45,7 +49,9 @@ public interface IParticipantService {
 
     boolean checkAdminOfGroupChat(long userId, long conversationId);
 
-    List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id);
+    Page<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id, int page, int size);
+
+    List<ParticipantResponse> getAllConversationByUserIdAndIsGroup(long userId, boolean isGroupChat);
 
     void removeToGroupChat(long userId, long conversationId);
 

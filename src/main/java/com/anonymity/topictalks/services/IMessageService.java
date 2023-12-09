@@ -4,6 +4,7 @@ import com.anonymity.topictalks.models.dtos.LastMessageDTO;
 import com.anonymity.topictalks.models.dtos.MessageDTO;
 import com.anonymity.topictalks.models.dtos.ReceiveMessageDTO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -16,12 +17,10 @@ import java.util.List;
  */
 public interface IMessageService {
 
-    List<ReceiveMessageDTO> getMessages(Long conversationId);
+    Page<ReceiveMessageDTO> getMessages(Long conversationId, int page, int size);
 
     MessagePO saveMessage(MessagePO message);
 
     LastMessageDTO getLastMessageByConversationId(long converId);
-
-    List<ReceiveMessageDTO> getMessagesInChatOneToOne(Long userInSessionId, Long partnerId, Long topicChildrenId);
 
 }

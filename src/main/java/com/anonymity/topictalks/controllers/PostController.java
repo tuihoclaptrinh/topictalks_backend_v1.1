@@ -3,18 +3,19 @@ package com.anonymity.topictalks.controllers;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.RejectPostRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.services.IPostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Streamable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,18 +31,18 @@ public class PostController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody PostRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
         PostPO newPost = postService.createPost(request);
-        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+        dataResponse.setStatus(HttpStatus.CREATED.value());
         dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
         dataResponse.setData(newPost);
         return ResponseEntity.ok(dataResponse);
     }
@@ -52,9 +53,9 @@ public class PostController {
     public ResponseEntity<?> updatePost(@PathVariable Long id, @RequestBody PostRequest postRequest, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
 
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -62,17 +63,17 @@ public class PostController {
         }
         PostDTO postUpdated = postService.updatePost(id, postRequest);
 
-        if (postUpdated == null) {//NOT FOUND
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+        if (postUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(postUpdated);
         return ResponseEntity.ok(dataResponse);
@@ -85,14 +86,14 @@ public class PostController {
         DataResponse dataResponse = new DataResponse();
         try {
             PostDTO postUpdated = postService.updateStatusPost(postId, statusId);
-            dataResponse.setStatus(HttpStatus.OK.value());//200
-            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setStatus(HttpStatus.OK.value());
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
             dataResponse.setSuccess(true);
             dataResponse.setData(postUpdated);
             return ResponseEntity.ok(dataResponse);
         } catch (GlobalException e) {
-            dataResponse.setStatus(e.getCode());//200
-            dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());//OK
+            dataResponse.setStatus(e.getCode());
+            dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(e.getMessage());
             return ResponseEntity.ok(dataResponse);
@@ -101,23 +102,25 @@ public class PostController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("{id}/all")
-    public ResponseEntity<?> getAllPosts(@PathVariable long id) {
+    @GetMapping("/all/{id}")
+    public ResponseEntity<?> getAllPosts(@PathVariable("id") long id,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
 
-        List<PostDTO> postList = postService.getAllPosts(id);
+        Streamable<PostDTO> postList = postService.getAllPosts(id, page, size);
 
-        if (postList == null) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (postList == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(postList);
 
@@ -129,8 +132,8 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable Long postId) {
         DataResponse dataResponse = new DataResponse();
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(postService.getPostByPostId(postId));
         return ResponseEntity.ok(dataResponse);
@@ -139,13 +142,15 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/aid={authorId}")
-    public ResponseEntity<?> getAllPostsByAuthorId(@PathVariable Long authorId) {
+    public ResponseEntity<?> getAllPostsByAuthorId(@PathVariable Long authorId,
+                                                   @RequestParam(value = "isApproved") boolean isApproved,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-//        dataResponse.setData(postService.getAllPostByAuthorIdAndRole(authorId));
-        dataResponse.setData(postService.getAllPostByAuthorId(authorId));
+        dataResponse.setData(postService.getAllPostByAuthorId(authorId,isApproved,page,size));
 
         return ResponseEntity.ok(dataResponse);
     }
@@ -153,12 +158,13 @@ public class PostController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/tpid={parentTopicId}")
-    public ResponseEntity<?> getAllPostsByParentTopicId(@PathVariable Long parentTopicId) {
+    public ResponseEntity<?> getAllPostsByParentTopicId(@PathVariable Long parentTopicId, @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(postService.getAllPostsByParentTopicId(parentTopicId));
+        dataResponse.setData(postService.getAllPostsByParentTopicId(parentTopicId, page, size));
 
         return ResponseEntity.ok(dataResponse);
     }
@@ -171,17 +177,17 @@ public class PostController {
 
         boolean isRemoved = postService.removePostById(id);
 
-        if (isRemoved == false) {//NOT FOUND
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+        if (isRemoved == false) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setSuccess(false);
-            dataResponse.setData("Cann't found this post.");
+            dataResponse.setData("Can't found this post.");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData("Removed the post successfully.");
 
@@ -196,31 +202,76 @@ public class PostController {
 
         PostPO postUpdated = postService.aprrovePost(postId);
 
-        if (postUpdated == null) {//NOT FOUND
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+        if (postUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData("Approved successfully");
         return ResponseEntity.ok(dataResponse);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("/reject")
+    public ResponseEntity<?> rejectPost(@RequestBody RejectPostRequest request, BindingResult bindingResult) {
+        DataResponse dataResponse = new DataResponse();
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+        PostPO postUpdated = postService.rejectPost(request);
+
+        if (postUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData("Reject successfully");
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/is-approved={isApproved}")
-    public ResponseEntity<?> getAllPostsByIsAproved(@PathVariable boolean isApproved) {
+    public ResponseEntity<?> getAllPostsByIsApprovedAndIsRejected(@PathVariable boolean isApproved,@RequestParam(defaultValue = "false") boolean isRejected, @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(postService.getAllPostsByIsApproved(isApproved));
+        dataResponse.setData(postService.getAllPostsByIsApprovedAndIsRejected(isApproved,isRejected, page, size));
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping("/popular-posts")
+    public ResponseEntity<?> getTop4PostsByIsAproved(@RequestParam(value = "isApproved") boolean isApproved) {
+        DataResponse dataResponse = new DataResponse();
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(postService.getTop4PostsByIsApproved(isApproved));
 
         return ResponseEntity.ok(dataResponse);
     }

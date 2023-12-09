@@ -21,9 +21,13 @@ import com.anonymity.topictalks.services.IMessageService;
 import com.anonymity.topictalks.services.IParticipantService;
 import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.RandomUserUtils;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -169,7 +173,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 ParticipantResponse participant = new ParticipantResponse();
                 participant.setConversationInfor(
                         convertToConversationDTO(list.get(i).getConversationInfo(),
-                        messageService.getLastMessageByConversationId(list.get(i).getConversationInfo().getId()))
+                                messageService.getLastMessageByConversationId(list.get(i).getConversationInfo().getId()))
                 );
                 List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
                         list.get(i).getConversationInfo().getId(),
@@ -215,7 +219,7 @@ public class ParticipantServiceImpl implements IParticipantService {
 
         ParticipantResponse participantResponse = new ParticipantResponse();
         LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationId);
-        participantResponse.setConversationInfor(convertToConversationDTO(participantPO.getConversationInfo(),lastMessageDTO));
+        participantResponse.setConversationInfor(convertToConversationDTO(participantPO.getConversationInfo(), lastMessageDTO));
         List<Long> partnerIdList = participantRepository.getPartnerIdByConversationIdAndUserId(
                 participantPO.getConversationInfo().getId(),
                 participantPO.getUserInfo().getId());
@@ -257,7 +261,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
             for (int i = 0; i < list.size(); i++) {
                 LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(list.get(i).getConversationInfo().getId());
-                participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo(),lastMessageDTO));
+                participant.setConversationInfor(convertToConversationDTO(list.get(i).getConversationInfo(), lastMessageDTO));
                 PartnerDTO partnerDTO = new PartnerDTO();
                 partnerDTO.setId(partner.getId());
                 partnerDTO.setBanned(partner.getIsBanned());
@@ -304,7 +308,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         participantRepository.save(participantPO2);
 
         LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationPO.getId());
-        participant.setConversationInfor(convertToConversationDTO(conversationPO,lastMessageDTO));
+        participant.setConversationInfor(convertToConversationDTO(conversationPO, lastMessageDTO));
         PartnerDTO partnerDTO = new PartnerDTO();
         partnerDTO.setId(partnerId);
         partnerDTO.setUsername(partner.getUsername());
@@ -334,7 +338,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         ParticipantPO participantPO1 = participantRepository.save(participantPO);
         ParticipantResponse participantResponse = new ParticipantResponse();
         LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationPO.getId());
-        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO,lastMessageDTO));
+        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO, lastMessageDTO));
         List<ParticipantPO> list = participantRepository.findAllByConversationInfo(conversationPO);
         List<PartnerDTO> partnerList = new ArrayList<>();
         for (ParticipantPO participant : list) {
@@ -368,7 +372,7 @@ public class ParticipantServiceImpl implements IParticipantService {
 
         ParticipantResponse participantResponse = new ParticipantResponse();
         LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationPO.getId());
-        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO,lastMessageDTO));
+        participantResponse.setConversationInfor(convertToConversationDTO(conversationPO, lastMessageDTO));
         PartnerDTO partnerDTO = new PartnerDTO();
         partnerDTO.setUsername(userPO.getUsername());
         partnerDTO.setId(userPO.getId());
@@ -420,14 +424,17 @@ public class ParticipantServiceImpl implements IParticipantService {
     }
 
     @Override
-    public List<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id) {
+    public Page<ParticipantResponse> getAllGroupChatByTopicChildrenId(long id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
-        List<ConversationPO> list = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO, true);
-        if (list.isEmpty()) return null;
-        List<ParticipantResponse> responseList = new ArrayList<>();
-        for (ConversationPO conversationPO : list) {
+
+        Page<ConversationPO> conversationPage = conversationRepository.findAllByTopicChildrenAndIsGroupChat(topicChildrenPO, true, pageable);
+
+        if (conversationPage.isEmpty()) return null;
+
+        return conversationPage.map(conversationPO -> {
             ParticipantResponse response = new ParticipantResponse();
-            response.setConversationInfor(convertToConversationDTO(conversationPO,messageService.getLastMessageByConversationId(conversationPO.getId())));
+            response.setConversationInfor(convertToConversationDTO(conversationPO, messageService.getLastMessageByConversationId(conversationPO.getId())));
             List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
             List<PartnerDTO> partnerDtos = new ArrayList<>();
             for (ParticipantPO po : poList) {
@@ -443,9 +450,39 @@ public class ParticipantServiceImpl implements IParticipantService {
             }
             response.setPartnerDTO(partnerDtos);
             response.setIsMember(null);
-            responseList.add(response);
+            return response;
+        });
+    }
+
+    @Override
+    public List<ParticipantResponse> getAllConversationByUserIdAndIsGroup(long userId, boolean isGroupChat) {
+        List<ParticipantResponse> responseList = new ArrayList<>();
+        List<ConversationPO> converList = conversationRepository.findAllByUserIdAndIsGroupChat(userId, isGroupChat);
+        if (converList.size() > 0) {
+            for (ConversationPO list : converList) {
+                ParticipantResponse response = new ParticipantResponse();
+                response.setConversationInfor(convertToConversationDTO(list, messageService.getLastMessageByConversationId(list.getId())));
+                List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(list);
+                List<PartnerDTO> partnerDtos = new ArrayList<>();
+                for (ParticipantPO po : poList) {
+                    PartnerDTO partnerDTO = new PartnerDTO();
+                    partnerDTO.setUsername(po.getUserInfo().getUsername());
+                    partnerDTO.setImage(po.getUserInfo().getImageUrl());
+                    partnerDTO.setId(po.getUserInfo().getId());
+                    partnerDTO.setMember(po.getIsMember());
+                    partnerDTO.setBanned(po.getUserInfo().getIsBanned());
+                    partnerDTO.setActive(po.getUserInfo().isActive());
+                    partnerDTO.setBannedAt(po.getUserInfo().getBannedDate());
+                    partnerDtos.add(partnerDTO);
+                }
+                response.setPartnerDTO(partnerDtos);
+                response.setIsMember(null);
+                responseList.add(response);
+            }
+
+            return responseList;
         }
-        return responseList;
+        return null;
     }
 
     @Override
@@ -458,6 +495,33 @@ public class ParticipantServiceImpl implements IParticipantService {
             }
         }
         return result;
+    }
+
+    @Override
+    public Page<ParticipantResponse> getAllParticipantByIsGroupChat(boolean isGroupChat, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<ConversationPO> conversationPage = conversationRepository.findAllByIsGroupChat(isGroupChat, pageable);
+
+        return conversationPage.map(conversationPO -> {
+            ParticipantResponse response = new ParticipantResponse();
+            response.setConversationInfor(convertToConversationDTO(conversationPO, messageService.getLastMessageByConversationId(conversationPO.getId())));
+            List<ParticipantPO> poList = participantRepository.findAllByConversationInfo(conversationPO);
+            List<PartnerDTO> partnerDtos = new ArrayList<>();
+            for (ParticipantPO po : poList) {
+                PartnerDTO partnerDTO = new PartnerDTO();
+                partnerDTO.setUsername(po.getUserInfo().getUsername());
+                partnerDTO.setImage(po.getUserInfo().getImageUrl());
+                partnerDTO.setId(po.getUserInfo().getId());
+                partnerDTO.setMember(po.getIsMember());
+                partnerDTO.setBanned(po.getUserInfo().getIsBanned());
+                partnerDTO.setActive(po.getUserInfo().isActive());
+                partnerDTO.setBannedAt(po.getUserInfo().getBannedDate());
+                partnerDtos.add(partnerDTO);
+            }
+            response.setPartnerDTO(partnerDtos);
+            response.setIsMember(null);
+            return response;
+        });
     }
 
     @Override

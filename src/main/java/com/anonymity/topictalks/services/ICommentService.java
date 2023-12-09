@@ -12,6 +12,8 @@ public interface ICommentService {
 
     List<CommentDTO> getCommentsByPostId(long postId);
 
+    CommentDTO getLastCommentsByPostId(long postId);
+
     CommentPO getCommentById(long id);
 
     CommentDTO create(CommentRequest request);
@@ -19,5 +21,6 @@ public interface ICommentService {
     CommentDTO update(long commentId, CommentUpdateRequest request);
 
     boolean remove(long userId, long commentId);
+
     void save(CommentPO commentPO);
 }

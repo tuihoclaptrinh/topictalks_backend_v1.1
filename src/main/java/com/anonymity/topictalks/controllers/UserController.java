@@ -1,6 +1,7 @@
 package com.anonymity.topictalks.controllers;
 
 import com.alibaba.fastjson.JSON;
+import com.anonymity.topictalks.models.dtos.GenderDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.AvatarRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserTopicRequest;
@@ -190,6 +191,36 @@ public class UserController {
         dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
         dataResponse.setSuccess(true);
         dataResponse.setData(userBanned);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @GetMapping("/all-age")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<?> getAgeOfAllUsers() {
+        DataResponse dataResponse = new DataResponse();
+
+        List<Integer> ageList = userService.getAgeOfAllUsers();
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(ageList);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @GetMapping("/all-gender")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<?> getGenderOfAllUsers() {
+        DataResponse dataResponse = new DataResponse();
+
+        GenderDTO genderDTO = userService.getAllGenderOfUser();
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(genderDTO);
 
         return ResponseEntity.ok(dataResponse);
     }

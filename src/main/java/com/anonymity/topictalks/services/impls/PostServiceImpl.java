@@ -10,6 +10,7 @@ import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.RejectPostRequest;
 import com.anonymity.topictalks.models.persists.post.CommentPO;
 import com.anonymity.topictalks.models.persists.post.LikePO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
@@ -23,6 +24,12 @@ import com.anonymity.topictalks.services.IPostService;
 import com.anonymity.topictalks.utils.enums.ERole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,22 +63,20 @@ public class PostServiceImpl implements IPostService {
     private final ILikeRepository likeRepository;
 
     @Override
-    public List<PostDTO> getAllPosts(long userId) {
+    public Streamable<PostDTO> getAllPosts(long userId, int page, int size) {
         UserPO userPO = userRepository.findById(userId).orElse(null);
         String roleUser = userPO.getRole().name();
-        List<PostDTO> dtoList = new ArrayList<>();
-        List<PostPO> postList;
+
+        Streamable<PostPO> postList;
         if (roleUser.equalsIgnoreCase("USER")) {
-            postList = postRepository.findAllByIsApproved(true);
+            PageRequest pageable = PageRequest.of(page, size);
+            postList = postRepository.findAllByIsApprovedAndIsRejectedOrderByCreatedAtDesc(true,false, pageable);
         } else {
-            postList = postRepository.findAll();
+            PageRequest pageable = PageRequest.of(page, size);
+            postList = postRepository.findAll(pageable);
         }
         if (postList.isEmpty()) return null;
-        for (PostPO list : postList) {
-            PostDTO postDto = convertToPostDto(list);
-            dtoList.add(postDto);
-        }
-        return dtoList;
+        return postList.map(this::convertToPostDto);
     }
 
     @Override
@@ -87,6 +92,7 @@ public class PostServiceImpl implements IPostService {
         post.setImage(request.getImage() != null ? request.getImage() : "");
         post.setTopicParentId(topicParent);
         post.setIsApproved(false);
+        post.setIsRejected(false);
         /**
          * If status_id =1 ---> statusName: Public
          * If status_id =2 ---> statusName: Friend
@@ -121,6 +127,8 @@ public class PostServiceImpl implements IPostService {
             post.setUpdatedAt(LocalDateTime.now());
             StatusPO statusPO = statusRepository.findById(Long.valueOf(request.getStatus_id())).orElse(null);
             post.setStatus(statusPO);
+            post.setIsRejected(false);
+            post.setReasonRejected(null);
 
             PostDTO postDto = convertToPostDto(post);
             return postDto;
@@ -161,82 +169,80 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public List<PostDTO> getAllPostByAuthorIdAndRole(Long authorId) {
-        List<PostPO> postList = new ArrayList<>();
+    public Page<PostDTO> getAllPostByAuthorIdAndRole(Long authorId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<PostPO> postList;
+
         if (userRepository.findById(authorId).get().getRole().toString().equals(ERole.USER.toString())) {
-            postList = postRepository.findByAuthorIdAndIsApproved(authorId, true);
+            postList = postRepository.findByAuthorIdAndIsApproved(authorId, true, pageable).getContent();
         } else {
-            postList = postRepository.findByAuthorId(authorId);
+            postList = postRepository.findByAuthorId(authorId, pageable).getContent();
         }
 
         if (postList.isEmpty()) return null;
+
         List<PostDTO> postDtoList = new ArrayList<>();
         for (PostPO list : postList) {
             PostDTO postDto = convertToPostDto(list);
             postDtoList.add(postDto);
         }
-        return postDtoList;
 
+        return new PageImpl<>(postDtoList, pageable, postRepository.countByAuthorId(authorId));
     }
 
     @Override
-    public List<PostDTO> getAllPostByAuthorId(Long authorId) {
-        List<PostPO> postList = postList = postRepository.findByAuthorId(authorId);
-        if (postList.isEmpty()) return null;
-        List<PostDTO> postDtoList = new ArrayList<>();
-        for (PostPO list : postList) {
-            PostDTO postDto = convertToPostDto(list);
-            postDtoList.add(postDto);
-        }
-        return postDtoList;
+    public Page<PostDTO> getAllPostByAuthorId(Long authorId, boolean isApproved, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostPO> postPage = postRepository.findByAuthorIdAndIsApproved(authorId, isApproved, pageable);
+        return postPage.map(this::convertToPostDto);
     }
 
     @Override
-    public List<PostDTO> getAllPostsByIsApproved(boolean isApproved) {
-        List<PostPO> postList = postRepository.findAllByIsApproved(isApproved);
-        if (postList.isEmpty()) return null;
-        List<PostDTO> postDtoList = new ArrayList<>();
-        for (PostPO list : postList) {
-            PostDTO postDto = convertToPostDto(list);
-            if(!isApproved) {
-                postDtoList.add(postDto);
-            } else if(postDto.getStatus() != 3 && isApproved) {
-                postDtoList.add(postDto);
-            }
+    public Page<PostDTO> getAllPostsByIsApprovedAndIsRejected(boolean isApproved, boolean isRejected, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Streamable<PostPO> postStream = postRepository.findAllByIsApprovedAndIsRejectedOrderByCreatedAtDesc(isApproved, isRejected, pageable);
 
-        }
-        return postDtoList;
+        List<PostDTO> postList = postStream.map(this::convertToPostDto)
+                .filter(postDto -> !isApproved || (postDto.getStatus() != 3 && isApproved))
+                .toList();
+
+        return PageableExecutionUtils.getPage(postList, pageable, () -> postRepository.countByIsApproved(isApproved));
     }
 
     @Override
-    public List<PostDTO> getAllPostsByParentTopicId(long id) {
-        List<PostPO> postList = postRepository.findByTopicParentId(id);
-        if (postList.isEmpty()) return null;
-        List<PostDTO> postDtoList = new ArrayList<>();
-        for (PostPO list : postList) {
-            if(list.getIsApproved()) {
-                PostDTO postDto = convertToPostDto(list);
-                postDtoList.add(postDto);
-            }
-
+    public List<PostDTO> getTop4PostsByIsApproved(boolean isApproved) {
+        List<PostPO> list = postRepository.findTop4ByIsApproved(isApproved, 1);
+        List<PostDTO> listDto = new ArrayList<>();
+        for (PostPO po : list) {
+            PostDTO postDTO = new PostDTO();
+            postDTO = convertToPostDto(po);
+            postDTO.setLastComment(commentService.getLastCommentsByPostId(po.getId()));
+            listDto.add(postDTO);
         }
-        return postDtoList;
+        return listDto;
+    }
+
+    @Override
+    public Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return postRepository.findByTopicParentId(id, true, pageable)
+                .map(this::convertToPostDto);
     }
 
     @Override
     public List<PostDTO> getAllPostsByUserId(long userId, long userInSessionId) {
-        FriendListPO friendListPO = friendListRepository.findByUserIdAndFriendId(userId,userInSessionId);
-        if (friendListPO!= null){
+        FriendListPO friendListPO = friendListRepository.findByUserIdAndFriendId(userId, userInSessionId);
+        if (friendListPO != null) {
             List<PostPO> list = postRepository.findByFriendId(userId);
             List<PostDTO> listDto = new ArrayList<>();
-            for (PostPO po:list) {
+            for (PostPO po : list) {
                 listDto.add(convertToPostDto(po));
             }
             return listDto;
         }
-        List<PostPO> list = postRepository.findByAuthorIdAndIsApprovedAndStatusId(userId,true);
+        List<PostPO> list = postRepository.findByAuthorIdAndIsApprovedAndStatusId(userId, true);
         List<PostDTO> listDto = new ArrayList<>();
-        for (PostPO po:list) {
+        for (PostPO po : list) {
             listDto.add(convertToPostDto(po));
         }
         return listDto;
@@ -249,6 +255,20 @@ public class PostServiceImpl implements IPostService {
             PostPO postPO = postRepository.findById(id).orElse(null);
             postPO.setId(id);
             postPO.setIsApproved(true);
+            return postRepository.save(postPO);
+        }
+        return null;
+    }
+
+    @Override
+    public PostPO rejectPost(RejectPostRequest request) {
+        boolean isExisted = postRepository.existsById(request.getPostId());
+        if (isExisted) {
+            PostPO postPO = postRepository.findById(request.getPostId()).orElse(null);
+            postPO.setId(request.getPostId());
+            postPO.setIsApproved(false);
+            postPO.setIsRejected(true);
+            postPO.setReasonRejected(request.getReasonReject());
             return postRepository.save(postPO);
         }
         return null;
@@ -286,10 +306,13 @@ public class PostServiceImpl implements IPostService {
                 userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().isActive(),
                 commentService.getCommentsByPostId(postPO.getId()).size(),
+                null,
                 likeService.getAllUserLikeByPostId(postPO.getId()),
                 postPO.getCreatedAt(),
                 postPO.getUpdatedAt(),
-                postPO.getIsApproved()
+                postPO.getIsApproved(),
+                postPO.getIsRejected(),
+                postPO.getIsRejected() == true ? postPO.getReasonRejected() : null
         );
         return postDto;
     }

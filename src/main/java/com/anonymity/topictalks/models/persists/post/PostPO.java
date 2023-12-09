@@ -104,6 +104,18 @@ public class PostPO extends DateAudit implements Serializable {
     private Boolean isApproved;
 
     /**
+     * Indicates whether the post is approved or not.
+     */
+    @Column(name = "is_rejected", nullable = false)
+    private Boolean isRejected;
+
+    /**
+     * Indicates whether the post is approved or not.
+     */
+    @Column(name = "reason_rejected", nullable = true)
+    private String reasonRejected;
+
+    /**
      * The content of the post, which is stored as a large text.
      */
     @Lob

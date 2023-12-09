@@ -25,9 +25,12 @@ public class TriggerConfiguration {
             executeScript(jdbcTemplate, "drop_trigger.sql");
             executeScript(jdbcTemplate, "drop_procedure.sql");
             executeScript(jdbcTemplate, "drop_update_procedure.sql");
+            executeScript(jdbcTemplate, "drop_insert_age_user_trigger.sql");
             executeScript(jdbcTemplate, "create_trigger.sql");
-          executeScript(jdbcTemplate,"update_is_ban_procedure.sql");
+            executeScript(jdbcTemplate, "update_is_ban_procedure.sql");
             executeScript(jdbcTemplate, "procedure_verify_account.sql");
+            executeScript(jdbcTemplate, "update_age_user_trigger.sql");
+            executeScript(jdbcTemplate, "insert_age_user_procedure.sql");
 
         };
     }

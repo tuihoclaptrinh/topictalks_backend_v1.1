@@ -7,6 +7,7 @@ import com.anonymity.topictalks.models.payloads.requests.ConversationMatcherRequ
 import com.anonymity.topictalks.services.IMessageService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +32,10 @@ public class MessageController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{room}")
-    public ResponseEntity<List<ReceiveMessageDTO>> getMessages(@PathVariable Long room) {
-        return ResponseEntity.ok(messageService.getMessages(room));
+    public ResponseEntity<Page<ReceiveMessageDTO>> getMessages(@PathVariable Long room,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(messageService.getMessages(room,page,size));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/content/{partnerId}")
-    public ResponseEntity<List<ReceiveMessageDTO>> getMessagesInChatOneToOne(@PathVariable Long partnerId, @RequestBody ConversationMatcherRequest request) {
-        return ResponseEntity.ok(messageService.getMessagesInChatOneToOne(request.getUserIdInSession(),partnerId,request.getTopicChildrenId()));
-    }
 }

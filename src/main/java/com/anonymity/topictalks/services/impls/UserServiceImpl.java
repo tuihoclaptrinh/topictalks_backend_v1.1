@@ -1,6 +1,10 @@
 package com.anonymity.topictalks.services.impls;
 
+import com.anonymity.topictalks.daos.post.IPostRepository;
+import com.anonymity.topictalks.daos.user.IFriendListRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
+import com.anonymity.topictalks.exceptions.GlobalException;
+import com.anonymity.topictalks.models.dtos.GenderDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
@@ -13,11 +17,14 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,9 +37,17 @@ public class UserServiceImpl implements IUserService {
     private IUserRepository userRepository;
 
     @Autowired
+    private IPostRepository postRepository;
+
+    @Autowired
+    private IFriendListRepository friendListRepository;
+
+    @Autowired
     private EmailUtils emailUtils;
+
     @Autowired
     private OtpUtils otpUtils;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -63,7 +78,7 @@ public class UserServiceImpl implements IUserService {
         } else {
             log.info("OTP: {}", otp);
             log.info("Duration: {}", Duration.between(user.getOtpGeneratedTime(),
-                    LocalDateTime.now()).getSeconds()<60);
+                    LocalDateTime.now()).getSeconds() < 60);
             return "Please regenerate otp and try again";
         }
 
@@ -95,7 +110,7 @@ public class UserServiceImpl implements IUserService {
     public String regenerateOtp(String email) {
         UserPO user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        if(!user.isVerify()) {
+        if (!user.isVerify()) {
             String otp = otpUtils.generateOtp();
             try {
                 emailUtils.sendOtpEmail(email, otp);
@@ -122,7 +137,7 @@ public class UserServiceImpl implements IUserService {
         UserPO user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found with email: {}" + request.getEmail()));
 
-        if(user.getTokenForgotPassword().equals(request.getToken())) {
+        if (user.getTokenForgotPassword().equals(request.getToken())) {
             if (Duration.between(user.getTokenGeneratedTime(), LocalDateTime.now()).getSeconds() < (5 * 60)) {
                 user.setPassword(passwordEncoder.encode(request.getNewPassword()));
                 user.setTokenForgotPassword(null);
@@ -156,6 +171,7 @@ public class UserServiceImpl implements IUserService {
             return false;
         }
     }
+
     @Override
     public boolean updateActive(boolean active, long id) {
         UserPO userPO = userRepository.findById(id)
@@ -198,7 +214,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDTO getUserById(long id) {
         UserPO userPO = userRepository.findById(id).orElse(null);
-        return userPO != null ? convertUserPOToUserDTO(userPO) : null;
+        if (userPO == null) return null;
+        UserDTO userDTO = convertUserPOToUserDTO(userPO);
+        userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id, true)));
+        userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id, true)));
+        return userDTO;
     }
 
     @Override
@@ -238,7 +258,7 @@ public class UserServiceImpl implements IUserService {
     public void unBanUser(long id) {
         boolean isExisted = userRepository.existsById(id);
 
-        if(isExisted) {
+        if (isExisted) {
             UserPO userPO = userRepository.findById(id).orElse(null);
             userPO.setIsBanned(false);
             userRepository.save(userPO);
@@ -261,6 +281,30 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<Integer> getAgeOfAllUsers() {
+        return userRepository.getAllAgeOfUser();
+    }
+
+    @Override
+    public GenderDTO getAllGenderOfUser() {
+        GenderDTO result = new GenderDTO();
+        List<String> genderList = userRepository.getAllGenderOfUser();
+        for (int i = 0; i < genderList.size(); i++) {
+            String[] parts = genderList.get(i).split(":");
+            System.out.println("==============> Test gender: " + parts[0] + " = " + parts[1]);
+            if (i == 0) {
+                result.setFemale(Integer.valueOf(parts[1]));
+            } else if (i == 1) {
+                result.setMale(Integer.valueOf(parts[1]));
+            } else {
+                result.setOthers(Integer.valueOf(parts[1]));
+            }
+
+        }
+        return result;
+    }
+
+    @Override
     public Object updateUser(long id, UserUpdateRequest request) {
         boolean isExisted = userRepository.existsById(id);
 
@@ -274,22 +318,26 @@ public class UserServiceImpl implements IUserService {
             } else {
                 userPO.setEmail(email);
             }
-//            String pattern = "yyyy-MM-dd";
-//            String fixedTime = "00:00:00";
-//            try {
-//                LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
-//                LocalDateTime instant = dateTime.toInstant(ZoneOffset.UTC);
-            userPO.setDob(request.getDob());
-//            } catch (DateTimeParseException e) {
-//                System.out.println("Error parsing the date string: " + e.getMessage());
-//                throw new GlobalException(e.getErrorIndex(), e.getMessage());
-//            }
+            String pattern = "yyyy-MM-dd";
+            String fixedTime = "00:00:00";
+            try {
+                if (request.getDob() != null) {
+                    LocalDateTime dateTime = LocalDateTime.parse(request.getDob() + "T" + fixedTime, DateTimeFormatter.ofPattern(pattern + "'T'" + "HH:mm:ss"));
+                    userPO.setDob(dateTime);
+                }
+            } catch (DateTimeParseException e) {
+                System.out.println("Error parsing the date string: " + e.getMessage());
+                throw new GlobalException(e.getErrorIndex(), e.getMessage());
+            }
             userPO.setCountry(request.getCountry());
             userPO.setPhoneNumber(request.getPhoneNumber());
             userPO.setBio(request.getBio());
             userPO.setGender(request.getGender());
             userPO.setUpdatedAt(LocalDateTime.now());
-            return convertUserPOToUserDTO(userRepository.save(userPO));
+            UserDTO userDTO = convertUserPOToUserDTO(userRepository.save(userPO));
+            userDTO.setTotalNumOfPosts(String.valueOf(postRepository.countByAuthorIdAndIsApproved(id, true)));
+            userDTO.setTotalNumOfFriends(String.valueOf(friendListRepository.countFriendByUserId(id, true)));
+            return userDTO;
         }
         return null;
     }
@@ -327,7 +375,9 @@ public class UserServiceImpl implements IUserService {
         userDTO.setUpdatedAt(userPO.getUpdatedAt());
         userDTO.setIsBanned(userPO.getIsBanned());
         userDTO.setBannedDate(userPO.getBannedDate());
-
+        if (userPO.getIsBanned() == true) {
+            userDTO.setDueDateUnBan(userPO.getBannedDate().plusDays(userPO.getNumDateBan()));
+        }
         return userDTO;
     }
 }

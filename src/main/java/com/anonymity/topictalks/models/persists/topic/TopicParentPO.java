@@ -67,4 +67,18 @@ public class TopicParentPO extends DateAudit implements Serializable {
     @Column(name = "topic_parent_name", nullable = false)
     private String topicParentName;
 
+    /**
+     * An optional image associated with the children topic.
+     */
+    @Lob
+    @Column(name = "image", columnDefinition = "LONGTEXT", nullable = false)
+    private String image;
+
+    @Column(name = "short_descript",nullable = false)
+    private String shortDescript;
+
+    @NotNull
+    @Column(name = "is_expired", nullable = false)
+    private boolean isExpired;
+
 }

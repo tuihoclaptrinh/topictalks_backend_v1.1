@@ -5,6 +5,8 @@ import com.anonymity.topictalks.models.payloads.responses.ConversationRandomResp
 import com.anonymity.topictalks.models.payloads.responses.ConversationResponse;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
 
+import java.util.List;
+
 /**
  * @author de140172 - author
  * @version 1.1 - version of software
@@ -28,5 +30,4 @@ public interface IConversationService {
     void deleteByConversationId(long conversationId, long userId);
 
     void deleteConversationByUser(long conversationId);
-
 }

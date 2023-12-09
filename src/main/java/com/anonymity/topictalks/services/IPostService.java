@@ -2,7 +2,10 @@ package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.payloads.requests.PostRequest;
+import com.anonymity.topictalks.models.payloads.requests.RejectPostRequest;
 import com.anonymity.topictalks.models.persists.post.PostPO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.util.Streamable;
 
 import java.util.List;
 
@@ -15,19 +18,23 @@ public interface IPostService {
 
     boolean removePostById(long id);
 
-    List<PostDTO> getAllPosts(long userId);
+    Streamable<PostDTO> getAllPosts(long userId, int page, int size);
 
-    List<PostDTO> getAllPostByAuthorIdAndRole(Long authorId);
+    Page<PostDTO> getAllPostByAuthorIdAndRole(Long authorId, int page, int size);
 
-    List<PostDTO> getAllPostByAuthorId(Long authorId);
+    Page<PostDTO> getAllPostByAuthorId(Long authorId, boolean isApproved, int page, int size);
 
-    List<PostDTO> getAllPostsByIsApproved(boolean isApproved);
+    Page<PostDTO> getAllPostsByIsApprovedAndIsRejected(boolean isApproved,boolean isRejected, int page, int size);
 
-    List<PostDTO> getAllPostsByParentTopicId(long id);
+    List<PostDTO> getTop4PostsByIsApproved(boolean isApproved);
+
+    Page<PostDTO> getAllPostsByParentTopicId(long id, int page, int size);
 
     List<PostDTO> getAllPostsByUserId(long userID, long userInSessionId);
 
     PostPO aprrovePost(Long id);
+
+    PostPO rejectPost(RejectPostRequest request);
 
     Object getPostByPostId(Long postId);
 

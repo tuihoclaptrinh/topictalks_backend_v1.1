@@ -3,10 +3,14 @@ package com.anonymity.topictalks.services.impls;
 import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
 import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
+import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,16 +48,23 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
+    public Page<TopicChildrenPO> getTopicChildrenByTopicParentIdAndIsExpired(long parentTopicId, boolean isExpired, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return topicChildrenRepository.findByTopicParentIdAndIsExpired(parentTopicId, isExpired, pageable);
+    }
+
+    @Override
     public TopicChildrenPO getTopicChildrenById(long TopicChildrenId) {
         return topicChildrenRepository.findById(TopicChildrenId);
     }
 
     @Override
-    public TopicChildrenPO updateTopicName(long id, String newName) {
+    public TopicChildrenPO update(long id, TopicRequest request) {
         TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
         if (topicChildrenPO != null) {
-            topicChildrenPO.setId(id);
-            topicChildrenPO.setTopicChildrenName(newName);
+            topicChildrenPO.setTopicChildrenName(request.getTopicName());
+            topicChildrenPO.setImage(request.getUrlImage());
+            topicChildrenPO.setShortDescript(request.getShortDescript());
             topicChildrenPO.setUpdatedAt(LocalDateTime.now());
             return topicChildrenRepository.save(topicChildrenPO);
         }
@@ -61,7 +72,25 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     }
 
     @Override
-    public boolean checkDuplicateTopicName(String newName, long topicParentId) {
-        return topicChildrenRepository.findByTopicChildrenNameAndTopicParentId(newName, topicParentId).size() > 0 ? true : false;
+    public TopicChildrenPO updateIsExpiredById(long id, boolean isExpired) {
+        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
+        if (topicChildrenPO != null) {
+            topicChildrenPO.setId(id);
+            topicChildrenPO.setExpired(isExpired);
+            topicChildrenPO.setUpdatedAt(LocalDateTime.now());
+            return topicChildrenRepository.save(topicChildrenPO);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean checkDuplicateTopicName(String newName, long topicChildrenId,long topicParentId) {
+        return topicChildrenRepository.findByIdAndTopicChildrenNameAndTopicParentId(newName, topicParentId,topicChildrenId).size() > 0 ? true : false;
+    }
+
+    @Override
+    public Page<TopicChildrenPO> searchByTopicChildrenName(String topicChildrenName, boolean isExpired, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return topicChildrenRepository.findByTopicChildrenNameContainingIgnoreCase(topicChildrenName, isExpired, pageable);
     }
 }

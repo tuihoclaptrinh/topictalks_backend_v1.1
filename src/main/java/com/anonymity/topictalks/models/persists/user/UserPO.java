@@ -230,6 +230,14 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     )
     private LocalDateTime dob;
 
+    /**
+     * The user's age.
+     */
+    @Column(
+            name = "age",
+            nullable = true
+    )
+    private int age;
 
     /**
      * Indicates whether the user is banned.
@@ -340,6 +348,22 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     public boolean isEnabled() {
         return true;
     }
+
+//    @PrePersist
+//    public void prePersist() {
+//        if (dob != null) {
+//            age = calculateAge(dob);
+//            System.out.println("prePersist(): (case dob NOT null) System run pass here...");
+//        } else {
+//            System.out.println("prePersist(): (case dob null) System run pass here...");
+//            age =0;
+//        }
+//    }
+//
+//    private Integer calculateAge(LocalDateTime dob) {
+//        LocalDateTime currentDate = LocalDateTime.now();
+//        return currentDate.getYear() - dob.getYear();
+//    }
 
 
 

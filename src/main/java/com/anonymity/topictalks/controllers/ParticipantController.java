@@ -11,6 +11,7 @@ import com.anonymity.topictalks.services.IConversationService;
 import com.anonymity.topictalks.services.IParticipantService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,17 +35,17 @@ public class ParticipantController {
 
         List<ParticipantResponse> list = participantService.getAllParticipantByUserId(id);
 
-        if (list.isEmpty()) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (list.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(list);
 
@@ -77,19 +78,19 @@ public class ParticipantController {
     public ResponseEntity<?> getParticipantByPartnerId(@PathVariable("id") long id, @RequestBody ConversationMatcherRequest request) {
         DataResponse dataResponse = new DataResponse();
 
-        ParticipantResponse participant = participantService.getParticipantByUserIdAndPartnerId(request.getUserIdInSession(), id,request.getTopicChildrenId());
+        ParticipantResponse participant = participantService.getParticipantByUserIdAndPartnerId(request.getUserIdInSession(), id, request.getTopicChildrenId());
 
-        if (participant == null) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (participant == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(participant);
 
@@ -100,9 +101,9 @@ public class ParticipantController {
     public ResponseEntity<?> createChatGroup(@RequestBody ConversationRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
 
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -111,17 +112,17 @@ public class ParticipantController {
         ConversationResponse conversation = conversationService.createConversation(request, true);
         ParticipantResponse participantResponse = participantService.createGroupChat(conversation.getConversationId());
 
-        if (participantResponse == null) {//NOT FOUND
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+        if (participantResponse == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(participantResponse);
         return ResponseEntity.ok(dataResponse);
@@ -133,41 +134,31 @@ public class ParticipantController {
 
         ParticipantResponse participantResponse = participantService.joinGroupChat(userId, conversationId);
 
-        if (participantResponse == null) {//NOT FOUND
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+        if (participantResponse == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(participantResponse);
         return ResponseEntity.ok(dataResponse);
     }
 
     @GetMapping("/group-chat/{id}")
-    public ResponseEntity<?> getAllGroupChatsByTopicChildrenId(@PathVariable("id") long id) {
+    public ResponseEntity<?> getAllGroupChatsByTopicChildrenId(@PathVariable("id") long id,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
-
-        List<ParticipantResponse> participant = participantService.getAllGroupChatByTopicChildrenId(id);
-
-        if (participant == null) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
-            dataResponse.setSuccess(false);
-            dataResponse.setData("");
-
-            return ResponseEntity.ok(dataResponse);
-        }
-
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
-        dataResponse.setData(participant);
+        dataResponse.setData(participantService.getAllGroupChatByTopicChildrenId(id, page, size));
 
         return ResponseEntity.ok(dataResponse);
     }
@@ -176,9 +167,9 @@ public class ParticipantController {
     public ResponseEntity<?> approveToChatGroup(@RequestBody ProcessMemberGroupChatRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
 
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -186,8 +177,8 @@ public class ParticipantController {
         }
         boolean isAdmin = participantService.checkAdminOfGroupChat(request.getUserInSessionId(), request.getConversationId());
         if (!isAdmin) {
-            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());//403
-            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());//BAD REQUEST
+            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("Not permission");
 
@@ -195,15 +186,15 @@ public class ParticipantController {
         } else {
             ParticipantResponse response = participantService.approveToGroupChat(request.getMemberId(), request.getConversationId());
             if (response == null) {
-                dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//404
-                dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NOT FOUND
+                dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+                dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
                 dataResponse.setSuccess(false);
                 dataResponse.setData("");
 
                 return ResponseEntity.ok(dataResponse);
             }
-            dataResponse.setStatus(HttpStatus.OK.value());//200
-            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setStatus(HttpStatus.OK.value());
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
             dataResponse.setSuccess(true);
             dataResponse.setData(response);
             return ResponseEntity.ok(dataResponse);
@@ -219,8 +210,8 @@ public class ParticipantController {
 
         boolean isAdmin = participantService.checkAdminOfGroupChat(userInSessionId, conversationId);
         if (!isAdmin) {
-            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());//403
-            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());//BAD REQUEST
+            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("Not permission");
 
@@ -228,19 +219,69 @@ public class ParticipantController {
         } else {
             try {
                 participantService.removeToGroupChat(memberId, conversationId);
-                dataResponse.setStatus(HttpStatus.OK.value());//200
-                dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+                dataResponse.setStatus(HttpStatus.OK.value());
+                dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
                 dataResponse.setSuccess(true);
                 dataResponse.setData("This member has removed out of group chat successfully.");
                 return ResponseEntity.ok(dataResponse);
             } catch (GlobalException e) {
-                dataResponse.setStatus(e.getCode());//200
-                dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());//OK
+                dataResponse.setStatus(e.getCode());
+                dataResponse.setDesc(HttpStatus.valueOf(e.getCode()).getReasonPhrase());
                 dataResponse.setSuccess(true);
                 dataResponse.setData(e.getMessage());
                 return ResponseEntity.ok(dataResponse);
             }
         }
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/group-chat")
+    public ResponseEntity<?> getAllGroupChatByUserIdAndIsGroup(@RequestParam(value = "uid") long id) {
+        DataResponse dataResponse = new DataResponse();
+
+        List<ParticipantResponse> participant = participantService.getAllConversationByUserIdAndIsGroup(id, true);
+
+        if (participant == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(participant);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("")
+    public ResponseEntity<?> getAllParticipants(@RequestParam("is_groupchat") boolean isGroupChat,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "10") int size) {
+        DataResponse dataResponse = new DataResponse();
+
+        Page<ParticipantResponse> participant = participantService.getAllParticipantByIsGroupChat(isGroupChat, page, size);
+
+        if (participant == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(participant);
+
+        return ResponseEntity.ok(dataResponse);
     }
 
 }

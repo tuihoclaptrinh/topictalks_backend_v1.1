@@ -3,6 +3,8 @@ package com.anonymity.topictalks.daos.message;
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.MessagePO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,7 +22,7 @@ import java.util.List;
 @Repository
 public interface IMessageRepository extends IBaseRepository<MessagePO, Long> {
 
-    List<MessagePO> findAllByConversationId(ConversationPO conversation);
+    List<MessagePO> findAllByConversationIdOrderByCreatedAtDesc(ConversationPO conversation);
 
     @Query(value = "SELECT * FROM message m WHERE m.conversation_id = :id ORDER BY created_at DESC LIMIT 1;", nativeQuery = true)
     MessagePO getLastMessageByConversationId(@Param(value = "id") long conversationId);

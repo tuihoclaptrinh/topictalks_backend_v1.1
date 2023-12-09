@@ -186,12 +186,24 @@ public class NotificationServiceImpl implements INotificationService {
     @Transactional
     public long updateReadNoti(Long notiId) {
         QMessageNotificationPO qMessageNotificationPO = QMessageNotificationPO.messageNotificationPO;
+        QPostNotificationPO qPostNotificationPO = QPostNotificationPO.postNotificationPO;
 
-        long updateCount = jpaQueryFactory.update(qMessageNotificationPO)
+        boolean isFoundInMessageNotification = jpaQueryFactory.selectOne()
+                .from(qMessageNotificationPO)
                 .where(qMessageNotificationPO.id.eq(notiId))
-                .set(qMessageNotificationPO.isRead, true)
-                .execute();
+                .fetchFirst() != null;
 
-        return updateCount;
+        if (isFoundInMessageNotification) {
+            jpaQueryFactory.update(qMessageNotificationPO)
+                    .where(qMessageNotificationPO.id.eq(notiId))
+                    .set(qMessageNotificationPO.isRead, true)
+                    .execute();
+        } else {
+            jpaQueryFactory.update(qPostNotificationPO)
+                    .where(qPostNotificationPO.id.eq(notiId))
+                    .set(qPostNotificationPO.isRead, true)
+                    .execute();
+        }
+        return 1;
     }
 }

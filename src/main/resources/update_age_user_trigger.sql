@@ -1,0 +1,1 @@
+UPDATE user SET age = IF(dob IS NULL, 0, TIMESTAMPDIFF(YEAR, dob, CURDATE()));

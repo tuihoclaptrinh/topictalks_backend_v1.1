@@ -1,4 +1,4 @@
-package com.anonymity.topictalks.models.payloads.requests;
+package com.anonymity.topictalks.models.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopicUpdateRequest {
-    private String newName;
+public class GenderDTO {
+    private int male;
+    private int female;
+    private int others;
 }

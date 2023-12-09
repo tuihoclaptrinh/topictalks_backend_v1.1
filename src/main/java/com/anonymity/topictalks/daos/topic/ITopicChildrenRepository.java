@@ -3,6 +3,8 @@ package com.anonymity.topictalks.daos.topic;
 import com.anonymity.topictalks.daos.IBaseRepository;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,10 +28,25 @@ public interface ITopicChildrenRepository extends IBaseRepository<TopicChildrenP
     @Query(value = "SELECT topic_children_id FROM topic_children", nativeQuery = true)
     List<Integer> getTopicChildrenIds();
     @Query(value = "SELECT * FROM topic_children t WHERE t.topic_children_name= :topicChildrenName AND t.topic_parent_id= :topicParentId", nativeQuery = true)
-    List<TopicChildrenPO> findByTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName, @Param(value = "topicParentId") long topicParentId);
+
+    List<TopicChildrenPO> findByTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName,
+                                                                  @Param(value = "topicParentId") long topicParentId);
+
+    @Query(value = "SELECT * FROM topic_children t " +
+            "WHERE t.topic_children_name= :topicChildrenName AND t.topic_parent_id= :topicParentId AND t.topic_children_id != :topicChildrenId", nativeQuery = true)
+    List<TopicChildrenPO> findByIdAndTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName,
+                                                                       @Param(value = "topicParentId") long topicParentId,
+                                                                       @Param(value = "topicChildrenId") long topicChildrenId);
+
+
     @Query(value = "SELECT * FROM topic_children t WHERE t.topic_parent_id= :topicParentId", nativeQuery = true)
     List<TopicChildrenPO> findByTopicParentId(@Param(value = "topicParentId") long topicParentId);
 
-    TopicChildrenPO findById(long id);
+    @Query(value = "SELECT * FROM topic_children t WHERE t.topic_parent_id= :topicParentId AND t.is_expired= :isExpired ORDER BY t.topic_children_id DESC", nativeQuery = true)
+    Page<TopicChildrenPO> findByTopicParentIdAndIsExpired(@Param(value = "topicParentId") long topicParentId, @Param(value = "isExpired") boolean isExpired, Pageable pageable);
+
+    @Query(value = "SELECT * FROM topic_children t " +
+            "WHERE LOWER(t.topic_children_name) LIKE CONCAT('%', :topicChildrenName, '%') AND t.is_expired = :isExpired", nativeQuery = true)
+    Page<TopicChildrenPO> findByTopicChildrenNameContainingIgnoreCase(@Param(value = "topicChildrenName") String topicParentName, @Param(value = "isExpired") boolean isExpired, Pageable pageable);
 
 }

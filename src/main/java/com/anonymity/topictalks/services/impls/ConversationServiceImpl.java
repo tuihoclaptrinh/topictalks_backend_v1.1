@@ -251,9 +251,9 @@ public class ConversationServiceImpl implements IConversationService {
         ConversationResponse response = new ConversationResponse();
         response.setConversationId(conversationPO.getId());
         response.setIsGroupChat(conversationPO.getIsGroupChat());
-        response.setAdminId(conversationPO.getAdminId());
         response.setChatName(conversationPO.getChatName());
         if (conversationPO.getIsGroupChat() == true) {
+            response.setAdminId(conversationPO.getAdminId());
             response.setAvtGroupImg(conversationPO.getAvatarGroupImg());
         } else {
             response.setAvtGroupImg(null);

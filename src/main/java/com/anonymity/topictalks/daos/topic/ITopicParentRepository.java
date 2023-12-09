@@ -23,10 +23,22 @@ public interface ITopicParentRepository extends IBaseRepository<TopicParentPO, L
 
     Optional<TopicParentPO> findById(Long id);
 
+    @Query(value = "SELECT * FROM topic_parent t WHERE t.is_expired= :isExpired", nativeQuery = true)
+    List<TopicParentPO> findAllByIsExpired(@Param(value = "isExpired") boolean isExpired);
+
+    @Query(value = "SELECT * FROM topic_parent t " +
+            "WHERE t.topic_parent_name= :topicParentName AND t.topic_parent_id != :topicParentId", nativeQuery = true)
+    List<TopicParentPO> findByTopicParentNameAndAndId(@Param(value = "topicParentName") String topicParentName, @Param(value = "topicParentId") Long topicParentId);
+
     @Query(value = "SELECT * FROM topic_parent t WHERE t.topic_parent_name= :topicParentName", nativeQuery = true)
     List<TopicParentPO> findByTopicParentName(@Param(value = "topicParentName") String topicParentName);
 
+    @Query(value = "SELECT * FROM topic_parent t WHERE LOWER(t.topic_parent_name) LIKE CONCAT('%', :topicParentName, '%') AND t.is_expired = :isExpired", nativeQuery = true)
+    List<TopicParentPO> findByTopicParentNameContainingIgnoreCase(@Param(value = "topicParentName") String topicParentName, @Param(value = "isExpired") boolean isExpired);
 
+    @Query(value = "SELECT CONCAT(t.topic_parent_id, ':',t.topic_parent_name) AS topic_parent " +
+            "FROM topic_parent t", nativeQuery = true)
+    List<String> getListTopicParentId();
 
 
 }
