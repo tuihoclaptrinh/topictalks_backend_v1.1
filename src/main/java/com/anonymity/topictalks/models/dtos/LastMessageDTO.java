@@ -15,5 +15,5 @@ public class LastMessageDTO implements Serializable {
     private long senderId;
     private String userName;
     private String message;
-    private LocalDateTime timeAt;
+    private String timeAt;
 }

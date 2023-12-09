@@ -1,7 +1,10 @@
 package com.anonymity.topictalks.models.payloads.responses;
 
+import com.anonymity.topictalks.models.dtos.LastMessageDTO;
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

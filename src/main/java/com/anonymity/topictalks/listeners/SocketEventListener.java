@@ -66,6 +66,7 @@ public class SocketEventListener {
     private final IParticipantRepository participantRepository;
     private final INotificationService notificationService;
     private final IUserService userService;
+    private final IMessageService messageService;
 
     @OnConnect
     public void eventOnConnect(SocketIOClient client) {
@@ -319,10 +320,11 @@ public class SocketEventListener {
                 String[] userIds = keys.stream().findFirst().get().split("-");
                 Long userId1 = Long.parseLong(userIds[0]);
                 Long userId2 = Long.parseLong(key.split("-")[0]);
-
-                if (conversationService.checkMatchingConversations(userId1, userId2)) {
-                    List<Long> conversationId = conversationRepository.checkMatchingConversations(userId1, userId2,false);
-                    ParticipantResponse response = participantService.getParticipantByConversationIdAndUserId(conversationId.get(0),userId1);
+                boolean isExistedConversationBefore = conversationService.checkMatchingConversations(userId1, userId2);
+                logger.info("------> isExistedConversationBefore: {}", isExistedConversationBefore);
+                if (isExistedConversationBefore == true) {
+                    List<Long> conversationId = conversationRepository.checkMatchingConversations(userId1, userId2, false);
+                    ParticipantResponse response = participantService.getParticipantByConversationIdAndUserId(conversationId.get(0), userId1);
                     ConversationRandomResponse conversationRandomResponse = new ConversationRandomResponse();
                     TopicChildrenDTO topicChildrenDTO = new TopicChildrenDTO();
                     topicChildrenDTO.setTopicChildrenName(response.getConversationInfor().getTopicChildren().getTopicChildrenName());
@@ -334,6 +336,24 @@ public class SocketEventListener {
                     conversationRandomResponse.setIsGroupChat(response.getConversationInfor().getIsGroupChat());
                     conversationRandomResponse.setAdminId(response.getConversationInfor().getAdminId());
                     conversationRandomResponse.setId(response.getConversationInfor().getId());
+
+                    LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationId.get(0));
+                    conversationRandomResponse.setLastMessageDTO(lastMessageDTO);
+                    List<PartnerDTO> partnerDTO = response.getPartnerDTO();
+
+                    UserPO userPO = userRepository.findById(userId1).orElse(null);
+                    ParticipantPO participantPO = participantRepository.findByConversationIdAndUserId(conversationId.get(0), userId1);
+                    PartnerDTO partnerDTO1 = new PartnerDTO();
+                    if (userPO != null) {
+                        partnerDTO1.setUsername(userPO.getUsername());
+                        partnerDTO1.setMember(participantPO.getIsMember());
+                        partnerDTO1.setBanned(userPO.getIsBanned());
+                        partnerDTO1.setId(userId1);
+                        partnerDTO1.setImage(userPO.getImageUrl());
+                        partnerDTO1.setActive(userPO.isActive());
+                        partnerDTO1.setBannedAt(userPO.getBannedDate());
+                    }
+                    partnerDTO.add(partnerDTO1);
                     participantRandomResponse = new ParticipantRandomResponse(conversationRandomResponse, response.getPartnerDTO());
                 } else {
                     participantRandomResponse = participantService.createChatRandom(

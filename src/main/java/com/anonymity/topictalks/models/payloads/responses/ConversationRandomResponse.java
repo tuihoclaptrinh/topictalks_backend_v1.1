@@ -1,7 +1,10 @@
 package com.anonymity.topictalks.models.payloads.responses;
 
+import com.anonymity.topictalks.models.dtos.LastMessageDTO;
 import com.anonymity.topictalks.models.dtos.TopicChildrenDTO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,4 +29,7 @@ public class ConversationRandomResponse implements Serializable {
     private Boolean isGroupChat;
     private TopicChildrenDTO topicChildren;
     private Long adminId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("lastMessage")
+    private LastMessageDTO lastMessageDTO;
 }

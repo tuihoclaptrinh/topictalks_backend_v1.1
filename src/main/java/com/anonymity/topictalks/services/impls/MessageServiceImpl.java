@@ -104,6 +104,6 @@ public class MessageServiceImpl implements IMessageService {
         return messagePO != null ? new LastMessageDTO(messagePO.getSenderId().getId(),
                 messagePO.getSenderId().getUsername(),
                 messagePO.getContent(),
-                messagePO.getCreatedAt()) : null;
+                String.valueOf(messagePO.getCreatedAt())) : null;
     }
 }
