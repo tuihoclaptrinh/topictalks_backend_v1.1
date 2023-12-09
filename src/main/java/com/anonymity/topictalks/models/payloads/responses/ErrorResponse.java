@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +15,7 @@ import java.time.Instant;
 public class ErrorResponse {
     private int status;
     private String error;
-    private Instant timestamp;
+    private LocalDateTime timestamp;
     private String message;
     private String path;
 }

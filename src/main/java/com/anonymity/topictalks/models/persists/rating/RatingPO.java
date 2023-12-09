@@ -65,7 +65,7 @@ public class RatingPO extends DateAudit implements Serializable {
     @ManyToOne
     @MapsId("topicChildrenId")
     @JoinColumn(name = "topic_children_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+//    @OnDelete(action = OnDeleteAction.CASCADE)
     private TopicChildrenPO topicChildrenInfo;
 
     /**

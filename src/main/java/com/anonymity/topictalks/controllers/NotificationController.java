@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/notification")
 @PreAuthorize("hasAnyRole('ADMIN','USER')")
 @Tag(name = "MessageNoti", description = "The Notification API")
-public class INotificationController {
+public class NotificationController {
 
     private final INotificationService notificationService;
 

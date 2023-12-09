@@ -20,17 +20,16 @@ import java.util.List;
 
 @Repository
 public interface ITopicChildrenRepository extends IBaseRepository<TopicChildrenPO, Long> {
-    @Query(value = "SELECT * FROM topic_children t WHERE t.topic_children_name= :topicChildrenName AND t.topic_parent_id= :topicParentId", nativeQuery = true)
-    List<TopicChildrenPO> findByTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName, @Param(value = "topicParentId") long topicParentId);
-    @Query(value = "SELECT * FROM topic_children t WHERE t.topic_parent_id= :topicParentId", nativeQuery = true)
-    List<TopicChildrenPO> findByTopicParentId(@Param(value = "topicParentId") long topicParentId);
-
-
     @Query(value = "SELECT COUNT(*) FROM topic_children", nativeQuery = true)
     int getCountTopics();
 
     @Query(value = "SELECT topic_children_id FROM topic_children", nativeQuery = true)
     List<Integer> getTopicChildrenIds();
+    @Query(value = "SELECT * FROM topic_children t WHERE t.topic_children_name= :topicChildrenName AND t.topic_parent_id= :topicParentId", nativeQuery = true)
+    List<TopicChildrenPO> findByTopicChildrenNameAndTopicParentId(@Param(value = "topicChildrenName") String topicChildrenName, @Param(value = "topicParentId") long topicParentId);
+    @Query(value = "SELECT * FROM topic_children t WHERE t.topic_parent_id= :topicParentId", nativeQuery = true)
+    List<TopicChildrenPO> findByTopicParentId(@Param(value = "topicParentId") long topicParentId);
 
     TopicChildrenPO findById(long id);
+
 }

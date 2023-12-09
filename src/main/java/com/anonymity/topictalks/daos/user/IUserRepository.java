@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,29 +24,32 @@ import java.util.Optional;
  */
 
 @Repository
+@Transactional
 public interface IUserRepository extends IBaseRepository<UserPO, Long> {
+
+    @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
+    int getCountUsers();
+
+    @Query(value = "SELECT user_id FROM user", nativeQuery = true)
+    List<Integer> getUserIds();
 
     @Procedure("DELETE_UNVERIFIED_USERS_PROCEDURE")
     void deleteUnVerifyUser();
   
     @Procedure("UPDATE_IS_BAN_USER_PROCEDURE")
     void updateIsBannProcedure(String username);
-    @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
-    int getCountUsers();
+
 
     Optional<UserPO> findByUsername(String username);
 
     Optional<UserPO> findByEmail(String email);
 
-    Optional<UserPO> findById(Long id);
+//    Optional<UserPO> findById(Long id);
 
     Optional<UserPO> getUserByUsernameOrEmail(String username, String mail);
 
     List<UserPO> findAllByBannedDate(LocalDateTime bannedDate);
 
     Optional<UserPO> findByNickname(String nickname);
-
-    @Query(value = "SELECT user_id FROM user", nativeQuery = true)
-    List<Integer> getUserIds();
 
 }

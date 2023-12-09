@@ -56,6 +56,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final NicknameService nicknameService;
     private final IUserService userService;
 
+
+
     @Override
     public Object register(RegisterRequest request) {
 //        userRepository.deleteUnVerifyUser();
@@ -70,7 +72,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             return error = ErrorResponse.builder()
                     .status(HttpServletResponse.SC_FORBIDDEN)
                     .error("Register failure")
-                    .timestamp(Instant.now())
+                    .timestamp(LocalDateTime.now())
                     .message(error.getMessage())
                     .build();
         }
@@ -193,7 +195,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 return error = ErrorResponse.builder()
                         .status(HttpServletResponse.SC_FORBIDDEN)
                         .error("Register failure")
-                        .timestamp(Instant.now())
+                        .timestamp(LocalDateTime.now())
                         .message(error.getMessage())
                         .build();
             }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * @author de140172 - author
@@ -28,10 +29,10 @@ public class ResponseData<T> implements Serializable {
     private T data;
 
     public static ResponseData ofSuccess(String message,Object data){
-        return ResponseData.builder().code(200).message(message).data(data).build();
+        return ResponseData.builder().requestId(UUID.randomUUID().toString()).code(200).message(message).data(data).build();
     }
     public static ResponseData ofFailed(String message,Object data){
-        return ResponseData.builder().code(400).message(message).data(data).build();
+        return ResponseData.builder().requestId(UUID.randomUUID().toString()).code(400).message(message).data(data).build();
     }
 
 }
