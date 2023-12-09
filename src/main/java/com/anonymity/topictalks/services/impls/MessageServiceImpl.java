@@ -53,6 +53,7 @@ public class MessageServiceImpl implements IMessageService {
     private final IParticipantRepository participantRepository;
     private final IUserRepository userRepository;
 
+
     /**
      * @param conversationId
      * @return
@@ -101,9 +102,17 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     public LastMessageDTO getLastMessageByConversationId(long converId) {
         MessagePO messagePO = messageRepository.getLastMessageByConversationId(converId);
-        return messagePO != null ? new LastMessageDTO(messagePO.getSenderId().getId(),
+        if (messagePO == null) {
+            LastMessageDTO lastMessageDTO = new LastMessageDTO();
+            ConversationPO conversationPO = conversationRepository.findById(converId).orElse(null);
+            if (conversationPO != null) {
+                lastMessageDTO.setTimeAt(String.valueOf(conversationPO.getCreatedAt()));
+                return lastMessageDTO;
+            }
+        }
+        return new LastMessageDTO(messagePO.getSenderId().getId(),
                 messagePO.getSenderId().getUsername(),
                 messagePO.getContent(),
-                String.valueOf(messagePO.getCreatedAt())) : null;
+                String.valueOf(messagePO.getCreatedAt()));
     }
 }
