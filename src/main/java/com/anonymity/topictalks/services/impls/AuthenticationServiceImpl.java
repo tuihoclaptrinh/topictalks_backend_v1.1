@@ -56,9 +56,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final NicknameService nicknameService;
     private final IUserService userService;
 
+
+
     @Override
     public Object register(RegisterRequest request) {
-        userRepository.deleteUnVerifyUser();
+//        userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
         Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
         if (!user.isEmpty()) {
@@ -70,7 +72,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             return error = ErrorResponse.builder()
                     .status(HttpServletResponse.SC_FORBIDDEN)
                     .error("Register failure")
-                    .timestamp(Instant.now())
+                    .timestamp(LocalDateTime.now())
                     .message(error.getMessage())
                     .build();
         }
@@ -198,7 +200,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 return error = ErrorResponse.builder()
                         .status(HttpServletResponse.SC_FORBIDDEN)
                         .error("Register failure")
-                        .timestamp(Instant.now())
+                        .timestamp(LocalDateTime.now())
                         .message(error.getMessage())
                         .build();
             }
@@ -220,8 +222,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setCreatedAt(LocalDateTime.now());
             new_user.setUpdatedAt(null);
 
-            new_user = userRepository.save(new_user);
-            new_user.setUsername("Anominity" + new_user.getId());
             new_user = userRepository.save(new_user);
 
             var jwt = jwtService.generateToken(new_user);

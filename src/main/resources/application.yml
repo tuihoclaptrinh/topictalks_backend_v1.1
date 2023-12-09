@@ -1,6 +1,8 @@
 server:
   port: 5000 # Port on which the server will run
 spring:
+  profiles:
+    active: dev
   task:
     scheduling:
       pool:
@@ -24,14 +26,10 @@ spring:
     url: jdbc:mysql://localhost:3306/topic-talks-app?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root # Database username
     password: 123456789 # Database password
-
   jpa:
     hibernate:
       ddl-auto: update # If the update data table does not exist, it will be automatically created.
-    show-sql: true # Show SQL statements
-    properties:
-      hibernate:
-        format_sql: true # Format SQL statements
+
   messages:
     basename: messages
   jackson:

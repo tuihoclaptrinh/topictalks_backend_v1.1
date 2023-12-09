@@ -1,22 +1,29 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.daos.rating.IRatingRepository;
+import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
+import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.payloads.requests.*;
 import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse;
 import com.anonymity.topictalks.models.payloads.responses.RefreshTokenResponse;
-import com.anonymity.topictalks.services.IAuthenticationService;
-import com.anonymity.topictalks.services.IRefreshTokenService;
-import com.anonymity.topictalks.services.IUserService;
+import com.anonymity.topictalks.models.persists.rating.RatingPO;
+import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.anonymity.topictalks.recommendation.*;
+import com.anonymity.topictalks.services.*;
 import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 /**
  * @author de140172 - author
@@ -29,12 +36,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
 
     private final IAuthenticationService authenticationService;
     private final IRefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final IUserService userService;
+    private final IRatingRepository ratingRepository;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request) {
@@ -86,6 +95,29 @@ public class AuthenticationController {
     @PostMapping("/regenerate-otp")
     public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
         return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
+    }
+
+    @PostMapping("/user/rating")
+    public ResponseEntity<RatingPO> saveRating(@RequestBody RatingPO ratingPO) {
+        return new ResponseEntity<>(ratingRepository.save(ratingPO), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/user/rating/all")
+    public ResponseEntity<List<RatingPO>> getAllRatings() {
+        return new ResponseEntity<>(ratingRepository.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/user/rating/{userId}")
+    public ResponseEntity<List<RatingPO>> getAllRatingsByUser(@PathVariable("userId") int userId) {
+        return new ResponseEntity<>(ratingRepository.findAllByUserInfo((long)userId), HttpStatus.OK);
+    }
+
+    @PutMapping("/user/{userId}/topic/{topicId}/update/rating/{rating}")
+    public ResponseEntity<RatingPO> updateRating(@PathVariable("userId")int userId, @PathVariable("topicId") int topicId,@PathVariable("rating") int newRatingPO) {
+        RatingPO ratingExist = ratingRepository.getRatingUpdate(userId, topicId);
+        ratingExist.setRating(newRatingPO);
+        ratingRepository.save(ratingExist);
+        return new ResponseEntity<>(ratingExist, HttpStatus.OK);
     }
 
 }

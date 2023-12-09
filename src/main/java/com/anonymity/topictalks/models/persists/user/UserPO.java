@@ -3,6 +3,7 @@ package com.anonymity.topictalks.models.persists.user;
 import com.anonymity.topictalks.models.persists.audit.DateAudit;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.models.persists.post.LikePO;
+import com.anonymity.topictalks.models.persists.rating.RatingPO;
 import com.anonymity.topictalks.utils.enums.ERole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -273,6 +274,10 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     @OneToMany(mappedBy = "userInfo", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<LikePO> likes;
+
+    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<RatingPO> ratings;
 
     /**
      * Get the authorities granted to the user based on their role.
