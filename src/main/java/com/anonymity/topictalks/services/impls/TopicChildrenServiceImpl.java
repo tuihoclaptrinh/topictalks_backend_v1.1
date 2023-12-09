@@ -55,12 +55,12 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
 
     @Override
     public TopicChildrenPO getTopicChildrenById(long TopicChildrenId) {
-        return topicChildrenRepository.findById(TopicChildrenId);
+        return topicChildrenRepository.findById(TopicChildrenId).orElseThrow();
     }
 
     @Override
     public TopicChildrenPO update(long id, TopicRequest request) {
-        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
+        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id).orElseThrow();
         if (topicChildrenPO != null) {
             topicChildrenPO.setTopicChildrenName(request.getTopicName());
             topicChildrenPO.setImage(request.getUrlImage());
@@ -73,7 +73,7 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
 
     @Override
     public TopicChildrenPO updateIsExpiredById(long id, boolean isExpired) {
-        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id);
+        TopicChildrenPO topicChildrenPO = topicChildrenRepository.findById(id).orElseThrow();
         if (topicChildrenPO != null) {
             topicChildrenPO.setId(id);
             topicChildrenPO.setExpired(isExpired);
