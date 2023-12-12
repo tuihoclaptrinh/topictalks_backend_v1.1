@@ -59,17 +59,15 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
 
     @Override
-    public Object register(RegisterRequest request) {
-//        userRepository.deleteUnVerifyUser();
+    public Object register(RegisterRequest registerRequest) {
+        userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
-        Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
-        if (!user.isEmpty()) {
-            if (user.get().getEmail().equalsIgnoreCase(request.getEmail().toLowerCase(Locale.ROOT))) {
+        UserPO user = userService.getUserByEmail(registerRequest.getEmail());
+        if (user!=null) {
+            if (user.getEmail().equalsIgnoreCase(registerRequest.getEmail().toLowerCase(Locale.ROOT))) {
                 error.setMessage("This email address has been exist another account.");
-            } else {
-                error.setMessage("This username has been exist another account.");
             }
-            return error = ErrorResponse.builder()
+            return ErrorResponse.builder()
                     .status(HttpServletResponse.SC_FORBIDDEN)
                     .error("Register failure")
                     .timestamp(LocalDateTime.now())
@@ -79,7 +77,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         String otp;
         try {
             otp = otpUtils.generateOtp();
-            emailUtils.sendOtpEmail(request.getEmail(), otp);
+            emailUtils.sendOtpEmail(registerRequest.getEmail(), otp);
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send otp please try again");
         } catch (TemplateException | IOException e) {
@@ -87,18 +85,17 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         }
         var random = new Random();
         var nickName = nicknameService.generateUserNickname();
-        var userByNickname = userRepository.findByNickname(nickName);
+        var userByNickname = userRepository.findByUsername(nickName);
         var new_user = new UserPO();
         if (userByNickname.isPresent()) {
-            new_user.setNickname(nickName + random.nextInt(100 - 1 + 1) + 1);
+            new_user.setUsername(nickName + random.nextInt(100 - 1 + 1) + 1);
         } else {
-            new_user.setNickname(nickName);
+            new_user.setUsername(nickName);
         }
         new_user.setFullName("");
-        new_user.setUsername(request.getUsername());
-        new_user.setEmail(request.getEmail().toLowerCase(Locale.ROOT));
+        new_user.setEmail(registerRequest.getEmail().toLowerCase(Locale.ROOT));
         new_user.setDob(null);
-        new_user.setPassword(passwordEncoder.encode(request.getPassword()));
+        new_user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         new_user.setVerify(false);
         new_user.setOtp(otp);
         new_user.setOtpGeneratedTime(LocalDateTime.now());
@@ -148,7 +145,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         } catch (AuthenticationException ex) {
             throw new CustomAuthenticationException("Invalid username or password.", ex);
         }
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userRepository.findByEmail(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
 
         var roles = user.getRole().getAuthorities()
@@ -187,6 +184,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     public Object authenticateGoogle(AuthenticationGoogleRequest request) {
 
         var user = userRepository.findByEmail(request.getEmail()).orElse(null);
+        var nickName = nicknameService.generateUserNickname();
 
         if (user == null) {
             ErrorResponse error = new ErrorResponse();
@@ -194,34 +192,37 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             if (!user1.isEmpty()) {
                 if (user1.get().getEmail().equalsIgnoreCase(request.getEmail().toLowerCase(Locale.ROOT))) {
                     error.setMessage("This email address has been exist another account.");
-                } else {
-                    error.setMessage("This username has been exist another account.");
                 }
-                return error = ErrorResponse.builder()
+                return ErrorResponse.builder()
                         .status(HttpServletResponse.SC_FORBIDDEN)
                         .error("Register failure")
                         .timestamp(LocalDateTime.now())
                         .message(error.getMessage())
                         .build();
             }
+            var random = new Random();
+            var userByNickname = userRepository.findByUsername(nickName);
             var new_user = new UserPO();
             new_user.setFullName(request.getFullName());
-            new_user.setUsername("USER-GOOGLE-");
+            if (userByNickname.isPresent()) {
+                new_user.setUsername(nickName + random.nextInt(100 - 1 + 1) + 1);
+            } else {
+                new_user.setUsername(nickName);
+            }
             new_user.setEmail(request.getEmail());
             new_user.setDob(null);
             new_user.setPassword("");
             new_user.setBio("");
             new_user.setImageUrl(request.getUrlImage());
-            new_user.setGender("");
-            new_user.setPhoneNumber("");
             new_user.setCountry("");
+            new_user.setPhoneNumber("");
             new_user.setIsBanned(false);
             new_user.setBannedDate(null);
             new_user.setNumDateBan(0);
             new_user.setRole(ERole.USER);
             new_user.setCreatedAt(LocalDateTime.now());
             new_user.setUpdatedAt(null);
-
+            new_user.setGender("");
             new_user = userRepository.save(new_user);
 
             var jwt = jwtService.generateToken(new_user);

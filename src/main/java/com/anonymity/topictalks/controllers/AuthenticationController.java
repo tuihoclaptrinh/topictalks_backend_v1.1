@@ -97,27 +97,4 @@ public class AuthenticationController {
         return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
     }
 
-    @PostMapping("/user/rating")
-    public ResponseEntity<RatingPO> saveRating(@RequestBody RatingPO ratingPO) {
-        return new ResponseEntity<>(ratingRepository.save(ratingPO), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/user/rating/all")
-    public ResponseEntity<List<RatingPO>> getAllRatings() {
-        return new ResponseEntity<>(ratingRepository.findAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/user/rating/{userId}")
-    public ResponseEntity<List<RatingPO>> getAllRatingsByUser(@PathVariable("userId") int userId) {
-        return new ResponseEntity<>(ratingRepository.findAllByUserInfo((long)userId), HttpStatus.OK);
-    }
-
-    @PutMapping("/user/{userId}/topic/{topicId}/update/rating/{rating}")
-    public ResponseEntity<RatingPO> updateRating(@PathVariable("userId")int userId, @PathVariable("topicId") int topicId,@PathVariable("rating") int newRatingPO) {
-        RatingPO ratingExist = ratingRepository.getRatingUpdate(userId, topicId);
-        ratingExist.setRating(newRatingPO);
-        ratingRepository.save(ratingExist);
-        return new ResponseEntity<>(ratingExist, HttpStatus.OK);
-    }
-
 }

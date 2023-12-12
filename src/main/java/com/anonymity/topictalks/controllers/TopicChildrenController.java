@@ -3,6 +3,8 @@ package com.anonymity.topictalks.controllers;
 import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
 import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
+import com.anonymity.topictalks.models.payloads.responses.TopicChildrenResponse;
+import com.anonymity.topictalks.models.payloads.responses.TopicParentResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -176,4 +178,10 @@ public class TopicChildrenController {
 
         return ResponseEntity.ok(dataResponse);
     }
+
+    @GetMapping("/all/{tppId}")
+    public List<TopicChildrenResponse> getAllTopicChildren(@PathVariable("tppId") Long tppId) {
+        return topicChildrenService.listsByParentId(tppId);
+    }
+
 }
