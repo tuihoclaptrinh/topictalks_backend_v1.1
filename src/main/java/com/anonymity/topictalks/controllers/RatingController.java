@@ -1,10 +1,14 @@
 package com.anonymity.topictalks.controllers;
 
+import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.payloads.requests.RatingRequest;
 import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 import com.anonymity.topictalks.models.payloads.responses.HotTopicResponse;
 import com.anonymity.topictalks.models.payloads.responses.RatingResponse;
+import com.anonymity.topictalks.models.persists.rating.RatingPO;
+import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IRatingService;
+import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +36,41 @@ import java.util.List;
 public class RatingController {
 
     private final IRatingService ratingService;
+    private final IUserRepository userRepository;
 
     @PostMapping("/topic")
     public ResponseData ratingOnTopic(@RequestBody RatingRequest ratingRequest) {
         try {
+            UserPO user = userRepository.findById(ratingRequest.getUserId()).orElseThrow(null);
+            if(!user.isVerify()) {
+                return ResponseData.ofFailed("error", ErrorResponse.builder()
+                        .message("your account is not verify!")
+                        .timestamp(LocalDateTime.now())
+                        .build());
+            }
             RatingResponse savedRating = ratingService.ratingTopic(ratingRequest);
             return ResponseData.ofSuccess("succeed", savedRating);
+        } catch (Exception e) {
+            return ResponseData.ofFailed(e.getMessage(), ErrorResponse.builder()
+                    .message(e.getMessage())
+                    .timestamp(LocalDateTime.now())
+                    .build());
+        }
+    }
+
+    @PostMapping("/topics")
+    public ResponseData ratingOnTopics(@RequestBody List<RatingRequest> ratingsRequest) {
+        try {
+            UserPO user = userRepository.findById(ratingsRequest.get(0).getUserId()).orElseThrow(null);
+            if(!user.isVerify()) {
+                return ResponseData.ofFailed("error", ErrorResponse.builder()
+                        .message("your account is not verify!")
+                        .timestamp(LocalDateTime.now())
+                        .build());
+            }
+            Integer result = ratingService.ratingManyTopics(ratingsRequest);
+            log.info("You have add " + result);
+            return ResponseData.ofSuccess("succeed", "added your wishlist");
         } catch (Exception e) {
             return ResponseData.ofFailed(e.getMessage(), ErrorResponse.builder()
                     .message(e.getMessage())

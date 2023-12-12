@@ -7,13 +7,19 @@ import com.anonymity.topictalks.models.payloads.requests.RatingIdRequest;
 import com.anonymity.topictalks.models.payloads.requests.RatingRequest;
 import com.anonymity.topictalks.models.payloads.responses.HotTopicResponse;
 import com.anonymity.topictalks.models.payloads.responses.RatingResponse;
+import com.anonymity.topictalks.models.persists.rating.QRatingPO;
 import com.anonymity.topictalks.models.persists.rating.RatingKey;
 import com.anonymity.topictalks.models.persists.rating.RatingPO;
 import com.anonymity.topictalks.services.IRatingService;
 import com.anonymity.topictalks.services.IUserService;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -22,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author de140172 - author
@@ -40,6 +47,7 @@ public class RatingService implements IRatingService {
     private final IRatingRepository ratingRepository;
     private final IUserRepository userRepository;
     private final ITopicChildrenRepository topicChildrenRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
     /**
      * @param ratingRequest
@@ -58,6 +66,26 @@ public class RatingService implements IRatingService {
                 .tpcId(savedRating.getTopicChildrenInfo().getId())
                 .rating(savedRating.getRating())
                 .build();
+    }
+
+    /**
+     * @param ratingManyRequest
+     * @return
+     */
+    @Override
+    public Integer ratingManyTopics(List<RatingRequest> ratingManyRequest) {
+        int result = 0;
+        try {
+            List<RatingPO> entities = ratingManyRequest.stream()
+                    .map(this::convertToRatingPO)
+                    .collect(Collectors.toList());
+
+            result = ratingRepository.saveAll(entities).size();
+
+            return result;
+        } catch (Exception e) {
+            return result;
+        }
     }
 
     /**
@@ -134,6 +162,7 @@ public class RatingService implements IRatingService {
                     .topicChildrenId(topicChildrenId)
                     .tpcCount(tpcCount)
                     .maxRating(maxRating)
+                    .avgRating(avgRating)
                     .createdAt(createdAt)
                     .updatedAt(updatedAt)
                     .image(image)
@@ -160,7 +189,7 @@ public class RatingService implements IRatingService {
         }
     }
 
-    private static List<RatingResponse> convertToRatingsPayload(List<RatingPO> ratings) {
+    private List<RatingResponse> convertToRatingsPayload(List<RatingPO> ratings) {
         List<RatingResponse> ratingsResponse = new ArrayList<>();
 
         for(RatingPO rating: ratings) {
@@ -171,11 +200,20 @@ public class RatingService implements IRatingService {
         return ratingsResponse;
     }
 
-    private static RatingResponse convertToRatingPayload(RatingPO ratingPO) {
+    private RatingResponse convertToRatingPayload(RatingPO ratingPO) {
         return RatingResponse.builder()
                 .userId(ratingPO.getUserInfo().getId())
                 .tpcId(ratingPO.getTopicChildrenInfo().getId())
                 .rating(ratingPO.getRating())
+                .build();
+    }
+
+    private RatingPO convertToRatingPO(RatingRequest request) {
+        return RatingPO.builder()
+                .id(new RatingKey(request.getUserId(), request.getTpcId()))
+                .userInfo(userRepository.findById(request.getUserId()).orElseThrow(null))
+                .topicChildrenInfo(topicChildrenRepository.findById(request.getTpcId()).orElseThrow(null))
+                .rating(request.getRating())
                 .build();
     }
 

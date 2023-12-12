@@ -2,6 +2,7 @@ package com.anonymity.topictalks.controllers;
 
 import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
+import com.anonymity.topictalks.models.payloads.responses.TopicParentResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicParentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -202,4 +203,10 @@ public class TopicParentController {
 
         return ResponseEntity.ok(dataResponse);
     }
+
+    @GetMapping("/all/wishlist")
+    public List<TopicParentResponse> getAllTopicParentToAddWishList() {
+        return topicParentService.getAllTopicParent();
+    }
+
 }

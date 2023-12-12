@@ -114,15 +114,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     )
     private String fullName;
 
-    /**
-     * The user's last name.
-     */
-    @Size(max = 100)
-    @Column(
-            name = "nickname"
-    )
-    private String nickname;
-
     @Column(name = "is_verify", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isVerify;
 

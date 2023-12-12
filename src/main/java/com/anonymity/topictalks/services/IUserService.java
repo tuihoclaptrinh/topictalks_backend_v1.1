@@ -56,4 +56,6 @@ public interface IUserService {
     List<Integer> getAgeOfAllUsers();
 
     GenderDTO getAllGenderOfUser();
+
+    UserPO getUserByEmail(String email);
 }

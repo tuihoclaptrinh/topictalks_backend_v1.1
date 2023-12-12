@@ -3,6 +3,7 @@ package com.anonymity.topictalks.services;
 
 import com.anonymity.topictalks.models.dtos.ChartTopicInforDTO;
 import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
+import com.anonymity.topictalks.models.payloads.responses.TopicParentResponse;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public interface ITopicParentService {
     List<TopicParentPO> searchByTopicParentName(String topicParentName, boolean isExpired);
 
     List<ChartTopicInforDTO> retrieveDataForTopicParent();
+
+    List<TopicParentResponse> getAllTopicParent();
 
 }
 

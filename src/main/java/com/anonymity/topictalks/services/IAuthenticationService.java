@@ -15,7 +15,7 @@ import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
  */
 public interface IAuthenticationService {
 
-    Object register(RegisterRequest request);
+    Object register(RegisterRequest registerRequest);
     AuthenticationResponse authenticate(AuthenticationRequest request);
     Object authenticateGoogle(AuthenticationGoogleRequest request);
 
