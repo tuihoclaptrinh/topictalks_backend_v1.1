@@ -297,7 +297,7 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
      */
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     /**

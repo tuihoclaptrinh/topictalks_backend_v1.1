@@ -143,7 +143,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         } catch (AuthenticationException ex) {
-            throw new CustomAuthenticationException("Invalid username or password.", ex);
+            throw new CustomAuthenticationException("Invalid email or password.", ex);
         }
         var user = userRepository.findByEmail(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
@@ -159,7 +159,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         if (user.isVerify()) {
             LocalDateTime dueDate = null;
-            if (user.getIsBanned() == true) {
+            if (user.getIsBanned()) {
                 dueDate = user.getBannedDate().plusDays(user.getNumDateBan());
             }
             return AuthenticationResponse.builder()
