@@ -62,12 +62,10 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     public Object register(RegisterRequest request) {
         userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
-        Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
+        Optional<UserPO> user = userRepository.findByEmail(request.getEmail());
         if (!user.isEmpty()) {
             if (user.get().getEmail().equalsIgnoreCase(request.getEmail().toLowerCase(Locale.ROOT))) {
                 error.setMessage("This email address has been exist another account.");
-            } else {
-                error.setMessage("This username has been exist another account.");
             }
             return error = ErrorResponse.builder()
                     .status(HttpServletResponse.SC_FORBIDDEN)
