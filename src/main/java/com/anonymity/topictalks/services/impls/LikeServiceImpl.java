@@ -74,7 +74,7 @@ public class LikeServiceImpl implements ILikeService {
             response.setTotalLike(list.size());
             List<LikeListDTO> inforLike = new ArrayList<>();
             for (LikePO infor : list) {
-                LikeListDTO likeListDTO = new LikeListDTO(infor.getUserId(), infor.getUserInfo().getUsername());
+                LikeListDTO likeListDTO = new LikeListDTO(infor.getUserId(), infor.getUserInfo().getNickName());
                 inforLike.add(likeListDTO);
             }
             response.setUserLike(inforLike);

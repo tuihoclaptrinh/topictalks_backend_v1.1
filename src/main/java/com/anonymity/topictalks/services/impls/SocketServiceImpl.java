@@ -103,7 +103,7 @@ public class SocketServiceImpl implements ISocketService {
 //            client.joinRoom(participant.getConversationInfo().getId().toString());
             logger.info("Receive: {}", participant.getConversationInfo().getId().toString());
             client.joinRoom(participant.getConversationInfo().getId().toString());
-            logger.info("Socket ID[{}] - conversation[{}] - username [{}]  Connected to chat module through", client.getSessionId().toString(), participant.getConversationInfo().getId(), participant.getUserInfo().getUsername());
+            logger.info("Socket ID[{}] - conversation[{}] - username [{}]  Connected to chat module through", client.getSessionId().toString(), participant.getConversationInfo().getId(), participant.getUserInfo().getNickName());
             var key2 = new ParticipantKey();
             var participant2 = ParticipantPO.builder()
                     .id(key2)
@@ -112,7 +112,7 @@ public class SocketServiceImpl implements ISocketService {
                     .build();
             participantRepository.save(participant2);
 
-            logger.info("Socket ID[{}] - conversation[{}] - username [{}]  Connected to chat module through", client.getSessionId().toString(), participant.getConversationInfo().getId(), participant2.getUserInfo().getUsername());
+            logger.info("Socket ID[{}] - conversation[{}] - username [{}]  Connected to chat module through", client.getSessionId().toString(), participant.getConversationInfo().getId(), participant2.getUserInfo().getNickName());
 
             sendSocketMessage(client,
                     ReceiveMessageDTO.builder()

@@ -62,12 +62,10 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     public Object register(RegisterRequest request) {
         userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
-        Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
+        Optional<UserPO> user = userRepository.findByEmail(request.getEmail());
         if (!user.isEmpty()) {
             if (user.get().getEmail().equalsIgnoreCase(request.getEmail().toLowerCase(Locale.ROOT))) {
                 error.setMessage("This email address has been exist another account.");
-            } else {
-                error.setMessage("This username has been exist another account.");
             }
             return error = ErrorResponse.builder()
                     .status(HttpServletResponse.SC_FORBIDDEN)
@@ -168,7 +166,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             return AuthenticationResponse.builder()
                     .accessToken(jwt)
                     .roles(roles)
-                    .username(user.getUsername())
+                    .username(user.getNickName())
                     .url_img(user.getImageUrl())
                     .id(user.getId())
                     .isBanned(user.getIsBanned())
@@ -236,7 +234,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
             return AuthenticationResponse.builder()
                     .accessToken(jwt)
-                    .username(new_user.getUsername())
+                    .username(new_user.getNickName())
                     .id(new_user.getId())
                     .url_img(new_user.getImageUrl())
                     .refreshToken(refreshToken.getToken())

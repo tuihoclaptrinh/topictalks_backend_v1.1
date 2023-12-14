@@ -74,7 +74,7 @@ public class MessageServiceImpl implements IMessageService {
                 .map(messagePO -> {
                     ReceiveMessageDTO receiveMessageDTO = new ReceiveMessageDTO();
                     receiveMessageDTO.setUserId(messagePO.getSenderId().getId());
-                    receiveMessageDTO.setUsername(messagePO.getSenderId().getUsername());
+                    receiveMessageDTO.setUsername(messagePO.getSenderId().getNickName());
                     receiveMessageDTO.setConversationId(messagePO.getConversationId().getId());
                     receiveMessageDTO.setGroupChat(messagePO.getConversationId().getIsGroupChat());
                     receiveMessageDTO.setGroupChatName(messagePO.getConversationId().getIsGroupChat() ?
@@ -111,7 +111,7 @@ public class MessageServiceImpl implements IMessageService {
             }
         }
         return new LastMessageDTO(messagePO.getSenderId().getId(),
-                messagePO.getSenderId().getUsername(),
+                messagePO.getSenderId().getNickName(),
                 messagePO.getContent(),
                 String.valueOf(messagePO.getCreatedAt()));
     }

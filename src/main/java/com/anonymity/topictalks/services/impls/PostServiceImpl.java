@@ -302,7 +302,7 @@ public class PostServiceImpl implements IPostService {
                 postPO.getAuthorId().getId(),
                 postPO.getStatus().getId(),
                 postPO.getStatus().getStatusName(),
-                userRepository.findById(postPO.getAuthorId().getId()).get().getUsername(),
+                userRepository.findById(postPO.getAuthorId().getId()).get().getNickName(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().getImageUrl(),
                 userRepository.findById(postPO.getAuthorId().getId()).get().isActive(),
                 commentService.getCommentsByPostId(postPO.getId()).size(),
