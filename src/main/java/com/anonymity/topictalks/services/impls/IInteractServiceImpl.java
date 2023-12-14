@@ -96,7 +96,7 @@ public class IInteractServiceImpl implements IInteractService {
         UserQaDTO userQaDTO = new UserQaDTO();
         UserPO sender = interactPO.getSenderId();
         userQaDTO.setUserId(sender.getId());
-        userQaDTO.setUsername(sender.getUsername());
+        userQaDTO.setUsername(sender.getNickName());
         userQaDTO.setAvatarUrl(sender.getImageUrl());
         userQaDTO.setEmail(sender.getEmail());
         userQaDTO.setPhoneNumber(sender.getPhoneNumber());

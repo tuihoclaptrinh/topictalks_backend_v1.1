@@ -376,7 +376,7 @@ public class UserServiceImpl implements IUserService {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(userPO.getId());
         userDTO.setFullName(userPO.getFullName());
-        userDTO.setUsername(userPO.getUsername());
+        userDTO.setUsername(userPO.getNickName());
         userDTO.setEmail(userPO.getEmail());
         userDTO.setPhoneNumber(userPO.getPhoneNumber());
         userDTO.setDob(userPO.getDob());

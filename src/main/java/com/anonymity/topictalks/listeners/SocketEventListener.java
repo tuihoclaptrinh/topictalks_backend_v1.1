@@ -103,7 +103,7 @@ public class SocketEventListener {
             Long userId = receiveMessageDTO.getUserId();
             UserPO userPO = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist"));
-            receiveMessageDTO.setUsername(userPO.getUsername());
+            receiveMessageDTO.setUsername(userPO.getNickName());
             receiveMessageDTO.setTimeAt(LocalDateTime.now().toString());
             List<Long> userOfflineList = new ArrayList<>();
 //            Collection<String> keys = clientJoinRoom.keySet();
@@ -345,7 +345,7 @@ public class SocketEventListener {
                     ParticipantPO participantPO = participantRepository.findByConversationIdAndUserId(conversationId.get(0), userId1);
                     PartnerDTO partnerDTO1 = new PartnerDTO();
                     if (userPO != null) {
-                        partnerDTO1.setUsername(userPO.getUsername());
+                        partnerDTO1.setUsername(userPO.getNickName());
                         partnerDTO1.setMember(participantPO.getIsMember());
                         partnerDTO1.setBanned(userPO.getIsBanned());
                         partnerDTO1.setId(userId1);

@@ -150,7 +150,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<PartnerDTO> partnerDTOList = new ArrayList<>();
         for (ParticipantPO po : list) {
             PartnerDTO partnerDTO = new PartnerDTO();
-            partnerDTO.setUsername(po.getUserInfo().getUsername());
+            partnerDTO.setUsername(po.getUserInfo().getNickName());
             partnerDTO.setId(po.getUserInfo().getId());
             partnerDTO.setImage(po.getUserInfo().getImageUrl());
             partnerDTO.setBanned(po.getUserInfo().getIsBanned());
@@ -187,7 +187,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                     partnerDTO.setBanned(partner.getIsBanned());
                     partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
                     partnerDTO.setImage(partner.getImageUrl());
-                    partnerDTO.setUsername(partner.getUsername());
+                    partnerDTO.setUsername(partner.getNickName());
                     partnerDTO.setActive(partner.isActive());
                     UserPO partnerInfor = userRepository.findById(partner.getId()).orElse(null);
                     ParticipantPO participantPO = participantRepository.findByConversationInfoAndAndUserInfo(list.get(i).getConversationInfo(), partnerInfor);
@@ -232,7 +232,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             partnerDTO.setBanned(partner.getIsBanned());
             partnerDTO.setBannedAt(partner.getIsBanned() ? null : partner.getBannedDate());
             partnerDTO.setImage(partner.getImageUrl());
-            partnerDTO.setUsername(partner.getUsername());
+            partnerDTO.setUsername(partner.getNickName());
             partnerDTO.setActive(partner.isActive());
             UserPO partnerInfo = userRepository.findById(partner.getId()).orElse(null);
             ParticipantPO partnerParticipantPO = participantRepository.findByConversationInfoAndAndUserInfo(participantPO.getConversationInfo(), partnerInfo);
@@ -267,7 +267,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 partnerDTO.setBanned(partner.getIsBanned());
                 partnerDTO.setBannedAt(partner.getIsBanned() == true ? null : partner.getBannedDate());
                 partnerDTO.setImage(partner.getImageUrl());
-                partnerDTO.setUsername(partner.getUsername());
+                partnerDTO.setUsername(partner.getNickName());
                 partnerDTO.setActive(partner.isActive());
                 partnerDTO.setMember(true);
                 listPartner.add(partnerDTO);
@@ -279,7 +279,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         }
         ConversationRequest request = new ConversationRequest();
         request.setAdminId(0L);
-        request.setChatName(partner.getUsername());
+        request.setChatName(partner.getNickName());
         request.setTopicChildrenId(topicChildrenId);
         ConversationResponse conversationResponse = new ConversationResponse();
         try {
@@ -311,7 +311,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         participant.setConversationInfor(convertToConversationDTO(conversationPO, lastMessageDTO));
         PartnerDTO partnerDTO = new PartnerDTO();
         partnerDTO.setId(partnerId);
-        partnerDTO.setUsername(partner.getUsername());
+        partnerDTO.setUsername(partner.getNickName());
         partnerDTO.setBanned(partner.getIsBanned());
         partnerDTO.setBannedAt(partner.getBannedDate());
         partnerDTO.setImage(partner.getImageUrl());
@@ -343,7 +343,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         List<PartnerDTO> partnerList = new ArrayList<>();
         for (ParticipantPO participant : list) {
             PartnerDTO partner = new PartnerDTO();
-            partner.setUsername(participant.getUserInfo().getUsername());
+            partner.setUsername(participant.getUserInfo().getNickName());
             partner.setId(participant.getUserInfo().getId());
             partner.setImage(participant.getUserInfo().getImageUrl());
             partner.setBanned(participant.getUserInfo().getIsBanned());
@@ -374,7 +374,7 @@ public class ParticipantServiceImpl implements IParticipantService {
         LastMessageDTO lastMessageDTO = messageService.getLastMessageByConversationId(conversationPO.getId());
         participantResponse.setConversationInfor(convertToConversationDTO(conversationPO, lastMessageDTO));
         PartnerDTO partnerDTO = new PartnerDTO();
-        partnerDTO.setUsername(userPO.getUsername());
+        partnerDTO.setUsername(userPO.getNickName());
         partnerDTO.setId(userPO.getId());
         partnerDTO.setMember(po.getIsMember());
         partnerDTO.setImage(userPO.getImageUrl());
@@ -439,7 +439,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             List<PartnerDTO> partnerDtos = new ArrayList<>();
             for (ParticipantPO po : poList) {
                 PartnerDTO partnerDTO = new PartnerDTO();
-                partnerDTO.setUsername(po.getUserInfo().getUsername());
+                partnerDTO.setUsername(po.getUserInfo().getNickName());
                 partnerDTO.setImage(po.getUserInfo().getImageUrl());
                 partnerDTO.setId(po.getUserInfo().getId());
                 partnerDTO.setMember(po.getIsMember());
@@ -466,7 +466,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                 List<PartnerDTO> partnerDtos = new ArrayList<>();
                 for (ParticipantPO po : poList) {
                     PartnerDTO partnerDTO = new PartnerDTO();
-                    partnerDTO.setUsername(po.getUserInfo().getUsername());
+                    partnerDTO.setUsername(po.getUserInfo().getNickName());
                     partnerDTO.setImage(po.getUserInfo().getImageUrl());
                     partnerDTO.setId(po.getUserInfo().getId());
                     partnerDTO.setMember(po.getIsMember());
@@ -509,7 +509,7 @@ public class ParticipantServiceImpl implements IParticipantService {
             List<PartnerDTO> partnerDtos = new ArrayList<>();
             for (ParticipantPO po : poList) {
                 PartnerDTO partnerDTO = new PartnerDTO();
-                partnerDTO.setUsername(po.getUserInfo().getUsername());
+                partnerDTO.setUsername(po.getUserInfo().getNickName());
                 partnerDTO.setImage(po.getUserInfo().getImageUrl());
                 partnerDTO.setId(po.getUserInfo().getId());
                 partnerDTO.setMember(po.getIsMember());

@@ -149,9 +149,9 @@ public class NotificationServiceImpl implements INotificationService {
             NotiResponse response = new NotiResponse();
             response.setNotiId(post.getId());
             response.setUserId(post.getUserId().getId());
-            response.setUsername(post.getUserId().getUsername());
+            response.setUsername(post.getUserId().getNickName());
             response.setPartnerId(post.getPartnerId());
-            response.setPartnerUsername(post.getPostId().getAuthorId().getUsername());
+            response.setPartnerUsername(post.getPostId().getAuthorId().getNickName());
             response.setMessage(post.getMessageNoti());
             response.setPostId(post.getPostId().getId());
             response.setPostImage(post.getPostId().getImage());
@@ -163,9 +163,9 @@ public class NotificationServiceImpl implements INotificationService {
             NotiResponse response = new NotiResponse();
             response.setNotiId(message.getId());
             response.setUserId(message.getUserId().getId());
-            response.setUsername(message.getUserId().getUsername());
+            response.setUsername(message.getUserId().getNickName());
             response.setPartnerId(message.getPartnerId());
-            response.setPartnerUsername(userRepository.findById(message.getPartnerId()).get().getUsername());
+            response.setPartnerUsername(userRepository.findById(message.getPartnerId()).get().getNickName());
             response.setMessage(message.getMessageNoti());
             response.setChatName(message.getConversationId().getChatName());
             response.setConversationId(message.getConversationId().getId());
