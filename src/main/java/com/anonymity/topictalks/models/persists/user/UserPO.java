@@ -350,22 +350,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
         return true;
     }
 
-//    @PrePersist
-//    public void prePersist() {
-//        if (dob != null) {
-//            age = calculateAge(dob);
-//            System.out.println("prePersist(): (case dob NOT null) System run pass here...");
-//        } else {
-//            System.out.println("prePersist(): (case dob null) System run pass here...");
-//            age =0;
-//        }
-//    }
-//
-//    private Integer calculateAge(LocalDateTime dob) {
-//        LocalDateTime currentDate = LocalDateTime.now();
-//        return currentDate.getYear() - dob.getYear();
-//    }
-
 
 
 }
