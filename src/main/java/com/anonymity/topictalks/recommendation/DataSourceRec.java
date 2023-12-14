@@ -32,6 +32,7 @@ public class DataSourceRec {
 
     // Get the total number of users
     public int getNumUsers() {
+        int numUsers = -1;
         if (numUsers == -1) {
             try {
                 numUsers = userRepository.getCountUsers();
@@ -44,6 +45,7 @@ public class DataSourceRec {
 
     // Get the total number of items
     public int getNumItems() {
+        int numItems = -1;
         if (numItems == -1) {
             try {
                 numItems = topicChildrenRepository.getCountTopics();
@@ -56,6 +58,7 @@ public class DataSourceRec {
 
     // Get the set of items
     public int[] getItems() {
+        int[] items = null;
         if (items == null) {
             try {
                 items = new int[getNumItems()];
@@ -72,6 +75,7 @@ public class DataSourceRec {
 
     // Get the set of users
     public int[] getUsers() {
+        int[] users = null;
         if (users == null) {
             try {
                 users = new int[getNumUsers()];
@@ -88,6 +92,7 @@ public class DataSourceRec {
 
     // Get the rating for item i for user u, if NaN is returned, the rating is non-existent.
     public double getRating(int u, int i) {
+        int getUserItemRating = -1;
         try {
             getUserItemRating = ratingRepository.getRating(u, i);
             return getUserItemRating;
@@ -99,6 +104,7 @@ public class DataSourceRec {
 
     // Get the ratings represented in a nested HashMap
     public HashMap<Integer, HashMap<Integer, Integer>> getRatings() {
+        HashMap<Integer, HashMap<Integer, Integer>> ratings = null;
         if (ratings == null) {
             try {
                 List<RatingPO> listRatings = ratingRepository.findAll();

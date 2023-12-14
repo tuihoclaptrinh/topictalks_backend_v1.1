@@ -44,8 +44,6 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
     Optional<UserPO> findByEmail(String email);
 
-//    Optional<UserPO> findById(Long id);
-
     @Query(value = "SELECT u.age FROM user u", nativeQuery = true)
     List<Integer> getAllAgeOfUser();
 
