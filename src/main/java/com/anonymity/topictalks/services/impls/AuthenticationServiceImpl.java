@@ -166,7 +166,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             return AuthenticationResponse.builder()
                     .accessToken(jwt)
                     .roles(roles)
-                    .username(user.getUsername())
+                    .username(user.getNickName())
                     .url_img(user.getImageUrl())
                     .id(user.getId())
                     .isBanned(user.getIsBanned())
@@ -234,7 +234,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
             return AuthenticationResponse.builder()
                     .accessToken(jwt)
-                    .username(new_user.getUsername())
+                    .username(new_user.getNickName())
                     .id(new_user.getId())
                     .url_img(new_user.getImageUrl())
                     .refreshToken(refreshToken.getToken())
