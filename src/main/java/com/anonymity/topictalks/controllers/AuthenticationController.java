@@ -46,7 +46,6 @@ public class AuthenticationController {
     private final IRefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final IUserService userService;
-    private final IRatingRepository ratingRepository;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request) {
