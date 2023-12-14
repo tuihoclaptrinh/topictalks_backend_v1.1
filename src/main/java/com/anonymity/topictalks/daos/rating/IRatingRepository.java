@@ -38,22 +38,22 @@ public interface IRatingRepository extends IBaseRepository<RatingPO, RatingKey> 
     List<RatingPO> findByUserInfo(UserPO userPO);
 
     @Query(value = "SELECT r.topic_children_id AS topicChildrenId, " +
-            "       COUNT(r.topic_children_id) AS tpcCount, " +
-            "       MAX(r.rating) AS maxRating, " +
-            "       AVG(r.rating) AS avgRating, " +
-            "       t.created_at, t.updated_at, t.image, t.topic_children_name, t.short_descript " +
+            "COUNT(r.topic_children_id) AS tpcCount, " +
+            "MAX(r.rating) AS maxRating, " +
+            "AVG(r.rating) AS avgRating, " +
+            "t.created_at, t.updated_at, t.image, t.topic_children_name, t.short_descript " +
             "FROM rating r " +
             "JOIN topic_children t ON r.topic_children_id = t.topic_children_id " +
-            "GROUP BY r.topic_children_id, t.image " +
+            "GROUP BY r.topic_children_id " +
             "ORDER BY tpcCount DESC, maxRating DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Object[]> findTopRatedTopicsRaw();
 
     @Query(value = "SELECT r.topic_children_id AS topicChildrenId, " +
-            "       AVG(r.rating) AS avgRating, " +
+            "AVG(r.rating) AS avgRating " +
             "FROM rating r " +
-            "GROUP BY r.topic_children_id, t.image " +
-            "HAVING r.topic_children_id = :tpcId", nativeQuery = true)
-    Object[] findAvgRatings(Long tpcId);
+            "GROUP BY r.topic_children_id " +
+            "HAVING r.topic_children_id= :topicChildrenId ", nativeQuery = true)
+    Object[] findAvgRatings(Long topicChildrenId);
 
 }

@@ -5,8 +5,12 @@ import com.anonymity.topictalks.daos.post.IPostRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
 import com.anonymity.topictalks.models.dtos.ChartTopicInforDTO;
 import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
+import com.anonymity.topictalks.models.payloads.responses.TopicParentResponse;
+import com.anonymity.topictalks.models.persists.topic.QTopicParentPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicParentService;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +29,9 @@ public class TopicParentServiceImpl implements ITopicParentService {
 
     @Autowired
     private IPostRepository postRepository;
+
+    @Autowired
+    private JPAQueryFactory jpaQueryFactory;
 
     @Override
     public TopicParentPO create(TopicRequest request) {
@@ -132,5 +139,23 @@ public class TopicParentServiceImpl implements ITopicParentService {
             response.add(dto);
         }
         return response;
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public List<TopicParentResponse> getAllTopicParent() {
+        QTopicParentPO qTopicParentPO = QTopicParentPO.topicParentPO;
+
+        List<TopicParentResponse> topicParentResponse = jpaQueryFactory.select(
+                        Projections.bean(TopicParentResponse.class,
+                                qTopicParentPO.id,
+                                qTopicParentPO.topicParentName)
+                ).where(qTopicParentPO.isExpired.eq(false))
+                .from(qTopicParentPO)
+                .fetch();
+
+        return topicParentResponse;
     }
 }

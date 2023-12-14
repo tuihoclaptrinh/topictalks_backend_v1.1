@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public Object register(RegisterRequest request) {
-//        userRepository.deleteUnVerifyUser();
+        userRepository.deleteUnVerifyUser();
         ErrorResponse error = new ErrorResponse();
         Optional<UserPO> user = (userRepository.getUserByUsernameOrEmail(request.getUsername(), request.getEmail().toLowerCase(Locale.ROOT)));
         if (!user.isEmpty()) {
@@ -87,15 +87,15 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         }
         var random = new Random();
         var nickName = nicknameService.generateUserNickname();
-        var userByNickname = userRepository.findByNickname(nickName);
+        var userByNickname = userRepository.findByNickName(nickName);
         var new_user = new UserPO();
-        if (userByNickname.isPresent()) {
-            new_user.setNickname(nickName + random.nextInt(100 - 1 + 1) + 1);
+        if (userByNickname!=null) {
+            new_user.setNickName(nickName + random.nextInt(100 - 1 + 1) + 1);
         } else {
-            new_user.setNickname(nickName);
+            new_user.setNickName(nickName);
         }
         new_user.setFullName("");
-        new_user.setUsername(request.getUsername());
+        new_user.setUsername(new_user.getNickName());
         new_user.setEmail(request.getEmail().toLowerCase(Locale.ROOT));
         new_user.setDob(null);
         new_user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -127,7 +127,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         return AuthenticationResponse.builder()
                 .accessToken(jwt)
-                .username(new_user.getUsername())
+                .username(new_user.getNickName())
                 .id(new_user.getId())
                 .url_img(new_user.getImageUrl())
                 .refreshToken(refreshToken.getToken())
@@ -148,7 +148,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         } catch (AuthenticationException ex) {
             throw new CustomAuthenticationException("Invalid username or password.", ex);
         }
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userRepository.findByEmail(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
 
         var roles = user.getRole().getAuthorities()
@@ -206,7 +206,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             }
             var new_user = new UserPO();
             new_user.setFullName(request.getFullName());
-            new_user.setUsername("USER-GOOGLE-");
+            new_user.setUsername(new_user.getNickName());
             new_user.setEmail(request.getEmail());
             new_user.setDob(null);
             new_user.setPassword("");
@@ -222,6 +222,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setCreatedAt(LocalDateTime.now());
             new_user.setUpdatedAt(null);
 
+            new_user = userRepository.save(new_user);
+            new_user.setUsername("Anominity" + new_user.getId());
             new_user = userRepository.save(new_user);
 
             var jwt = jwtService.generateToken(new_user);
@@ -255,7 +257,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return AuthenticationResponse.builder()
                 .accessToken(jwt)
                 .roles(roles)
-                .username(user.getUsername())
+                .username(user.getNickName())
                 .url_img(user.getImageUrl())
                 .id(user.getId())
                 .isBanned(user.getIsBanned())

@@ -34,7 +34,6 @@ public class DataSourceRec {
     public int getNumUsers() {
         if (numUsers == -1) {
             try {
-                IUserRepository userRepository = this.userRepository;
                 numUsers = userRepository.getCountUsers();
             } catch (Exception e) {
                 System.out.println("[ERR] Error in getNumUsers: " + e.getMessage());
@@ -47,7 +46,6 @@ public class DataSourceRec {
     public int getNumItems() {
         if (numItems == -1) {
             try {
-                ITopicChildrenRepository topicChildrenRepository = this.topicChildrenRepository;
                 numItems = topicChildrenRepository.getCountTopics();
             } catch (Exception e) {
                 System.out.println("[ERR] Error in getNumItems: " + e.getMessage());
@@ -60,7 +58,6 @@ public class DataSourceRec {
     public int[] getItems() {
         if (items == null) {
             try {
-                ITopicChildrenRepository topicChildrenRepository = this.topicChildrenRepository;
                 items = new int[getNumItems()];
                 List<Integer> listItems = topicChildrenRepository.getTopicChildrenIds();
                 for (int i = 0; i < listItems.size(); i++) {
@@ -77,7 +74,6 @@ public class DataSourceRec {
     public int[] getUsers() {
         if (users == null) {
             try {
-                IUserRepository userRepository = this.userRepository;
                 users = new int[getNumUsers()];
                 List<Integer> listUsers = userRepository.getUserIds();
                 for (int i = 0; i < listUsers.size(); i++) {
@@ -93,7 +89,6 @@ public class DataSourceRec {
     // Get the rating for item i for user u, if NaN is returned, the rating is non-existent.
     public double getRating(int u, int i) {
         try {
-            IRatingRepository ratingRepository = this.ratingRepository;
             getUserItemRating = ratingRepository.getRating(u, i);
             return getUserItemRating;
         } catch (Exception e) {
@@ -106,17 +101,24 @@ public class DataSourceRec {
     public HashMap<Integer, HashMap<Integer, Integer>> getRatings() {
         if (ratings == null) {
             try {
-                IRatingRepository ratingRepository = this.ratingRepository;
                 List<RatingPO> listRatings = ratingRepository.findAll();
-                ratings = new HashMap<>();
+                ratings = new HashMap<Integer, HashMap<Integer, Integer>>();
+                HashMap<Integer ,Integer> innerHashMap = null ;
 
                 for (RatingPO ratingPO : listRatings) {
                     int item = Integer.parseInt(ratingPO.getTopicChildrenInfo().getId().toString());
                     int user = Integer.parseInt(ratingPO.getUserInfo().getId().toString());
                     int rating = ratingPO.getRating();
-                    log.info("rating: " + rating);
 
-                    ratings.computeIfAbsent(item, k -> new HashMap<>()).put(user, rating);
+                    innerHashMap = ratings.get(item);
+
+                    if(innerHashMap == null) {
+                        innerHashMap = new HashMap<Integer, Integer>();
+                    }
+
+                    innerHashMap.put(user, rating);
+                    ratings.put(item, innerHashMap);
+
                 }
 
             } catch (Exception e) {

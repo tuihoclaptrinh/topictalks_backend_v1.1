@@ -5,6 +5,8 @@ import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.models.payloads.requests.*;
 import com.anonymity.topictalks.models.payloads.responses.AuthenticationResponse;
+import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
+import com.anonymity.topictalks.models.payloads.responses.RecommendTopicResponse;
 import com.anonymity.topictalks.models.payloads.responses.RefreshTokenResponse;
 import com.anonymity.topictalks.models.persists.rating.RatingPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
@@ -23,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -43,7 +46,6 @@ public class AuthenticationController {
     private final IRefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
     private final IUserService userService;
-    private final IRatingRepository ratingRepository;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request) {
@@ -95,29 +97,6 @@ public class AuthenticationController {
     @PostMapping("/regenerate-otp")
     public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
         return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
-    }
-
-    @PostMapping("/user/rating")
-    public ResponseEntity<RatingPO> saveRating(@RequestBody RatingPO ratingPO) {
-        return new ResponseEntity<>(ratingRepository.save(ratingPO), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/user/rating/all")
-    public ResponseEntity<List<RatingPO>> getAllRatings() {
-        return new ResponseEntity<>(ratingRepository.findAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/user/rating/{userId}")
-    public ResponseEntity<List<RatingPO>> getAllRatingsByUser(@PathVariable("userId") int userId) {
-        return new ResponseEntity<>(ratingRepository.findAllByUserInfo((long)userId), HttpStatus.OK);
-    }
-
-    @PutMapping("/user/{userId}/topic/{topicId}/update/rating/{rating}")
-    public ResponseEntity<RatingPO> updateRating(@PathVariable("userId")int userId, @PathVariable("topicId") int topicId,@PathVariable("rating") int newRatingPO) {
-        RatingPO ratingExist = ratingRepository.getRatingUpdate(userId, topicId);
-        ratingExist.setRating(newRatingPO);
-        ratingRepository.save(ratingExist);
-        return new ResponseEntity<>(ratingExist, HttpStatus.OK);
     }
 
 }

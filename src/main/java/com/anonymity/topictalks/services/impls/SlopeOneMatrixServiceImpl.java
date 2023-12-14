@@ -22,8 +22,8 @@ import java.util.Map;
 public class SlopeOneMatrixServiceImpl implements ISlopeOneMatrixService {
 
     private final IRecDatasourceService dataSource;
-    private HashMap<Integer, HashMap<Integer, Double>> itemAVGDiffMatrix;
-    private HashMap<Integer, HashMap<Integer, Integer>> itemItemWeightMatrix;
+    private HashMap<Integer, HashMap<Integer, Double>> itemAVGDiffMatrix = null;
+    private HashMap<Integer, HashMap<Integer, Integer>> itemItemWeightMatrix = null;
     private boolean isWeighted = true;
 
     private void calcItemPairs() {

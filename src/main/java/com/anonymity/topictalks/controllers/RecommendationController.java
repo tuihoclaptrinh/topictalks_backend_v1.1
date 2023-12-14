@@ -7,7 +7,10 @@ import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 import com.anonymity.topictalks.models.payloads.responses.RecommendTopicResponse;
 import com.anonymity.topictalks.models.persists.rating.RatingPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
+import com.anonymity.topictalks.recommendation.DataSourceRec;
+import com.anonymity.topictalks.recommendation.SlopeOneMatrix;
 import com.anonymity.topictalks.recommendation.SlopeOneRecommendationService;
+import com.anonymity.topictalks.recommendation.SlopeOneRecommender;
 import com.anonymity.topictalks.services.*;
 import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,25 +43,27 @@ import java.util.*;
 @Slf4j
 public class RecommendationController {
 
-    private final IRecDatasourceService datasourceService;
-    private final ISlopeOneRecommenderService slopeOneRecommenderService;
+    private final DataSourceRec dataSourceRec;
     private final ITopicChildrenService topicChildrenService;
     private final IRatingService ratingService;
 
     @GetMapping("/user/{userId}")
     public ResponseData recommendTopicChildren(@PathVariable int userId) {
+        SlopeOneMatrix avgDiff = new SlopeOneMatrix(dataSourceRec, true);
+        SlopeOneRecommender slopeOne = new SlopeOneRecommender(dataSourceRec, true, avgDiff);
         try {
             List<Integer> recommendedTopicChildren = new ArrayList<>();
             List<RecommendTopicResponse> responses = new ArrayList<>();
 
-            int[] items = datasourceService.getItems();
+            int[] items = dataSourceRec.getItems();
 
             Map<Integer, Double> predictions = new HashMap<>();
 
             for (int item : items) {
-                double prediction = slopeOneRecommenderService.recommendOne(userId, item);
+                double prediction = slopeOne.recommendOne(userId, item);
                 predictions.put(item, prediction);
             }
+
             Set<Integer> top7Keys = findTop7Entries(predictions).keySet();
             for(Integer key: top7Keys) {
                 TopicChildrenPO data = topicChildrenService.getTopicChildrenById((long) key);
@@ -152,7 +157,7 @@ public class RecommendationController {
                 top7Entries.put(entry.getValue(), value);
                 count++;
                 if (count == 7) {
-                    break; // Stop after adding the top 5 entries
+                    break; // Stop after adding the top 7 entries
                 }
             }
         }

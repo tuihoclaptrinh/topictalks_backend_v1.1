@@ -114,15 +114,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     )
     private String fullName;
 
-    /**
-     * The user's last name.
-     */
-    @Size(max = 100)
-    @Column(
-            name = "nickname"
-    )
-    private String nickname;
-
     @Column(name = "is_verify", columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isVerify;
 
@@ -152,6 +143,15 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
             nullable = false
     )
     private String username;
+
+    /**
+     * The user's nick name.
+     */
+    @NotNull
+    @Column(
+            name = "nick_name"
+    )
+    private String nickName;
 
     /**
      * The user's email address, which is unique and serves as a natural identifier.
@@ -306,8 +306,9 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
      */
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
+
 
     /**
      * Check if the user's account is non-expired (always returns true).

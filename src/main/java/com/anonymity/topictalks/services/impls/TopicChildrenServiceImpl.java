@@ -4,9 +4,14 @@ import com.anonymity.topictalks.daos.topic.ITopicChildrenRepository;
 import com.anonymity.topictalks.daos.topic.ITopicParentRepository;
 import com.anonymity.topictalks.models.payloads.requests.TopicChildrenRequest;
 import com.anonymity.topictalks.models.payloads.requests.TopicRequest;
+import com.anonymity.topictalks.models.payloads.responses.TopicChildrenResponse;
+import com.anonymity.topictalks.models.payloads.responses.TopicParentResponse;
+import com.anonymity.topictalks.models.persists.topic.QTopicChildrenPO;
 import com.anonymity.topictalks.models.persists.topic.TopicChildrenPO;
 import com.anonymity.topictalks.models.persists.topic.TopicParentPO;
 import com.anonymity.topictalks.services.ITopicChildrenService;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +28,8 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     private ITopicChildrenRepository topicChildrenRepository;
     @Autowired
     private ITopicParentRepository topicParentRepository;
+    @Autowired
+    private JPAQueryFactory jpaQueryFactory;
 
     @Override
     public TopicChildrenPO create(TopicChildrenRequest request) {
@@ -92,5 +99,24 @@ public class TopicChildrenServiceImpl implements ITopicChildrenService {
     public Page<TopicChildrenPO> searchByTopicChildrenName(String topicChildrenName, boolean isExpired, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return topicChildrenRepository.findByTopicChildrenNameContainingIgnoreCase(topicChildrenName, isExpired, pageable);
+    }
+
+    /**
+     * @param tppId
+     * @return
+     */
+    @Override
+    public List<TopicChildrenResponse> listsByParentId(Long tppId) {
+        QTopicChildrenPO qTopicChildrenPO = QTopicChildrenPO.topicChildrenPO;
+
+        List<TopicChildrenResponse> topicChildrenResponses = jpaQueryFactory.select(
+                        Projections.bean(TopicChildrenResponse.class,
+                                qTopicChildrenPO.id,
+                                qTopicChildrenPO.topicChildrenName)
+                ).where(qTopicChildrenPO.topicParentId.id.eq(tppId))
+                .from(qTopicChildrenPO)
+                .fetch();
+
+        return topicChildrenResponses;
     }
 }

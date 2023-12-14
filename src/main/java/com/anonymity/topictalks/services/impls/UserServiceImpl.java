@@ -18,6 +18,7 @@ import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -302,6 +303,20 @@ public class UserServiceImpl implements IUserService {
 
         }
         return result;
+    }
+
+    /**
+     * @param email
+     * @return
+     */
+    @Override
+    public UserPO getUserByEmail(String email) {
+        try {
+            return userRepository.findByEmail(email).orElseThrow(null);
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     @Override

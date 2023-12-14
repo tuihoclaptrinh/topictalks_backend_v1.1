@@ -58,6 +58,6 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
     List<UserPO> findAllByBannedDate(LocalDateTime bannedDate);
 
-    Optional<UserPO> findByNickname(String nickname);
+    UserPO findByNickName(String nickname);
 
 }

@@ -20,6 +20,8 @@ public interface IRatingService {
 
     RatingResponse ratingTopic(RatingRequest ratingRequest);
 
+    Integer ratingManyTopics(List<RatingRequest> ratingManyRequest);
+
     List<RatingResponse> getAllRatings();
 
     List<RatingResponse> getAllRatingsByTopicChildren(Long tpcId);
@@ -33,5 +35,7 @@ public interface IRatingService {
     List<HotTopicResponse> getAllHotTopics();
 
     BigDecimal avgRatingById(Long tpcId);
+
+
 
 }
