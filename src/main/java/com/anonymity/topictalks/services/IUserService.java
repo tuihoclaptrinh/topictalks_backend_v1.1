@@ -45,6 +45,8 @@ public interface IUserService {
 
     UserDTO banUser(long id, long numDateOfBan);
 
+    UserDTO updateStatusProfile(long id, boolean isPublic);
+
     boolean checkDuplicateEmail(long id, String email);
 
     boolean checkDuplicateUsername(long id, String username);

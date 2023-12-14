@@ -105,7 +105,7 @@ public class ParticipantServiceImpl implements IParticipantService {
                     .Id(us.getId())
                     .bannedAt(us.getBannedDate())
                     .image(us.getImageUrl())
-                    .isBanned(us.getIsBanned())
+                    .isBanned(us.isBanned())
                     .username(us.getUsername())
                     .active(us.isActive())
                     .build();

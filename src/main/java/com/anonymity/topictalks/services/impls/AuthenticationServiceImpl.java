@@ -101,7 +101,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         new_user.setOtp(otp);
         new_user.setOtpGeneratedTime(LocalDateTime.now());
         new_user.setBio("");
-        new_user.setImageUrl("");
+        new_user.setImageUrl(request.getUrlAvatar());
         new_user.setGender("");
         new_user.setNumDateBan(0);
         new_user.setPhoneNumber("");

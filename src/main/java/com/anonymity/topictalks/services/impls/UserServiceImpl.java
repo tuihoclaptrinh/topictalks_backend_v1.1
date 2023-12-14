@@ -17,8 +17,6 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.In;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -372,6 +370,19 @@ public class UserServiceImpl implements IUserService {
         return null;
     }
 
+    @Override
+    public UserDTO updateStatusProfile(long id, boolean isPublic) {
+        boolean isExisted = userRepository.existsById(id);
+        if (isExisted) {
+            UserPO userPO = userRepository.findById(id).orElse(null);
+            userPO.setIsPublic(isPublic);
+            userPO.setUpdatedAt(LocalDateTime.now());
+
+            return convertUserPOToUserDTO(userRepository.save(userPO));
+        }
+        return null;
+    }
+
     public UserDTO convertUserPOToUserDTO(UserPO userPO) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(userPO.getId());
@@ -388,7 +399,8 @@ public class UserServiceImpl implements IUserService {
         userDTO.setActive(userPO.isActive());
         userDTO.setCreatedAt(userPO.getCreatedAt());
         userDTO.setUpdatedAt(userPO.getUpdatedAt());
-        userDTO.setIsBanned(userPO.getIsBanned());
+        userDTO.setBanned(userPO.getIsBanned());
+        userDTO.setPublic(userPO.getIsPublic());
         userDTO.setBannedDate(userPO.getBannedDate());
         if (userPO.getIsBanned() == true) {
             userDTO.setDueDateUnBan(userPO.getBannedDate().plusDays(userPO.getNumDateBan()));

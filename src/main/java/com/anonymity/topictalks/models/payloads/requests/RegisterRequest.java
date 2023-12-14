@@ -32,4 +32,6 @@ public class RegisterRequest {
     @StrongPassword
     private String password;
 
+    @NullOrNotBlank(message = "Image URL cannot be null")
+    private String urlAvatar;
 }

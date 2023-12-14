@@ -224,4 +224,27 @@ public class UserController {
 
         return ResponseEntity.ok(dataResponse);
     }
+
+    @PutMapping("/status-profile")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<?> setStatusProfile(@RequestParam("id") long id,@RequestParam("isPublic") boolean isPublic) {
+        DataResponse dataResponse = new DataResponse();
+        UserDTO userDto = userService.updateStatusProfile(id,isPublic);
+
+        if (userDto == null) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData("");
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());//200
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setSuccess(true);
+        dataResponse.setData(userDto);
+
+        return ResponseEntity.ok(dataResponse);
+    }
 }

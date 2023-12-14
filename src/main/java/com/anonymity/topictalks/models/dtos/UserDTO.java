@@ -26,7 +26,7 @@ public class UserDTO implements Serializable {
     private String gender;
     private String country;
     private String imageUrl;
-    private Boolean isBanned;
+    private boolean isBanned;
     private LocalDateTime bannedDate;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime dueDateUnBan;
@@ -36,6 +36,7 @@ public class UserDTO implements Serializable {
     private String totalNumOfFriends;
     private ERole role;
     private boolean active;
+    private boolean isPublic;
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 }

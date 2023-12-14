@@ -262,6 +262,15 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     private LocalDateTime bannedDate;
 
     /**
+     * The user's status.
+     */
+    @Column(
+            name = "is_public",
+            columnDefinition = "boolean default false"
+    )
+    private Boolean isPublic;
+
+    /**
      * The user's role, represented as an enumeration.
      */
     @Enumerated(EnumType.STRING)
