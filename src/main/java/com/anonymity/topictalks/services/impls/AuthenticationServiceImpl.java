@@ -202,7 +202,18 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                         .message(error.getMessage())
                         .build();
             }
+            var random = new Random();
+            var nickName = nicknameService.generateUserNickname();
+            
             var new_user = new UserPO();
+            
+            var userByNickname = userRepository.findByNickName(nickName);
+            if (userByNickname!=null) {
+                new_user.setNickName(nickName + random.nextInt(100 - 1 + 1) + 1);
+            } else {
+                new_user.setNickName(nickName);
+            }
+        
             new_user.setFullName(request.getFullName());
             new_user.setUsername(new_user.getNickName());
             new_user.setEmail(request.getEmail());
