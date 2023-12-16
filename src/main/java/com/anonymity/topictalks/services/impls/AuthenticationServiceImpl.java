@@ -230,6 +230,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setRole(ERole.USER);
             new_user.setCreatedAt(LocalDateTime.now());
             new_user.setUpdatedAt(null);
+            new_user.setVerify(true);
 
             new_user = userRepository.save(new_user);
             new_user.setUsername("Anominity" + new_user.getId());
