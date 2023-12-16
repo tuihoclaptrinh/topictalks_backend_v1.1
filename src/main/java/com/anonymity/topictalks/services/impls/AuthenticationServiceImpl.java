@@ -233,8 +233,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setVerify(true);
 
             new_user = userRepository.save(new_user);
-            new_user.setUsername("Anominity" + new_user.getId());
-            new_user = userRepository.save(new_user);
 
             var jwt = jwtService.generateToken(new_user);
             var refreshToken = refreshTokenService.createRefreshToken(new_user.getId());
