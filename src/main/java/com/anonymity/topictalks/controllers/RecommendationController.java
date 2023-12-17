@@ -67,16 +67,19 @@ public class RecommendationController {
             Set<Integer> top7Keys = findTop7Entries(predictions).keySet();
             for(Integer key: top7Keys) {
                 TopicChildrenPO data = topicChildrenService.getTopicChildrenById((long) key);
-                RecommendTopicResponse recommendTopicResponse = RecommendTopicResponse.builder()
-                        .topicChildrenId(data.getId())
-                        .topicChildrenName(data.getTopicChildrenName())
-                        .image(data.getImage())
-                        .shortDescription(data.getShortDescript())
-                        .avgRating(ratingService.avgRatingById(data.getId()))
-                        .createdAt(data.getCreatedAt())
-                        .updatedAt(data.getUpdatedAt())
-                        .build();
-                responses.add(recommendTopicResponse);
+                if (!data.isExpired()) {
+                    RecommendTopicResponse recommendTopicResponse = RecommendTopicResponse.builder()
+                            .topicChildrenId(data.getId())
+                            .topicChildrenName(data.getTopicChildrenName())
+                            .image(data.getImage())
+                            .shortDescription(data.getShortDescript())
+                            .avgRating(ratingService.avgRatingById(data.getId()))
+                            .createdAt(data.getCreatedAt())
+                            .updatedAt(data.getUpdatedAt())
+                            .build();
+                    responses.add(recommendTopicResponse);
+                }
+
             }
             boolean b = recommendedTopicChildren.addAll(top7Keys);
 
