@@ -33,6 +33,7 @@ public class IInteractServiceImpl implements IInteractService {
         } else {
             interactPO.setSubject(request.getSubject());
             interactPO.setContent(request.getContent());
+            interactPO.setEvdImageUrl(request.getEvdImgUrl());
             interactPO.setCreatedAt(LocalDateTime.now());
             interactPO.setSenderId(userPO);
             try {
@@ -104,6 +105,7 @@ public class IInteractServiceImpl implements IInteractService {
                 interactPO.getId(),
                 interactPO.getSubject(),
                 interactPO.getContent(),
+                interactPO.getEvdImageUrl(),
                 userQaDTO,
                 interactPO.isAnswered(),
                 interactPO.getReplyContent(),

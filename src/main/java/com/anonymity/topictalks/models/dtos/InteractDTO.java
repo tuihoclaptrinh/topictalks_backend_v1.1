@@ -19,6 +19,7 @@ public class InteractDTO {
     private long id;
     private String subject;
     private String content;
+    private String evdImageUrl;
     private UserQaDTO senderInfor;
     private boolean isAnswered;
     @JsonInclude(JsonInclude.Include.NON_NULL)

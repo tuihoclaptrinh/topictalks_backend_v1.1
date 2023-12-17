@@ -2,10 +2,12 @@ package com.anonymity.topictalks.services;
 
 
 import com.anonymity.topictalks.models.dtos.GenderDTO;
+import com.anonymity.topictalks.models.dtos.PostDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
 import com.anonymity.topictalks.models.persists.user.UserPO;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +35,7 @@ public interface IUserService {
 
     boolean updateActive(boolean active, long id);
 
-    List<UserDTO> findAllUsers();
+    Page<UserDTO> findAllUsers(int page, int size);
 
     List<UserDTO> getAllUsersBanned(LocalDateTime bannedDate);
 

@@ -13,6 +13,7 @@ import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.services.IUserTopicService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,22 +59,24 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> findAllUsers() {
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<?> findAllUsers(@RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
+        Page<UserDTO> allUsers = userService.findAllUsers(page,size);
 
-        List<UserDTO> allUsers = userService.findAllUsers();
-
-        if (allUsers.isEmpty()) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (allUsers.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(allUsers);
 

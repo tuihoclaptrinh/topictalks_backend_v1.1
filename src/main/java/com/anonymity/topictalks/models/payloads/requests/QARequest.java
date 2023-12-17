@@ -13,4 +13,5 @@ public class QARequest {
     private Long senderId;
     private String subject;
     private String content;
+    private String evdImgUrl;
 }
