@@ -3,6 +3,7 @@ package com.anonymity.topictalks.services;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.FriendRequest;
 import com.anonymity.topictalks.models.payloads.responses.FriendInforResponse;
+import com.anonymity.topictalks.models.payloads.responses.FriendMentionResponse;
 import com.anonymity.topictalks.models.payloads.responses.FriendResponse;
 
 import java.util.List;
@@ -25,4 +26,7 @@ public interface IFriendService {
     List<FriendInforResponse> getAllFriendByUserId(long userId);
 
     void rejectFriendship(long userId, long friendId);
+
+    List<FriendMentionResponse> mentionFriends(Long userId);
+
 }

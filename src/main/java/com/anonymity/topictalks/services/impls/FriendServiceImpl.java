@@ -6,6 +6,7 @@ import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.FriendRequest;
 import com.anonymity.topictalks.models.payloads.responses.FriendInforResponse;
+import com.anonymity.topictalks.models.payloads.responses.FriendMentionResponse;
 import com.anonymity.topictalks.models.payloads.responses.FriendResponse;
 import com.anonymity.topictalks.models.persists.user.FriendListPO;
 import com.anonymity.topictalks.models.persists.user.QFriendListPO;
@@ -166,6 +167,35 @@ public class FriendServiceImpl implements IFriendService {
                 .execute();
         if (deletedRows ==0) {
             throw new GlobalException(400, "Reject failed");
+        }
+    }
+
+    @Override
+    public List<FriendMentionResponse> mentionFriends(Long userId) {
+        try {
+            QFriendListPO qFriendListPO = QFriendListPO.friendListPO;
+            QUserPO qUserPO = QUserPO.userPO;
+
+            List<FriendMentionResponse> responses = jpaQueryFactory.select(
+                            Projections.bean(FriendMentionResponse.class,
+                                    qFriendListPO.friendId.id.as("friendId"),
+                                    qUserPO.id.as("userId"),
+                                    qUserPO.username,
+                                    qUserPO.fullName,
+                                    qUserPO.imageUrl
+                            )
+                    )
+                    .from(qFriendListPO)
+                    .join(qUserPO)
+                    .on(qFriendListPO.userId.id.eq(qUserPO.id))
+                    .where(qFriendListPO.userId.id.eq(userId))
+                    .fetch();
+
+
+            return responses;
+        } catch (Exception e) {
+            log.info("[ERROR] something went wrong: ", e.getMessage());
+            return null;
         }
     }
 
