@@ -8,6 +8,7 @@ import com.anonymity.topictalks.models.dtos.GenderDTO;
 import com.anonymity.topictalks.models.dtos.UserDTO;
 import com.anonymity.topictalks.models.payloads.requests.ResetPasswordRequest;
 import com.anonymity.topictalks.models.payloads.requests.UserUpdateRequest;
+import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import com.anonymity.topictalks.services.IUserService;
 import com.anonymity.topictalks.utils.EmailUtils;
@@ -17,6 +18,9 @@ import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -185,14 +189,10 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<UserDTO> findAllUsers() {
-        List<UserPO> userPOList = userRepository.findAll();
-        List<UserDTO> userDTOList = new ArrayList<>();
-        for (UserPO list : userPOList) {
-            UserDTO userDTO = convertUserPOToUserDTO(list);
-            userDTOList.add(userDTO);
-        }
-        return userDTOList;
+    public Page<UserDTO> findAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserPO> userPage = userRepository.findAll(pageable);
+        return userPage.map(this::convertUserPOToUserDTO);
     }
 
     /**

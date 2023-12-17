@@ -1,9 +1,12 @@
 package com.anonymity.topictalks.daos.user;
 
 import com.anonymity.topictalks.daos.IBaseRepository;
+import com.anonymity.topictalks.models.persists.post.PostPO;
 import com.anonymity.topictalks.models.persists.user.UserPO;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -27,6 +30,8 @@ import java.util.Optional;
 @Transactional
 public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
+    Page<UserPO> findAll( Pageable pageable);
+
     @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
     int getCountUsers();
 
@@ -38,7 +43,6 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
   
     @Procedure("UPDATE_IS_BAN_USER_PROCEDURE")
     void updateIsBannProcedure(String username);
-
 
     Optional<UserPO> findByUsername(String username);
 

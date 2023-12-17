@@ -46,6 +46,10 @@ public class InteractPO  extends DateAudit implements Serializable {
     @Column(name = "answer_content", columnDefinition = "LONGTEXT",nullable = true)
     private String replyContent;
 
+    @Lob
+    @Column(name = "evd_img_url", columnDefinition = "LONGTEXT",nullable = true)
+    private String evdImageUrl;
+
     @Column(name = "adminId",nullable = true)
     private long adminReplyId;
 
