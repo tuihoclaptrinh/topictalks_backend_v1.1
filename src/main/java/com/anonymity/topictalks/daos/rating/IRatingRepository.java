@@ -44,6 +44,7 @@ public interface IRatingRepository extends IBaseRepository<RatingPO, RatingKey> 
             "t.created_at, t.updated_at, t.image, t.topic_children_name, t.short_descript " +
             "FROM rating r " +
             "JOIN topic_children t ON r.topic_children_id = t.topic_children_id " +
+            "WHERE t.is_expired= false" +
             "GROUP BY r.topic_children_id " +
             "ORDER BY tpcCount DESC, maxRating DESC " +
             "LIMIT 5", nativeQuery = true)
