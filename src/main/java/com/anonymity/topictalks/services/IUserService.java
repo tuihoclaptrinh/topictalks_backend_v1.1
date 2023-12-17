@@ -37,6 +37,8 @@ public interface IUserService {
 
     Page<UserDTO> findAllUsers(int page, int size);
 
+    Page<UserDTO> searchByNickName(String nickNameSearch,int page, int size);
+
     List<UserDTO> getAllUsersBanned(LocalDateTime bannedDate);
 
     UserDTO getUserById(long id);

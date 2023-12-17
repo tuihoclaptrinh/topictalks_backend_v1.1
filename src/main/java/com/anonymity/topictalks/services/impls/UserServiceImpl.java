@@ -195,6 +195,13 @@ public class UserServiceImpl implements IUserService {
         return userPage.map(this::convertUserPOToUserDTO);
     }
 
+    @Override
+    public Page<UserDTO> searchByNickName(String nickNameSearch,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserPO> userPage = userRepository.findByName(nickNameSearch,pageable);
+        return userPage.map(this::convertUserPOToUserDTO);
+    }
+
     /**
      * @param bannedDate
      * @return

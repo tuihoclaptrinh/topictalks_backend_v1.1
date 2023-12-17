@@ -32,6 +32,9 @@ public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
     Page<UserPO> findAll( Pageable pageable);
 
+    @Query(value = "SELECT * FROM user u where LOWER(u.nick_name) LIKE CONCAT('%', :nickName, '%');", nativeQuery = true)
+    Page<UserPO> findByName(@Param(value = "nickName") String nickName, Pageable pageable);
+
     @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
     int getCountUsers();
 

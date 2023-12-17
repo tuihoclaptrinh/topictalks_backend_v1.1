@@ -83,6 +83,32 @@ public class UserController {
         return ResponseEntity.ok(dataResponse);
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<?> findByNickName(@RequestParam("keyword") String nickname,
+                                            @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size) {
+        DataResponse dataResponse = new DataResponse();
+        Page<UserDTO> allUsers = userService.searchByNickName(nickname,page,size);
+
+        if (allUsers.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
+            dataResponse.setSuccess(false);
+            dataResponse.setData(null);
+
+            return ResponseEntity.ok(dataResponse);
+        }
+
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
+        dataResponse.setSuccess(true);
+        dataResponse.setData(allUsers);
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
     @GetMapping("/{id}")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> findUserById(@PathVariable("id") long id) {
