@@ -3,8 +3,11 @@ package com.anonymity.topictalks.controllers;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.payloads.requests.FriendRequest;
 import com.anonymity.topictalks.models.payloads.responses.DataResponse;
+import com.anonymity.topictalks.models.payloads.responses.ErrorResponse;
 import com.anonymity.topictalks.models.payloads.responses.FriendInforResponse;
+import com.anonymity.topictalks.models.payloads.responses.FriendMentionResponse;
 import com.anonymity.topictalks.services.IFriendService;
+import com.anonymity.topictalks.utils.commons.ResponseData;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Array;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,4 +122,18 @@ public class FriendController {
             return ResponseEntity.ok(dataResponse);
         }
     }
+
+    @GetMapping("/mention/friends/{userId}")
+    public ResponseData mentionFriends(@PathVariable("userId") Long userId) {
+        try {
+            List<FriendMentionResponse> lists = friendService.mentionFriends(userId);
+            return ResponseData.ofSuccess("succeed", lists);
+        } catch (Exception e) {
+            return ResponseData.ofFailed("failed", ErrorResponse.builder()
+                    .message(e.getMessage())
+                    .timestamp(LocalDateTime.now())
+                    .build());
+        }
+    }
+
 }
