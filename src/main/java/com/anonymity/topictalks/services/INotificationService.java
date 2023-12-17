@@ -17,6 +17,8 @@ public interface INotificationService {
 
     void saveNotification(NotiRequest request);
 
+    Integer saveMentionNotif(List<NotiRequest> requests);
+
     List<NotiResponse> notiList(Long userId);
 
     long updateReadNoti(Long notiId);

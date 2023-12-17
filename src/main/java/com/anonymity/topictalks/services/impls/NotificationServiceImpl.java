@@ -10,6 +10,7 @@ import com.anonymity.topictalks.daos.user.IUserRepository;
 import com.anonymity.topictalks.exceptions.GlobalException;
 import com.anonymity.topictalks.models.payloads.requests.NotiRequest;
 import com.anonymity.topictalks.models.payloads.responses.NotiResponse;
+import com.anonymity.topictalks.models.payloads.responses.RatingResponse;
 import com.anonymity.topictalks.models.persists.message.ConversationPO;
 import com.anonymity.topictalks.models.persists.message.ParticipantPO;
 import com.anonymity.topictalks.models.persists.message.QConversationPO;
@@ -19,6 +20,7 @@ import com.anonymity.topictalks.models.persists.notification.PostNotificationPO;
 import com.anonymity.topictalks.models.persists.notification.QMessageNotificationPO;
 import com.anonymity.topictalks.models.persists.notification.QPostNotificationPO;
 import com.anonymity.topictalks.models.persists.post.PostPO;
+import com.anonymity.topictalks.models.persists.rating.RatingPO;
 import com.anonymity.topictalks.models.persists.user.QUserPO;
 import com.anonymity.topictalks.services.INotificationService;
 import com.querydsl.core.types.Projections;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author de140172 - author
@@ -73,26 +76,23 @@ public class NotificationServiceImpl implements INotificationService {
             ConversationPO conversationPO = conversationRepository.findById(request.getConversationId()).orElse(null);
             if (conversationPO != null) {
                 if (conversationPO.getIsGroupChat() == false) {
-                        MessageNotificationPO noti = MessageNotificationPO
-                                .builder()
-                                .partnerId(request.getPartnerId())
-                                .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
-                                .userId(userRepository.findById(request.getUserId()).orElse(null))
-                                .messageNoti(request.getMessageNoti())
-                                .build();
-                        messageNotificationRepository.save(noti);
+                    MessageNotificationPO noti = MessageNotificationPO
+                            .builder()
+                            .partnerId(request.getPartnerId())
+                            .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
+                            .userId(userRepository.findById(request.getUserId()).orElse(null))
+                            .messageNoti(request.getMessageNoti())
+                            .build();
+                    messageNotificationRepository.save(noti);
                 } else {
-
-
-
-                            MessageNotificationPO noti = MessageNotificationPO
-                                    .builder()
-                                    .partnerId(request.getPartnerId())
-                                    .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
-                                    .userId(userRepository.findById(request.getUserId()).orElse(null))
-                                    .messageNoti(request.getMessageNoti())
-                                    .build();
-                            messageNotificationRepository.save(noti);
+                    MessageNotificationPO noti = MessageNotificationPO
+                            .builder()
+                            .partnerId(request.getPartnerId())
+                            .conversationId(conversationRepository.findById(request.getConversationId()).orElse(null))
+                            .userId(userRepository.findById(request.getUserId()).orElse(null))
+                            .messageNoti(request.getMessageNoti())
+                            .build();
+                    messageNotificationRepository.save(noti);
                 }
             }
         } else if (request.getPostId() != null) {
@@ -105,6 +105,22 @@ public class NotificationServiceImpl implements INotificationService {
                     .partnerId(postPO.getAuthorId().getId())
                     .build();
             postNotificationRepository.save(post);
+        }
+    }
+
+    @Override
+    public Integer saveMentionNotif(List<NotiRequest> requests) {
+        int result = 0;
+        try {
+            List<PostNotificationPO> entities = requests.stream()
+                    .map(this::convertToPostNotificationPO)
+                    .collect(Collectors.toList());
+
+            result = postNotificationRepository.saveAll(entities).size();
+
+            return result;
+        } catch (Exception e) {
+            return result;
         }
     }
 
@@ -205,5 +221,25 @@ public class NotificationServiceImpl implements INotificationService {
                     .execute();
         }
         return 1;
+    }
+
+    private List<PostNotificationPO> convertToPostNotificationPO(List<NotiRequest> requests){
+        List<PostNotificationPO> postNotificationPOS = new ArrayList<>();
+
+        for(NotiRequest request: requests) {
+            PostNotificationPO po = convertToPostNotificationPO(request);
+            postNotificationPOS.add(po);
+        }
+
+        return postNotificationPOS;
+    }
+
+    private PostNotificationPO convertToPostNotificationPO(NotiRequest request) {
+        return PostNotificationPO.builder()
+                .userId(userRepository.findById(request.getUserId()).orElse(null))
+                .postId(postRepository.findById(request.getPostId()).orElse(null))
+                .messageNoti(request.getMessageNoti())
+                .partnerId(request.getPartnerId())
+                .build();
     }
 }
