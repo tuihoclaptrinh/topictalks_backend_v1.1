@@ -26,6 +26,7 @@ public class UserDTO implements Serializable {
     private String gender;
     private String country;
     private String imageUrl;
+    private String imageUrlRandom;
     private boolean isBanned;
     private LocalDateTime bannedDate;
     @JsonInclude(JsonInclude.Include.NON_NULL)

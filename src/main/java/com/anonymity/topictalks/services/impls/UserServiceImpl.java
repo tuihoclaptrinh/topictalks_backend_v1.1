@@ -402,6 +402,7 @@ public class UserServiceImpl implements IUserService {
         userDTO.setCountry(userPO.getCountry());
         userDTO.setGender(userPO.getGender());
         userDTO.setImageUrl(userPO.getImageUrl());
+        userDTO.setImageUrlRandom(userPO.getImageUrlRandom());
         userDTO.setRole(userPO.getRole());
         userDTO.setActive(userPO.isActive());
         userDTO.setCreatedAt(userPO.getCreatedAt());

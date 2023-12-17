@@ -28,6 +28,7 @@ public class AuthenticationResponse {
     private  Long id;
     private String username;
     private String url_img;
+    private String url_img_random;
     private List<String> roles;
     private Boolean isBanned;
     private LocalDateTime bannedDate;

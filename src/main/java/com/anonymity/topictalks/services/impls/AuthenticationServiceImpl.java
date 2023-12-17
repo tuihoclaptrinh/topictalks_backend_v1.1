@@ -101,6 +101,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         new_user.setOtp(otp);
         new_user.setOtpGeneratedTime(LocalDateTime.now());
         new_user.setBio("");
+        new_user.setImageUrlRandom(request.getUrlAvatar());
         new_user.setImageUrl(request.getUrlAvatar());
         new_user.setGender("");
         new_user.setNumDateBan(0);
@@ -128,6 +129,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 .username(new_user.getNickName())
                 .id(new_user.getId())
                 .url_img(new_user.getImageUrl())
+                .url_img_random(new_user.getImageUrlRandom())
                 .refreshToken(refreshToken.getToken())
                 .roles(roles)
                 .tokenType(ETokenType.BEARER.name())
@@ -221,6 +223,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             new_user.setPassword("");
             new_user.setBio("");
             new_user.setImageUrl(request.getUrlImage());
+            new_user.setImageUrlRandom(request.getUrlImage());
             new_user.setGender("");
             new_user.setPhoneNumber("");
             new_user.setCountry("");
@@ -247,6 +250,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                     .username(new_user.getNickName())
                     .id(new_user.getId())
                     .url_img(new_user.getImageUrl())
+                    .url_img_random(new_user.getImageUrlRandom())
                     .refreshToken(refreshToken.getToken())
                     .roles(roles)
                     .tokenType(ETokenType.BEARER.name())
@@ -267,6 +271,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 .roles(roles)
                 .username(user.getNickName())
                 .url_img(user.getImageUrl())
+                .url_img_random(user.getImageUrlRandom())
                 .id(user.getId())
                 .isBanned(user.getIsBanned())
                 .bannedDate(user.getBannedDate())

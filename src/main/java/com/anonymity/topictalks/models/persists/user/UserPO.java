@@ -222,6 +222,15 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     private String imageUrl;
 
     /**
+     * The URL of the user's profile image.
+     */
+    @Column(
+            name = "image_url_random",
+            nullable = true
+    )
+    private String imageUrlRandom;
+
+    /**
      * The user's date of birth.
      */
     @Column(
