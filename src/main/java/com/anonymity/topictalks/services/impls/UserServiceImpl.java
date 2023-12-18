@@ -166,7 +166,8 @@ public class UserServiceImpl implements IUserService {
     public boolean updateAvatar(String avatar, long id) {
         UserPO userPO = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("This user doesn't exist."));
-        userPO.setImageUrl(avatar);
+//        userPO.setImageUrl(avatar);
+        userPO.setImageUrlRandom(avatar);
         try {
             userRepository.save(userPO);
             return true;
