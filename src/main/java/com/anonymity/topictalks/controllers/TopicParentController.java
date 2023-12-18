@@ -23,13 +23,12 @@ import java.util.List;
 public class TopicParentController {
     private final ITopicParentService topicParentService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TopicRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -44,14 +43,13 @@ public class TopicParentController {
 
             return ResponseEntity.ok(dataResponse);
         }
-        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+        dataResponse.setStatus(HttpStatus.CREATED.value());
         dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
         dataResponse.setData(newTopicParent);
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAllTopicParents() {
@@ -59,24 +57,23 @@ public class TopicParentController {
 
         List<TopicParentPO> list = topicParentService.getAll();
 
-        if (list.isEmpty()) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (list.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(list);
 
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-tparent")
     public ResponseEntity<?> getAllTopicParentsByIsExpired(@RequestParam(value = "isDisable") boolean isDisable) {
@@ -84,31 +81,30 @@ public class TopicParentController {
 
         List<TopicParentPO> list = topicParentService.getAllByIsExpired(isDisable);
 
-        if (list.isEmpty()) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (list.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(list);
 
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/rename")
     public ResponseEntity<?> updateTopicName(@RequestParam("id") long id, @RequestBody TopicRequest request) {
         DataResponse dataResponse = new DataResponse();
         if (topicParentService.checkDuplicateTopicName(request.getTopicName(),id) == true) {
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//204
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//NO CONTENT
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("This topic name has already exist.");
 
@@ -117,61 +113,58 @@ public class TopicParentController {
 
         TopicParentPO isUpdated = topicParentService.updateTopicName(id, request.getTopicName());
 
-        if (isUpdated == null) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (isUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("Failure to update.");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(isUpdated);
 
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/update-expired")
     public ResponseEntity<?> updateIsExpiredById(@RequestParam("id") long id, @RequestParam("is_expired") boolean isExpired) {
         DataResponse dataResponse = new DataResponse();
         TopicParentPO isUpdated = topicParentService.updateIsExpiredById(id, isExpired);
 
-        if (isUpdated == null) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (isUpdated == null) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("Failure to update.");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(isUpdated);
 
         return ResponseEntity.ok(dataResponse);
     }
-    @CrossOrigin(origins = "http://localhost:3000")
+
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/search")
     public List<TopicParentPO> searchByTopicParentName(@RequestParam("tp_name") String topicParentName, @RequestParam("is_expired") boolean isExpired) {
         return topicParentService.searchByTopicParentName(topicParentName,isExpired);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/retrieve")
     public List<?> retrieveDataForTopicParent() {
         return topicParentService.retrieveDataForTopicParent();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/update")
     public ResponseEntity<?> updateTopicParent(@RequestParam("id") long id, @RequestBody TopicRequest request) {

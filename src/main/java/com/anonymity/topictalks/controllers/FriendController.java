@@ -42,8 +42,8 @@ public class FriendController {
         DataResponse dataResponse = new DataResponse();
         try {
             FriendInforResponse response = friendService.requestAddFriend(request);
-            dataResponse.setStatus(HttpStatus.OK.value());//200
-            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setStatus(HttpStatus.OK.value());
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
             dataResponse.setSuccess(true);
             dataResponse.setData(response);
             return ResponseEntity.ok(dataResponse);
@@ -61,8 +61,8 @@ public class FriendController {
         DataResponse dataResponse = new DataResponse();
         try {
             FriendInforResponse response = friendService.acceptedRequestFriend(request);
-            dataResponse.setStatus(HttpStatus.OK.value());//200
-            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setStatus(HttpStatus.OK.value());
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
             dataResponse.setSuccess(true);
             dataResponse.setData(response);
             return ResponseEntity.ok(dataResponse);
@@ -87,17 +87,17 @@ public class FriendController {
 
         List<FriendInforResponse> list = friendService.getAllFriendByUserId(userId);
 
-        if (list.isEmpty()) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());//204
-            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());//NO CONTENT
+        if (list.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            dataResponse.setDesc(HttpStatus.NOT_FOUND.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(list);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(list);
 
@@ -109,8 +109,8 @@ public class FriendController {
         DataResponse dataResponse = new DataResponse();
         try {
             friendService.rejectFriendship(userId, friendId);
-            dataResponse.setStatus(HttpStatus.OK.value());//200
-            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+            dataResponse.setStatus(HttpStatus.OK.value());
+            dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
             dataResponse.setSuccess(true);
             dataResponse.setData("Reject friend successfully");
             return ResponseEntity.ok(dataResponse);

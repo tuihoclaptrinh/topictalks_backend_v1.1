@@ -56,8 +56,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final NicknameService nicknameService;
     private final IUserService userService;
 
-
-
     @Override
     public Object register(RegisterRequest request) {
         userRepository.deleteUnVerifyUser();

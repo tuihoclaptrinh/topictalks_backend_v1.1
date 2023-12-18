@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
  * @since 1.0 - version of class
  */
 
-
 @Service
 @Slf4j
 @RequiredArgsConstructor

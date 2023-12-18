@@ -38,29 +38,29 @@ public class UserController {
     }
 
     @PostMapping("/upload")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> create(@RequestBody AvatarRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
         boolean isSuccess = userService.updateAvatar(request.getImage(), request.getUserId());
-        if (bindingResult.hasErrors() || isSuccess == false) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());//400
-            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors() || isSuccess == false) {
+            dataResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            dataResponse.setDesc(HttpStatus.FORBIDDEN.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("Failure to upload avatar");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+        dataResponse.setStatus(HttpStatus.CREATED.value());
         dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
         dataResponse.setData("Upload avatar successfully");
         return ResponseEntity.ok(dataResponse);
     }
 
     @GetMapping("")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> findAllUsers(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size) {
         DataResponse dataResponse = new DataResponse();
@@ -85,7 +85,7 @@ public class UserController {
 
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> findByNickName(@RequestParam("keyword") String nickname,
                                             @RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size) {
@@ -110,7 +110,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> findUserById(@PathVariable("id") long id) {
         DataResponse dataResponse = new DataResponse();
 
@@ -125,8 +125,8 @@ public class UserController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(userPO);
 
@@ -134,13 +134,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody UserUpdateRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
 
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -167,8 +167,8 @@ public class UserController {
 
             return ResponseEntity.ok(dataResponse);
         }
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(userUpdated);
 
@@ -177,7 +177,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> deleteUserById(@PathVariable("id") long id) {
         DataResponse dataResponse = new DataResponse();
 
@@ -192,8 +192,8 @@ public class UserController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData("");
 
@@ -201,7 +201,7 @@ public class UserController {
     }
 
     @PutMapping("/ban")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<?> banUser(@RequestParam("id") long id,@RequestParam("num") long numDateBan) {
         DataResponse dataResponse = new DataResponse();
@@ -216,8 +216,8 @@ public class UserController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(userBanned);
 
@@ -225,7 +225,7 @@ public class UserController {
     }
 
     @GetMapping("/all-age")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> getAgeOfAllUsers() {
         DataResponse dataResponse = new DataResponse();
 
@@ -240,7 +240,7 @@ public class UserController {
     }
 
     @GetMapping("/all-gender")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> getGenderOfAllUsers() {
         DataResponse dataResponse = new DataResponse();
 
@@ -255,7 +255,7 @@ public class UserController {
     }
 
     @PutMapping("/status-profile")
-    @CrossOrigin(origins = "http://localhost:3000")
+
     public ResponseEntity<?> setStatusProfile(@RequestParam("id") long id,@RequestParam("isPublic") boolean isPublic) {
         DataResponse dataResponse = new DataResponse();
         UserDTO userDto = userService.updateStatusProfile(id,isPublic);
@@ -269,8 +269,8 @@ public class UserController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(userDto);
 

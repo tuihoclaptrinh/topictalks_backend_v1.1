@@ -26,14 +26,13 @@ import java.util.List;
 public class QAController {
     private final IInteractService interactService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody QARequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -55,14 +54,13 @@ public class QAController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/reply")
     public ResponseEntity<?> replyQA(@RequestBody ReplyQARequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -84,7 +82,6 @@ public class QAController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAllQA() {
@@ -105,7 +102,6 @@ public class QAController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{senderId}/all")
     public ResponseEntity<?> getAllQaBySenderId(@PathVariable Long senderId) {
@@ -126,7 +122,6 @@ public class QAController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public ResponseEntity<?> getQaById(@PathVariable Long id) {
         DataResponse dataResponse = new DataResponse();

@@ -23,21 +23,20 @@ public class UserTopicController {
     @PostMapping("{id}/create")
     public ResponseEntity<?> create(@PathVariable Long id, @RequestBody UserTopicRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+        dataResponse.setStatus(HttpStatus.CREATED.value());
         dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
         dataResponse.setData(userTopicService.createUserTopic(id, request));
         return ResponseEntity.ok(dataResponse);
-
 
     }
 }

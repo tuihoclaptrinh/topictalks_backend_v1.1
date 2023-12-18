@@ -36,6 +36,4 @@ public interface IRatingService {
 
     BigDecimal avgRatingById(Long tpcId);
 
-
-
 }

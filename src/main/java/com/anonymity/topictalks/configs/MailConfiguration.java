@@ -52,7 +52,6 @@ public class MailConfiguration {
     @Value("${spring.mail.smtp.starttls.enable}")
     private String mailSmtpStartTls;
 
-
     @Bean
     @Primary
     public FreeMarkerConfigurationFactoryBean getFreeMarkerConfiguration() {

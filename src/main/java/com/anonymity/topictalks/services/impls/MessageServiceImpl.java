@@ -53,7 +53,6 @@ public class MessageServiceImpl implements IMessageService {
     private final IParticipantRepository participantRepository;
     private final IUserRepository userRepository;
 
-
     /**
      * @param conversationId
      * @return

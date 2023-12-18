@@ -12,7 +12,6 @@ package com.anonymity.topictalks.recommendation;
  * For full documentation, see readme.txt
  *************************************************************************/
 
-
 // TODO: plot points for visualization
 
 // TODO: consistency with terms "clustering" and "iteration"
@@ -91,7 +90,6 @@ public class KMeans {
         end = System.currentTimeMillis();
     }
 
-
     /**
      * Builder class for constructing KMeans objects.
      *
@@ -137,7 +135,6 @@ public class KMeans {
             this.k = k;
             this.points = points;
         }
-
 
         /**
          * Sets optional parameter. Default value is 50.
@@ -192,7 +189,6 @@ public class KMeans {
         }
     }
 
-
     /***********************************************************************
      * KMeans clustering algorithm
      **********************************************************************/
@@ -224,7 +220,6 @@ public class KMeans {
         assignment = bestAssignment;
     }
 
-
     /**
      * Perform KMeans clustering algorithm once.
      */
@@ -242,7 +237,6 @@ public class KMeans {
             calcWCSS();
         } while (!stop(prevWCSS));
     }
-
 
     /**
      * Assigns to each data point the nearest centroid.
@@ -269,7 +263,6 @@ public class KMeans {
         }
 
     }
-
 
     /**
      * Updates the centroids.
@@ -323,7 +316,6 @@ public class KMeans {
         }
 
     }
-
 
     /***********************************************************************
      * Choose initial centroids
@@ -420,7 +412,6 @@ public class KMeans {
                 centroids[c][i] = points[choose][i];
         }
     }
-
 
     /***********************************************************************
      * Cutoff to stop clustering
@@ -529,8 +520,6 @@ public class KMeans {
     public String getTiming() {
         return "KMeans++ took: " + (double) (end - start) / 1000.0 + " seconds";
     }
-
-
 
     /***********************************************************************
      * Unit testing

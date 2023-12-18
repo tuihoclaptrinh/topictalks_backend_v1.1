@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class ReasonRejectController {
     private final IReasonRejectService reasonRejectService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAllPosts() {

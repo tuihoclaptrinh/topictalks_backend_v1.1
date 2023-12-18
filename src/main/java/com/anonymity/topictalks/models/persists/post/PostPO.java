@@ -42,7 +42,6 @@ import java.util.List;
  * @since 1.0 - version of class
  */
 
-
 @Data
 @Entity
 @Builder

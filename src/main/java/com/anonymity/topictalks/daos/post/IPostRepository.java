@@ -33,7 +33,6 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
             "WHERE p.author_id = :authorId", nativeQuery = true)
     int countByAuthorId(@Param(value = "authorId") long authorId);
 
-
     @Query(value = "SELECT * FROM post p " +
             "WHERE p.author_id = :authorId AND p.is_approved = :isApproved " +
             "ORDER BY p.post_id DESC", nativeQuery = true)
@@ -77,6 +76,5 @@ public interface IPostRepository extends IBaseRepository<PostPO, Long> {
             "GROUP BY tp.topic_parent_id, tp.topic_parent_name " +
             "ORDER BY tp.topic_parent_id ASC", nativeQuery = true)
     List<String> getListTopicAndCount();
-
 
 }

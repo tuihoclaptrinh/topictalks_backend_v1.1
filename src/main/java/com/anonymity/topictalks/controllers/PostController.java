@@ -16,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/post")
@@ -26,7 +25,6 @@ public class PostController {
 
     private final IPostService postService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody PostRequest request, BindingResult bindingResult) {
@@ -47,7 +45,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updatePost(@PathVariable Long id, @RequestBody PostRequest postRequest, BindingResult bindingResult) {
@@ -79,7 +76,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping("/update-status")
     public ResponseEntity<?> updateStatusPost(@RequestParam("pid") long postId, @RequestParam("sid") long statusId) {
@@ -100,7 +96,6 @@ public class PostController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all/{id}")
     public ResponseEntity<?> getAllPosts(@PathVariable("id") long id,
@@ -127,7 +122,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{postId}")
     public ResponseEntity<?> getPostById(@PathVariable Long postId) {
@@ -139,7 +133,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/aid={authorId}")
     public ResponseEntity<?> getAllPostsByAuthorId(@PathVariable Long authorId,
@@ -155,7 +148,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/tpid={parentTopicId}")
     public ResponseEntity<?> getAllPostsByParentTopicId(@PathVariable Long parentTopicId, @RequestParam(defaultValue = "0") int page,
@@ -169,7 +161,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePostById(@PathVariable("id") long id) {
@@ -194,7 +185,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/approve/{pid}")
     public ResponseEntity<?> approvePost(@PathVariable("pid") long postId) {
@@ -218,7 +208,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/reject")
     public ResponseEntity<?> rejectPost(@RequestBody RejectPostRequest request, BindingResult bindingResult) {
@@ -249,7 +238,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all-posts/is-approved={isApproved}")
     public ResponseEntity<?> getAllPostsByIsApprovedAndIsRejected(@PathVariable boolean isApproved,@RequestParam(defaultValue = "false") boolean isRejected, @RequestParam(defaultValue = "0") int page,
@@ -263,7 +251,6 @@ public class PostController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/popular-posts")
     public ResponseEntity<?> getTop4PostsByIsAproved(@RequestParam(value = "isApproved") boolean isApproved) {

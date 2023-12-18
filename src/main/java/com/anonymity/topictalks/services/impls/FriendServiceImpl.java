@@ -191,7 +191,6 @@ public class FriendServiceImpl implements IFriendService {
                     .where(qFriendListPO.userId.id.eq(userId))
                     .fetch();
 
-
             return responses;
         } catch (Exception e) {
             log.info("[ERROR] something went wrong: ", e.getMessage());
@@ -217,6 +216,5 @@ public class FriendServiceImpl implements IFriendService {
         );
         return response;
     }
-
 
 }

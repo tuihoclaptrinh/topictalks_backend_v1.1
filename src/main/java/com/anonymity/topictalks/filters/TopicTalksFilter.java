@@ -1,6 +1,5 @@
 package com.anonymity.topictalks.filters;
 
-
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +37,6 @@ public class TopicTalksFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-
         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, request.getHeader("Origin"));
         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "POST, GET, OPTIONS, DELETE,PUT");
@@ -50,7 +48,6 @@ public class TopicTalksFilter implements Filter {
         request.setAttribute(REQUEST_ID,uid);
         filterChain.doFilter(request, response);
     }
-
 
     @Override
     public void destroy() {

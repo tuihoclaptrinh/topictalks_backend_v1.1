@@ -30,18 +30,18 @@ public class CommentController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CommentRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
             return ResponseEntity.ok(dataResponse);
         }
         CommentDTO newComment = commentService.create(request);
-        dataResponse.setStatus(HttpStatus.CREATED.value()); //201
+        dataResponse.setStatus(HttpStatus.CREATED.value());
         dataResponse.setSuccess(true);
-        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());//CREATED
+        dataResponse.setDesc(HttpStatus.CREATED.getReasonPhrase());
         dataResponse.setData(newComment);
         return ResponseEntity.ok(dataResponse);
     }
@@ -50,9 +50,9 @@ public class CommentController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody CommentUpdateRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
 
-        if (bindingResult.hasErrors()) {//BAD REQUEST
-            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());//400
-            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());//BAD REQUEST
+        if (bindingResult.hasErrors()) {
+            dataResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            dataResponse.setDesc(HttpStatus.BAD_REQUEST.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData("");
 
@@ -70,8 +70,8 @@ public class CommentController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(commentUpdated);
         return ResponseEntity.ok(dataResponse);
@@ -83,17 +83,17 @@ public class CommentController {
 
         List<CommentDTO> commentList = commentService.getAllComments();
 
-        if (commentList.isEmpty()) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (commentList.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(commentList);
 
@@ -106,17 +106,17 @@ public class CommentController {
 
         List<CommentDTO> commentList = commentService.getCommentsByPostId(postId);
 
-        if (commentList.isEmpty()) {//NO CONTENT
-            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());//204
-            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());//NO CONTENT
+        if (commentList.isEmpty()) {
+            dataResponse.setStatus(HttpStatus.NO_CONTENT.value());
+            dataResponse.setDesc(HttpStatus.NO_CONTENT.getReasonPhrase());
             dataResponse.setSuccess(false);
             dataResponse.setData(null);
 
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData(commentList);
 
@@ -138,8 +138,8 @@ public class CommentController {
             return ResponseEntity.ok(dataResponse);
         }
 
-        dataResponse.setStatus(HttpStatus.OK.value());//200
-        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());//OK
+        dataResponse.setStatus(HttpStatus.OK.value());
+        dataResponse.setDesc(HttpStatus.OK.getReasonPhrase());
         dataResponse.setSuccess(true);
         dataResponse.setData("Removed the comment successfully.");
 

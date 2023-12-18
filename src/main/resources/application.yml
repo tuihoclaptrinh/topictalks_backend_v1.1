@@ -71,7 +71,6 @@ socket-server:
   #Set the maximum length of data processed per frame to prevent others from using big data to attack the server
   maxFramePayloadLength: 1048576
 
-
 logging: # Log pattern for console output
   pattern:
     console: "%clr(%d{dd-MM-yyy HH:mm:ss.SSS}){faint} %highlight(%-5level) %magenta(${PID}) --- %cyan([%t]) %yellow(%logger{50}).%green(%M) : %msg%n"

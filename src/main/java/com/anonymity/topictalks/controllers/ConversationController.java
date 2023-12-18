@@ -23,31 +23,26 @@ public class ConversationController {
 
     private final IConversationService conversationService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{partnerId}")
     public ResponseEntity<Object> checkConversationMatched(@PathVariable Long partnerId, @RequestBody ConversationMatcherRequest request) {
         return ResponseEntity.ok(JSON.parseObject("{\"isMatched\":\"" + conversationService.checkMatchingConversations(request.getUserIdInSession(), partnerId) + "\"}"));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/{conversationId}")
     public ResponseEntity<?> updateTopicGroupChat(@PathVariable Long conversationId, @RequestBody ConversationUpdateRequest request) {
         return ResponseEntity.ok(conversationService.updateTopicGroupChat(conversationId, request.getNewTopicId(), request.getUserIdUpdate()));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/update-avt/{conversationId}")
     public ResponseEntity<?> updateAvatarGroupChat(@PathVariable Long conversationId, @RequestBody ConversationUpdateRequest request) {
         return ResponseEntity.ok(conversationService.updateAvtImgGroupChat(conversationId,request.getAvatarImg(),request.getUserIdUpdate()));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/rename")
     public ResponseEntity<?> updateNameGroupChat(@RequestParam("cid") Long conversationId, @RequestBody ConversationRequest request) {
         return ResponseEntity.ok(conversationService.updateNameGroupChat(conversationId, request.getChatName(), request.getAdminId()));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping
     public ResponseEntity<?> removeConversation(@RequestParam("cid") Long conversationId) {
         DataResponse dataResponse = new DataResponse();

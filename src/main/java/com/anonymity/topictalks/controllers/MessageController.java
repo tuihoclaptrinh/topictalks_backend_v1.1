@@ -30,7 +30,6 @@ public class MessageController {
 
     private final IMessageService messageService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{room}")
     public ResponseEntity<Page<ReceiveMessageDTO>> getMessages(@PathVariable Long room,
                                                                @RequestParam(defaultValue = "0") int page,

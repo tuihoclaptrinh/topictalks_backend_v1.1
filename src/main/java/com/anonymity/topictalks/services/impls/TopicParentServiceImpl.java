@@ -71,7 +71,6 @@ public class TopicParentServiceImpl implements ITopicParentService {
         return topicParentRepository.findAllByIsExpired(isExpired);
     }
 
-
     @Override
     public TopicParentPO updateTopicName(long id, String newName) {
         TopicParentPO topicParentPO = topicParentRepository.findById(id).orElse(null);

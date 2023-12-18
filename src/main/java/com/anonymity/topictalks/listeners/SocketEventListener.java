@@ -137,7 +137,6 @@ public class SocketEventListener {
 //                        }
 //                    }
 
-
 //
 //                    if (isUserOffline) {
 //                        userOfflineList.add(userIdJoin);
@@ -375,6 +374,5 @@ public class SocketEventListener {
         logger.info("Client remaining: {}", clientChatRandom.size());
         return participantRandomResponse;
     }
-
 
 }

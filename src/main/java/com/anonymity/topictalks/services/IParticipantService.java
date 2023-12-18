@@ -1,6 +1,5 @@
 package com.anonymity.topictalks.services;
 
-
 import com.anonymity.topictalks.models.dtos.PartnerDTO;
 import com.anonymity.topictalks.models.dtos.ChatRandomDTO;
 import com.anonymity.topictalks.models.payloads.requests.ParticipantRequest;

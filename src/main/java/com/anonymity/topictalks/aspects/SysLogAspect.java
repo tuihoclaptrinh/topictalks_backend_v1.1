@@ -17,7 +17,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-
 /**
  * @author de140172 - author
  * @version 1.1 - version of software
@@ -33,7 +32,6 @@ public class SysLogAspect {
 
     @Pointcut("execution(* com.anonymity.topictalks.controllers..*.*(..))")
     public void log() {}
-
 
     @Before("log()")
     public void  doBefore(JoinPoint joinPoint) throws UnsupportedEncodingException {

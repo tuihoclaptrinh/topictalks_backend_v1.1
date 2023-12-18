@@ -327,7 +327,6 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
         return email;
     }
 
-
     /**
      * Check if the user's account is non-expired (always returns true).
      *
@@ -367,7 +366,5 @@ public class UserPO extends DateAudit implements UserDetails, Serializable {
     public boolean isEnabled() {
         return true;
     }
-
-
 
 }

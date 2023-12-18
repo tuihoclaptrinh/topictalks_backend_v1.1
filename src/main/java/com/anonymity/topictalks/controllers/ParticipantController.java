@@ -234,7 +234,6 @@ public class ParticipantController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/group-chat")
     public ResponseEntity<?> getAllGroupChatByUserIdAndIsGroup(@RequestParam(value = "uid") long id) {
         DataResponse dataResponse = new DataResponse();
@@ -258,7 +257,6 @@ public class ParticipantController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("")
     public ResponseEntity<?> getAllParticipants(@RequestParam("is_groupchat") boolean isGroupChat,
                                                 @RequestParam(defaultValue = "0") int page,

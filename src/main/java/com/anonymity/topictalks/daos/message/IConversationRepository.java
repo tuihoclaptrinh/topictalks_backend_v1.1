@@ -55,5 +55,4 @@ public interface IConversationRepository extends IBaseRepository<ConversationPO,
             "ORDER BY tp.topic_parent_id ASC", nativeQuery = true)
     List<String> getAllTopicAndCount();
 
-
 }

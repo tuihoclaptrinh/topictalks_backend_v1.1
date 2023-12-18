@@ -25,7 +25,6 @@ import java.util.List;
 public class TopicChildrenController {
     private final ITopicChildrenService topicChildrenService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TopicChildrenRequest request, BindingResult bindingResult) {
         DataResponse dataResponse = new DataResponse();
@@ -52,7 +51,6 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("")
     public ResponseEntity<?> getAllTopicChildrenByTopicParentIdAndIsExpired(@RequestParam(value = "tpid") Long id,
@@ -68,7 +66,6 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/topic-parent={id}")
     public ResponseEntity<?> getAllTopicChildrenByTopicParentId(@PathVariable Long id) {
@@ -82,7 +79,6 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getTopicChildrenById(@PathVariable Long id) {
@@ -107,7 +103,6 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/update")
     public ResponseEntity<?> update(@RequestParam("pid") long topicParentId, @RequestParam("cid") long topicChildrenId, @RequestBody TopicRequest request) {
@@ -139,7 +134,6 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/update-expired")
     public ResponseEntity<?> updateIsExpiredById(@RequestParam("id") long id, @RequestParam("is_expired") boolean isExpired) {
@@ -163,7 +157,6 @@ public class TopicChildrenController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/search")
     public ResponseEntity<?> searchByTopicParentName(@RequestParam("tp_name") String topicChildrenName,

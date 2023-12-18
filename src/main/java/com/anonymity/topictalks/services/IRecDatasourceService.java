@@ -10,7 +10,6 @@ import java.util.HashMap;
  * @since 1.0 - version of class
  */
 
-
 public interface IRecDatasourceService {
 
     // Get the total number of users

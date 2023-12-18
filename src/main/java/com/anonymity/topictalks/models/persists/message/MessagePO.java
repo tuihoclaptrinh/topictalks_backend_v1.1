@@ -33,7 +33,6 @@ import java.io.Serializable;
  * @since 1.0 - version of class
  */
 
-
 @Data
 @Entity
 @Builder

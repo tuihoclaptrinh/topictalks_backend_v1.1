@@ -40,5 +40,4 @@ public interface ITopicParentRepository extends IBaseRepository<TopicParentPO, L
             "FROM topic_parent t", nativeQuery = true)
     List<String> getListTopicParentId();
 
-
 }
