@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         format_sql: true # Format SQL statements
+<<<<<<< HEAD
 
 ## Socket Io Configuration
 socket-server:
@@ -40,3 +41,5 @@ socket-server:
   maxHttpContentLength: 1048576
   #Set the maximum length of data processed per frame to prevent others from using big data to attack the server
   maxFramePayloadLength: 1048576
+=======
+>>>>>>> fad508dd990f9a246521c21c1f508907af65acf6
