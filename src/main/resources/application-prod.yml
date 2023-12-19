@@ -10,7 +10,7 @@ spring:
       minimum-idle: 5
       # Database connection timeout, default is 30 seconds, which is 30000
       idle-timeout: 60000
-    url: mysql://root:GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD@mysql.railway.internal:3306/railway
+    url: jdbc:mysql://root:GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD@mysql.railway.internal:3306/railway
     username: root # Database username
     password: GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD # Database password
 
