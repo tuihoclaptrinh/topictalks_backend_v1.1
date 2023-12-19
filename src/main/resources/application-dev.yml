@@ -19,3 +19,24 @@ spring:
     properties:
       hibernate:
         format_sql: true # Format SQL statements
+
+## Socket Io Configuration
+socket-server:
+  # Socket Port
+  port: 8085
+  # Socket Host
+  host: 127.0.0.1
+  # Number of connections
+  workCount: 100
+  #Allow client requests
+  allowCustomRequests: true
+  # Protocol upgrade timeout (milliseconds), default 10 seconds
+  upgradeTimeout: 10000
+  # Ping message timeout (milliseconds), default 60 seconds
+  pingTimeout: 6000000
+  # Ping message interval (milliseconds), default is 25 seconds.
+  pingInterval: 2500000
+  #Set the maximum content length of HTTP interaction
+  maxHttpContentLength: 1048576
+  #Set the maximum length of data processed per frame to prevent others from using big data to attack the server
+  maxFramePayloadLength: 1048576

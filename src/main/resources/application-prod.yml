@@ -10,7 +10,7 @@ spring:
       minimum-idle: 5
       # Database connection timeout, default is 30 seconds, which is 30000
       idle-timeout: 60000
-    url: mysql://root:GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD@mysql.railway.internal:3306/railway
+    url: jdbc:mysql://root:GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD@mysql.railway.internal:3306/railway
     username: root # Database username
     password: GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD # Database password
 
@@ -19,3 +19,24 @@ spring:
     properties:
       hibernate:
         format_sql: true # Format SQL statements
+
+## Socket Io Configuration
+socket-server:
+  # Socket Port
+  port: 8085
+  # Socket Host
+  host: topictalksbackendv11-production.up.railway.app
+  # Number of connections
+  workCount: 100
+  #Allow client requests
+  allowCustomRequests: true
+  # Protocol upgrade timeout (milliseconds), default 10 seconds
+  upgradeTimeout: 10000
+  # Ping message timeout (milliseconds), default 60 seconds
+  pingTimeout: 6000000
+  # Ping message interval (milliseconds), default is 25 seconds.
+  pingInterval: 2500000
+  #Set the maximum content length of HTTP interaction
+  maxHttpContentLength: 1048576
+  #Set the maximum length of data processed per frame to prevent others from using big data to attack the server
+  maxFramePayloadLength: 1048576

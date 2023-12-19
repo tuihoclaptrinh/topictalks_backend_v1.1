@@ -35,27 +35,6 @@ application:
       refresh-token:
         expiration: 1296000000 # 15 days in ms
 
-## Socket Io Configuration
-socket-server:
-  # Socket Port
-  port: 8085
-  # Socket Host
-  host: 127.0.0.1
-  # Number of connections
-  workCount: 100
-  #Allow client requests
-  allowCustomRequests: true
-  # Protocol upgrade timeout (milliseconds), default 10 seconds
-  upgradeTimeout: 10000
-  # Ping message timeout (milliseconds), default 60 seconds
-  pingTimeout: 6000000
-  # Ping message interval (milliseconds), default is 25 seconds.
-  pingInterval: 2500000
-  #Set the maximum content length of HTTP interaction
-  maxHttpContentLength: 1048576
-  #Set the maximum length of data processed per frame to prevent others from using big data to attack the server
-  maxFramePayloadLength: 1048576
-
 logging: # Log pattern for console output
   pattern:
     console: "%clr(%d{dd-MM-yyy HH:mm:ss.SSS}){faint} %highlight(%-5level) %magenta(${PID}) --- %cyan([%t]) %yellow(%logger{50}).%green(%M) : %msg%n"
