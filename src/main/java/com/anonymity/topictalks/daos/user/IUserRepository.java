@@ -30,9 +30,10 @@ import java.util.Optional;
 @Transactional
 public interface IUserRepository extends IBaseRepository<UserPO, Long> {
 
+    @Query(value = "SELECT * FROM user u WHERE u.role != 'ADMIN'", nativeQuery = true)
     Page<UserPO> findAll( Pageable pageable);
 
-    @Query(value = "SELECT * FROM user u where LOWER(u.nick_name) LIKE CONCAT('%', :nickName, '%');", nativeQuery = true)
+    @Query(value = "SELECT * FROM user u where LOWER(u.nick_name) LIKE CONCAT('%', :nickName, '%') AND u.role != 'ADMIN'", nativeQuery = true)
     Page<UserPO> findByName(@Param(value = "nickName") String nickName, Pageable pageable);
 
     @Query(value = "SELECT COUNT(*) FROM user", nativeQuery = true)
