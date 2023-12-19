@@ -21,7 +21,7 @@ spring:
         format_sql: true # Format SQL statements
 <<<<<<< HEAD
 
-## Socket Io Configuration
+# Socket Io Configuration
 socket-server:
   # Socket Port
   port: 8085
