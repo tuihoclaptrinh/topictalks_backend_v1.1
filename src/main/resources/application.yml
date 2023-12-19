@@ -38,7 +38,7 @@ application:
 ## Socket Io Configuration
 socket-server:
   # Socket Port
-  port: 5001
+  port: 5000
   # Socket Host topictalksbackendv11-production.up.railway.app 127.0.0.1
   host: 0.0.0.0
   # Number of connections
