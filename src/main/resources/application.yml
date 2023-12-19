@@ -39,8 +39,8 @@ application:
 socket-server:
   # Socket Port
   port: 8080
-  # Socket Host topictalksbackendv11-production.up.railway.app
-  host: 127.0.0.1
+  # Socket Host topictalksbackendv11-production.up.railway.app 127.0.0.1
+  host: 0.0.0.0
   # Number of connections
   workCount: 100
   #Allow client requests
