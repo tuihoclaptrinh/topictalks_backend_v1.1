@@ -34,4 +34,5 @@ public class RegisterRequest {
 
     @NullOrNotBlank(message = "Image URL cannot be null")
     private String urlAvatar;
+
 }

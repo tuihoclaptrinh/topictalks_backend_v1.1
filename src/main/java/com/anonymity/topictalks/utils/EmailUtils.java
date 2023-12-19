@@ -56,7 +56,7 @@ public class EmailUtils {
         mail.getModel().put("otpDigit4", otpDigits[3]);
         mail.getModel().put("otpDigit5", otpDigits[4]);
         mail.getModel().put("otpDigit6", otpDigits[5]);
-        mail.getModel().put("userEmailTokenVerificationLink", "http://localhost:5000/verify-account?email="+email+"&otp="+otp);
+        mail.getModel().put("userEmailTokenVerificationLink", "https://www.topictalks.online/verify-account?email="+email+"&otp="+otp);
 
         templateConfiguration.setClassForTemplateLoading(getClass(), basePackagePath);
         Template template = templateConfiguration.getTemplate("email-verification.ftl");
@@ -115,7 +115,7 @@ public class EmailUtils {
         mail.setTo(email);
         mail.setFrom(mailFrom);
         mail.getModel().put("userName", email);
-        mail.getModel().put("userForgotPasswordLink", "http://localhost:3000/forgot-password?token="+token);
+        mail.getModel().put("userForgotPasswordLink", "https://www.topictalks.online/forgot-password?token="+token);
 
         templateConfiguration.setClassForTemplateLoading(getClass(), basePackagePath);
         Template template = templateConfiguration.getTemplate("forgot-password-mail.ftl");
