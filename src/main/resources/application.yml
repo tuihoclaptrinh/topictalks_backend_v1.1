@@ -38,9 +38,9 @@ application:
 ## Socket Io Configuration
 socket-server:
   # Socket Port
-  port: 8080
+  port: 8085
   # Socket Host 0.0.0.0 topictalksbackendv11-production.up.railway.app 127.0.0.1
-  host: topictalksbackendv11-production.up.railway.app
+  host: https://topictalksbackendv11-production.up.railway.app
   # Number of connections
   workCount: 100
   #Allow client requests
