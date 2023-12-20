@@ -1,0 +1,25 @@
+name: backend-service
+services:
+  app:
+    image: jhpister-backend
+    expose:
+      - "5000"
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=prod,api-docs
+      - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://root:GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD@mysql.railway.internal:3306/railway
+      - SPRING_LIQUIBASE_URL=jdbc:mysql://root:GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD@mysql.railway.internal:3306/railway
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=GFdHHcCCdHh2BdAe-gAhFhaCf6DbggGD
+      - SPRING_PROFILES_ACTIVE=prod
+      - VIRTUAL_HOST=topictalks.online
+      - LETSENCRYPT_HOST=topictalks.online
+      - LETSENCRYPT_EMAIL=email-id
+      - VIRTUAL_PORT=5000
+    networks:
+      production: {}
+networks:
+  production:
+    external: true
+    name: production
