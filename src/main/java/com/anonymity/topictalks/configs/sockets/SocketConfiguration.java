@@ -47,7 +47,8 @@ public class SocketConfiguration {
     public SocketIOServer socketIOServer() {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setPort(port);
-        config.setHostname(host);
+        //config.setHostname(host);
+        config.setOrigin("*");
         com.corundumstudio.socketio.SocketConfig socketConfig = new com.corundumstudio.socketio.SocketConfig();
         socketConfig.setReuseAddress(true);
         config.setSocketConfig(socketConfig);
